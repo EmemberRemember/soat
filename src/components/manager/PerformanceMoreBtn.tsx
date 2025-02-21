@@ -24,9 +24,9 @@ export function PerformanceButton({
       className={`flex justify-center items-center w-full bg-background border-flesh-200 text-foreground py-1.5
           hover:bg-flesh-200 hover:text-foreground hover:border-flesh-200 transition
           active:bg-flesh-300 active:text-foreground active:border-flesh-300
-          ${className}`}
+          ${className || ""}`}
     >
-      <img src={iconSrc} alt={label} className="w-1/6 mr-1" />
+      <img src={iconSrc} alt={label || "아이콘"} className="w-1/6 mr-1" />
       {label}
     </button>
   );
