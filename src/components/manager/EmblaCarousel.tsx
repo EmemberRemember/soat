@@ -83,7 +83,7 @@ export default function EmblaCarousel() {
   };
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto py-6 px-3">
+    <div className="relative w-full max-w-4xl mx-auto py-8 px-3">
       <div className="overflow-hidden" ref={emblaRef}>
         <div className="flex" ref={carouselRef}>
           {[1, 2, 3, 4, 5].map((num) => (
@@ -104,7 +104,7 @@ export default function EmblaCarousel() {
                 </div>
               </div>
               {clickedSlide === num && (
-                <div className="mt-4">
+                <div>
                   <div
                     className="absolute top-0 left-0 w-full h-full bg-transparent"
                     onClick={() => setClickedSlide(null)} // 슬라이드 외부 클릭 시 닫기

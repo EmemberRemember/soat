@@ -36,7 +36,7 @@ export default function PerformanceMoreBtn({
   onClick,
 }: PerformanceMoreBtnProps) {
   return (
-    <div className="border-2 border-flesh-200 rounded-md w-[142px] mt-5">
+    <div className="border-2 border-flesh-200 rounded-md w-[142px] mt-2">
       <PerformanceButton
         iconSrc="/images/icons/pen.svg"
         label="예매 정보 수정"
