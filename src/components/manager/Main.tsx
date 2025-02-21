@@ -17,6 +17,7 @@ export default function Main() {
       <ButtonWithIcon
         iconSrc="/images/icons/people-black.svg"
         label="관리자 정보 수정"
+        onClick={() => router.push("/manager/infoediting")}
       />
     </main>
   );
