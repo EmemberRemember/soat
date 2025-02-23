@@ -1,3 +1,4 @@
+import Footer from "@/components/manager/Footer";
 import Header from "@/components/manager/Header";
 import Main from "@/components/manager/Main";
 
@@ -6,6 +7,7 @@ export default function manager() {
     <>
       <Header />
       <Main />
+      <Footer />
     </>
   );
 }
