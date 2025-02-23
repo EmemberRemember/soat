@@ -1,11 +1,11 @@
 import React from "react";
-import EmblaCarousel from "./EmblaCarousel";
+import Carousel from "./Carousel";
 
 export default function Performance() {
   return (
     <main>
       <div>
-        <EmblaCarousel />
+        <Carousel />
       </div>
     </main>
   );
