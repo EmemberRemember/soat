@@ -7,7 +7,6 @@ export default function manager() {
     <>
       <Header />
       <Main />
-      <Footer />
     </>
   );
 }
