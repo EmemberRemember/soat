@@ -52,18 +52,14 @@ export default function SwiperCarousel() {
 
   return (
     <div
-      className="relative w-full max-w-4xl mx-auto py-8 px-3 overflow-hidden"
+      className="relative w-full h-[500px] max-w-4xl mx-auto py-8 px-3 overflow-hidden"
       ref={swiperRef}
-      style={{ height: "500px", overflow: "hidden" }}
     >
       <Swiper
         spaceBetween={5}
         slidesPerView="auto"
         loop={false}
-        style={{
-          height: "100%",
-          overflowX: "hidden",
-        }}
+        className="h-full overflowX-hidden"
       >
         {[1, 2, 3, 4, 5].map((num) => (
           <SwiperSlide key={num} style={{ width: "auto", overflow: "visible" }}>
@@ -88,13 +84,12 @@ export default function SwiperCarousel() {
         ))}
       </Swiper>
 
-      {clickedSlide !== null && (
+      {/* {clickedSlide !== null && (
         <div
-          className="absolute inset-0 cursor-pointer"
-          style={{ zIndex: 40 }}
+          className="absolute inset-0 cursor-pointer z-40"
           onClick={() => setClickedSlide(null)} // 슬라이드 외부 클릭 시 모달 닫기
         />
-      )}
+      )} */}
     </div>
   );
 }
