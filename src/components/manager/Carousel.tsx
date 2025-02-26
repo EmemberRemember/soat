@@ -84,12 +84,12 @@ export default function SwiperCarousel() {
         ))}
       </Swiper>
 
-      {/* {clickedSlide !== null && (
+      {clickedSlide !== null && (
         <div
-          className="absolute inset-0 cursor-pointer z-40"
+          className="absolute bottom-0 left-0 w-full h-[40%] cursor-pointer z-40"
           onClick={() => setClickedSlide(null)} // 슬라이드 외부 클릭 시 모달 닫기
         />
-      )} */}
+      )}
     </div>
   );
 }
