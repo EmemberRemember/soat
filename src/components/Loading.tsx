@@ -1,3 +1,10 @@
+import React from "react";
+import { MoonLoader } from "react-spinners";
+
 export default function Loading() {
-  return <p>로드 중...</p>;
+  return (
+    <>
+      <MoonLoader color="#FD713A" speedMultiplier={0.8} />
+    </>
+  );
 }
