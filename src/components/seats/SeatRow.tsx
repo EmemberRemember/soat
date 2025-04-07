@@ -39,7 +39,7 @@ export default function SeatRow({
       const currentSeatNum = !isAisle && seat ? ++seatNum : null;
       const seatId =
         seat && currentSeatNum ? `${seatLabel}${currentSeatNum}` : "";
-      const matchedSeat = occupiedSeat.find((s) => s.seatId === seatId);
+      const matchedSeat = occupiedSeat?.find((s) => s.seatId === seatId);
       const status = matchedSeat?.status;
 
       return (
