@@ -11,9 +11,7 @@ export default function AdminUserManagement() {
   const fetchAdminUsers = async () => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/account`
-      );
+      const response = await fetch(`/api/admin/account`);
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -43,16 +41,13 @@ export default function AdminUserManagement() {
 
     try {
       setLoading(true);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/account`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId: newUserId }),
-        }
-      );
+      const response = await fetch(`/api/admin/account`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId: newUserId }),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
@@ -75,16 +70,13 @@ export default function AdminUserManagement() {
   const removeAdminUser = async (userId: string) => {
     try {
       setLoading(true);
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/admin/account`,
-        {
-          method: "DELETE",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ userId }),
-        }
-      );
+      const response = await fetch(`/api/admin/account`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ userId }),
+      });
 
       if (!response.ok) {
         const errorData = await response.json();
