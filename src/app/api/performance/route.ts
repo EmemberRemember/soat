@@ -1,4 +1,5 @@
 // /api/performance/route.ts
+export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/app/api/firebaseAdmin";
