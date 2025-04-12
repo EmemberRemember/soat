@@ -1,4 +1,7 @@
 "use client";
+
+export const dynamic = "force-dynamic";
+
 import React, { useState, useEffect } from "react";
 import { Button } from "../controls/Button";
 import { JoinInput, Checkbox } from "@/components/controls/Inputs";
