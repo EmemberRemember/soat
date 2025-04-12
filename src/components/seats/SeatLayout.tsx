@@ -50,7 +50,7 @@ export default function SeatLayout({
       <div className="w-full bg-gray-300 h-8 rounded-lg flex items-center justify-center text-sm text-gray-600 mb-4">
         무대
       </div>
-      <div className="flex gap-4 flex-col">{renderRows()}</div>
+      <div className="flex gap-4 flex-col m-auto">{renderRows()}</div>
       <Modal isOpen={showModal} onClose={() => handleShowModal(false)}>
         <h2>
           {`${selectedSeatItem?.seatLabel}${selectedSeatItem?.seatNumber} 좌석 현황`}
