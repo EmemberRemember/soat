@@ -10,7 +10,11 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { TicketPlus } from "lucide-react";
 
-export default function EmblaCarousel() {
+interface CarouselDataProps {
+  label: string;
+}
+
+export default function EmblaCarousel({ label }: CarouselDataProps) {
   const [clickedSlide, setClickedSlide] = useState<number | null>(null); // 클릭한 슬라이드 관리
   const [performanceList, setPerformanceList] = useState<PerformanceData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -35,7 +39,31 @@ export default function EmblaCarousel() {
     async function fetchPerformanceList() {
       try {
         const response = await axios.get("/api/manager/performance");
-        setPerformanceList(response.data); // 공연 목록을 상태에 저장
+
+        if (label.includes("현재")) {
+          setPerformanceList(
+            response.data.filter(
+              (performance: PerformanceData) =>
+                new Date(performance.bookingStartDate) < new Date() &&
+                new Date(performance.bookingEndDate) > new Date()
+            )
+          );
+        } else if (label.includes("오픈 예정")) {
+          setPerformanceList(
+            response.data.filter(
+              (performance: PerformanceData) =>
+                new Date(performance.bookingStartDate) > new Date()
+            )
+          );
+        } else if (label.includes("완료")) {
+          setPerformanceList(
+            response.data.filter(
+              (performance: PerformanceData) =>
+                new Date(performance.bookingEndDate) < new Date()
+            )
+          );
+        }
+
         setIsLoading(false);
       } catch (error) {
         console.error("공연 목록 불러오기 실패:", error);
@@ -114,14 +142,16 @@ export default function EmblaCarousel() {
 
   return (
     <section className="relative w-full max-w-4xl mx-auto py-6 px-6">
-      <h2 className="text-2xl font-bold mb-6">나의 공연</h2>
-      <Link
-        href="/enrollment"
-        className="absolute right-6 top-5 bg-flesh-500 hover:bg-flesh-600 active:bg-flesh-700 text-sm px-4 py-2 rounded-md text-white flex items-center gap-2 transition duration-200"
-      >
-        <TicketPlus />
-        공연 등록
-      </Link>
+      <h2 className="text-2xl font-bold mb-6">{label}</h2>
+      {label.includes("진행중") && (
+        <Link
+          href="/enrollment"
+          className="absolute right-6 top-5 bg-flesh-500 hover:bg-flesh-600 active:bg-flesh-700 text-sm px-4 py-2 rounded-md text-white flex items-center gap-2 transition duration-200"
+        >
+          <TicketPlus />
+          공연 등록
+        </Link>
+      )}
       {performanceList.length > 0 ? (
         <>
           <Button
