@@ -21,6 +21,8 @@ export default function PerformanceSlide({
   handleCardOutsideClick,
 }: SliceProps) {
   const performId: string = data.id || "error";
+  const bookingStartDate = data.bookingStartDate;
+  const isNotBookingDate = new Date(bookingStartDate) > new Date();
 
   return (
     <article
@@ -48,11 +50,17 @@ export default function PerformanceSlide({
               {data.category}
             </Badge>
             <h3 className="font-medium text-sm truncate">{data.title}</h3>
-            <span className="text-gray-500 text-sm">
-              {(data.createdAt instanceof Timestamp
+            <span
+              className={`
+                text-sm 
+                ${isNotBookingDate ? "text-destructive" : "text-gray-500"}
+              `}
+            >
+              {/* {(data.createdAt instanceof Timestamp
                 ? data.createdAt.toDate()
                 : new Date(data.createdAt as string | number | Date)
-              ).toLocaleDateString("ko-KR")}
+              ).toLocaleDateString("ko-KR")} */}
+              {bookingStartDate}
             </span>
             {isOpen && (
               <div className="mt-3">
