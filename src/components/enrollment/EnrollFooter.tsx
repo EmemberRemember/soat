@@ -1,6 +1,10 @@
 "use client";
 import { Button } from "@/components/controls/Button";
-import { resetDirty, setStep } from "@/redux/slices/enrollSlice";
+import {
+  resetDirty,
+  resetEnrollState,
+  setStep,
+} from "@/redux/slices/enrollSlice";
 import { RootState } from "@/redux/store";
 import { getImage } from "@/services/indexedDBService";
 import { EnrollStep } from "@/types/enrollment";
@@ -9,14 +13,20 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import NavigationGuard from "./NavigationGuard";
 import EnrollRehydration from "./EnrollRehydartion";
+import { resetSeatState } from "@/redux/slices/seatSlice";
 
 export default function EnrollFooter() {
   const step = useSelector((state: RootState) => state.enroll.step);
   const enrollResult = useSelector((state: RootState) => state.enroll);
   const seatResult = useSelector((state: RootState) => state.seat);
   const imageFiles = enrollResult.files;
-  const isDirty = enrollResult.isDirty;
+  const isDirty = enrollResult.isDirty || seatResult.isDirty;
   const dispatch = useDispatch();
+
+  const resetStoreState = () => {
+    dispatch(resetEnrollState());
+    dispatch(resetSeatState());
+  };
 
   const onClickTempStore = () => {
     dispatch(resetDirty());
@@ -53,7 +63,9 @@ export default function EnrollFooter() {
           formData.append(`image`, newfile);
         }
       });
+
       const { files, ...rest } = { ...enrollResult, seats: seatResult };
+
       const result = { ...rest };
       formData.append("data", JSON.stringify(result));
       const response = await axios.put("/api/enrollment", formData, {
@@ -75,7 +87,7 @@ export default function EnrollFooter() {
 
   return (
     <EnrollRehydration>
-      <NavigationGuard isDirty={isDirty} />
+      <NavigationGuard isDirty={isDirty} onConfirm={resetStoreState} />
       <footer className="fixed left-0 bottom-0 bg-flesh-200 w-full h-[120px] flex justify-end items-center pr-[60px] gap-14">
         <Button onClick={onClickTempStore} type="button">
           임시 저장
