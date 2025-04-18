@@ -1,11 +1,11 @@
 export const dynamic = "force-dynamic";
-
 import { sanitizeHTML } from "./../../../utils/sanitizer";
 import { NextResponse, NextRequest } from "next/server";
 import { adminDb, adminStorage } from "../firebaseAdmin";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/auth/authOptions";
 import { v4 as uuidv4 } from "uuid";
+import { sanitizeHTML } from "@/utils/sanitizer";
 
 interface uploadedImages {
   id: string;
