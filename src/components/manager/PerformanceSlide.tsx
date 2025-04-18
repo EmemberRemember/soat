@@ -52,6 +52,7 @@ export default function PerformanceSlide({
           handleClick();
         }}
       >
+        {/* new Date() > new Date(bookingEndDate)는 공연 일자가 등록되지 않았지만 예매일자가 긴 데이터가 있어서 임시 구현 */}
         <CardContent className="p-0 relative">
           {new Date() > new Date(bookingEndDate) &&
             new Date(getLastPerformanceDate()) < new Date() && (
