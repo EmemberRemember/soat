@@ -3,7 +3,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PerformanceData } from "@/app/api/performance/route";
 import PerformanceMoreBtn from "./PerformanceMoreBtn";
-import { Timestamp } from "firebase/firestore";
 
 interface SliceProps {
   data: PerformanceData;
@@ -79,10 +78,6 @@ export default function PerformanceSlide({
                 ${isNotYetBookingDate ? "text-destructive" : "text-gray-500"}
               `}
             >
-              {/* {(data.createdAt instanceof Timestamp
-                ? data.createdAt.toDate()
-                : new Date(data.createdAt as string | number | Date)
-              ).toLocaleDateString("ko-KR")} */}
               {bookingStartDate}
             </span>
             {isOpen && (
