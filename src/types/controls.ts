@@ -1,5 +1,5 @@
 import { ReactElement, MouseEvent } from "react";
-import { ZodType } from "zod";
+import { ZodString, ZodEffects } from "zod";
 
 // 기본 공통 속성
 interface BaseProps {
@@ -41,7 +41,7 @@ export interface TextInputProps extends InputBaseProps {
 
 export interface JoinInputProps extends InputBaseProps {
   label: string; // required
-  validation?: ZodType<string | number>;
+  validation?: ZodString | ZodEffects<ZodString>;
   message?: string;
   disabled?: boolean;
   max?: number;

@@ -42,15 +42,22 @@ export default function Toolbar({
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = e.target.files;
-    if (file) {
+    if (!file || file.length === 0) return;
+
+    try {
       const fileId = await saveImageIndexedDB(file[0]);
       const imageUrl = await getImageURLIndexedDB(fileId);
       if (editor) {
         dispatch(addFile(fileId));
-        editor.chain().focus().setImage({ src: imageUrl, key: fileId }).run();
+        editor.chain().focus().setImage({ src: imageUrl }).run();
+        //setImage 내 없는 속성으로, key: fileId 제거
       }
+    } catch (err) {
+      console.error("이미지 업로드에 실패했습니다.", err);
+      alert("이미지 업로드에 실패했습니다.");
+    } finally {
+      e.target.value = "";
     }
-    e.target.value = "";
   };
 
   const handleUploadImageURL = () => {

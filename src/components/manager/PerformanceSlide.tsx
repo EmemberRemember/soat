@@ -3,6 +3,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { PerformanceData } from "@/app/api/performance/route";
 import PerformanceMoreBtn from "./PerformanceMoreBtn";
+import { Timestamp } from "firebase/firestore";
 
 interface SliceProps {
   data: PerformanceData;
@@ -48,7 +49,10 @@ export default function PerformanceSlide({
             </Badge>
             <h3 className="font-medium text-sm truncate">{data.title}</h3>
             <span className="text-gray-500 text-sm">
-              {new Date(data.createdAt).toLocaleDateString("ko-KR")}
+              {(data.createdAt instanceof Timestamp
+                ? data.createdAt.toDate()
+                : new Date(data.createdAt as string | number | Date)
+              ).toLocaleDateString("ko-KR")}
             </span>
             {isOpen && (
               <div className="mt-3">

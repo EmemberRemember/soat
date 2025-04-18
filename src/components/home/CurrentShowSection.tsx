@@ -8,7 +8,6 @@ import { Swiper as SwiperClass } from "swiper/types";
 import "swiper/css";
 import "swiper/css/pagination";
 import { PerformanceData } from "@/app/api/performance/route";
-import { DailyPerformances } from "@/types/enrollment";
 import Link from "next/link";
 
 const CATEGORIES = ["전체", "콘서트", "뮤지컬", "연극", "전시/행사", "팬미팅"];

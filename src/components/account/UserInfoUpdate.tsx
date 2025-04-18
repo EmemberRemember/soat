@@ -1,4 +1,7 @@
 "use client";
+
+export const dynamic = "force-dynamic";
+
 import React, { useState, useEffect } from "react";
 import { Button } from "../controls/Button";
 import { JoinInput, Checkbox } from "@/components/controls/Inputs";
@@ -74,9 +77,7 @@ export default function UserInfoUpdate() {
       currentPassword: password,
     };
     try {
-      const response = await axios.delete("/api/account/delete", {
-        data: formData,
-      });
+      const response = await axios.post("/api/account/delete", formData);
 
       if (response.status === 200) {
         setIsOpenModal(true);

@@ -39,7 +39,7 @@ export default function SeatRow({
       const currentSeatNum = !isAisle && seat ? ++seatNum : null;
       const seatId =
         seat && currentSeatNum ? `${seatLabel}${currentSeatNum}` : "";
-      const matchedSeat = occupiedSeat.find((s) => s.seatId === seatId);
+      const matchedSeat = occupiedSeat?.find((s) => s.seatId === seatId);
       const status = matchedSeat?.status;
 
       return (
@@ -59,11 +59,9 @@ export default function SeatRow({
   };
 
   return (
-    <div className="flex items-center gap-4">
-      <div className="flex items-center gap-2 w-fit">
-        <span className="font-bold w-6">{seatLabel}</span>
-        {renderSeats()}
-      </div>
+    <div className="flex items-center gap-2 w-fit">
+      <span className="font-bold w-6">{seatLabel}</span>
+      {renderSeats()}
     </div>
   );
 }

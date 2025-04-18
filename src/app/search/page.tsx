@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import SearchResultItem from "@/components/search/SearchResultItem";
 import SearchOptionFilter from "@/components/search/SearchOptionFilter";
 import SortFilter from "@/components/search/SortFilter";
@@ -8,24 +9,49 @@ import SearchOptionSection from "@/components/search/SearchOptionSection";
 import DesktopSearchOptionSection from "@/components/search/DesktopSearchOptionSection";
 import Header from "@/components/home/Header";
 import Footer from "@/components/home/Footer";
-import { PerformanceData } from "../api/performance/route";
-import axios from "axios";
-import { useSearchParams } from "next/navigation";
 import Loading from "@/components/Loading";
+import axios from "axios";
+import { PerformanceData } from "../api/performance/route";
+
+// 정적 생성을 비활성화하고 동적 렌더링 강제 설정
+export const dynamic = "force-dynamic";
 
 export interface Item extends PerformanceData {
   objectID: string;
   ratingCount: number;
 }
 
-export default function SearchPage() {
+// SearchParams를 사용하는 컴포넌트
+function SearchParamsProvider({ children }: { children: React.ReactNode }) {
+  // 여기서 useSearchParams를 사용하면 Suspense 경계 내에서 사용되어야 함
+  return children;
+}
+
+// 실제 검색 파라미터를 사용하는 컴포넌트
+function SearchParamsConsumer() {
+  // useSearchParams는 반드시 컴포넌트 최상위 레벨에서 호출되어야 함
+  const searchParams = useSearchParams();
+  const title = searchParams.get("title");
+  const category = searchParams.get("category");
+
+  return <SearchResults title={title} category={category} />;
+}
+
+// 검색 결과 컴포넌트
+function SearchResults({
+  title,
+  category,
+}: {
+  title: string | null;
+  category: string | null;
+}) {
   const [isOpenSearchOption, setIsOpenSearchOption] = useState(false);
   const [filterType, setFilterType] = useState<
     "category" | "saleStatus" | null
   >(null);
-  const [visibleItems, setVisibleItems] = useState(5); // 모바일: 더보기 버튼 클릭 시 추가 아이템 표시
-  const [currentPage, setCurrentPage] = useState(1); // 데스크탑: 페이지네이션 현재 페이지
-  const [selectedSortOption, setSelectedSortOption] = useState("최근날짜순"); // 정렬 옵션 상태
+  const [visibleItems, setVisibleItems] = useState(5);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedSortOption, setSelectedSortOption] = useState("최근날짜순");
   const [selectedCategoryFilters, setSelectedCategoryFilters] = useState<
     string[]
   >([]);
@@ -34,13 +60,9 @@ export default function SearchPage() {
   );
   const [isMobile, setIsMobile] = useState(false);
   const [searchDataList, setSearchDataList] = useState<Item[]>([]);
-  const searchParams = useSearchParams();
-  const title = searchParams.get("title");
-  const category = searchParams.get("category");
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
-  // title 검색 결과를 setSearchDataList 에 저장
-  const fetchData = async () => {
+  const fetchData = async (title: string | null, category: string | null) => {
     try {
       const response = await axios.get("/api/performance/search", {
         params: { title, category },
@@ -59,19 +81,6 @@ export default function SearchPage() {
   };
 
   useEffect(() => {
-    setIsLoading(true);
-    setSearchDataList([]); // 검색 결과 초기화
-    // url params에 title 또는 category 값이 없는 경우 fetchData() 미실행
-    if (
-      (!title || title.trim() === "") &&
-      (!category || category.trim() === "")
-    ) {
-      return;
-    }
-    fetchData();
-  }, [title, category]);
-
-  useEffect(() => {
     setIsMobile(window.innerWidth <= 768);
 
     const handleResize = () => {
@@ -82,7 +91,18 @@ export default function SearchPage() {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  // 정렬 로직
+  useEffect(() => {
+    setIsLoading(true);
+    setSearchDataList([]);
+    if (
+      (!title || title.trim() === "") &&
+      (!category || category.trim() === "")
+    ) {
+      return;
+    }
+    fetchData(title, category);
+  }, [title, category]);
+
   const sortedData = useMemo(() => {
     const sorted = [...searchDataList];
     if (selectedSortOption === "최근날짜순") {
@@ -95,34 +115,28 @@ export default function SearchPage() {
     return sorted;
   }, [searchDataList, selectedSortOption]);
 
-  // filteredData 계산 로직
   const filteredData = useMemo(() => {
     return sortedData.filter((item) => {
-      // 카테고리 필터 적용 (선택된 필터가 없으면 모두 통과)
       const matchesCategory =
         selectedCategoryFilters.length === 0 ||
         selectedCategoryFilters.includes(item.category);
 
-      // 판매상태 필터 적용 (선택된 필터가 없으면 모두 통과)
       const matchesStatus =
         selectedStatusFilters.length === 0 ||
         new Date() > new Date(item.bookingEndDate);
 
-      // 두 조건을 모두 만족해야 함
       return matchesCategory && matchesStatus;
     });
   }, [sortedData, selectedCategoryFilters, selectedStatusFilters]);
+
   const itemsPerPage = 5;
-  // 필터링된 데이터에 맞는 총 페이지 수
   const totalPages = Math.ceil(filteredData.length / itemsPerPage);
 
-  // 데스크탑용 페이지네이션 적용
   const displayedDataForDesktop = useMemo(() => {
     const startIdx = (currentPage - 1) * itemsPerPage;
     return filteredData.slice(startIdx, startIdx + itemsPerPage);
   }, [filteredData, currentPage]);
 
-  // 모바일용 더보기 기능 적용
   const displayedDataForMobile = useMemo(() => {
     return filteredData.slice(0, visibleItems);
   }, [filteredData, visibleItems]);
@@ -136,7 +150,6 @@ export default function SearchPage() {
     setIsOpenSearchOption(true);
   }
 
-  // 필터 핸들러 수정
   function handleFilterSelection(
     filter: string,
     type: "category" | "saleStatus"
@@ -160,7 +173,6 @@ export default function SearchPage() {
     }
   }
 
-  // 데스크탑 필터 리셋 함수
   function resetFilters(): void {
     setSelectedCategoryFilters([]);
     setSelectedStatusFilters([]);
@@ -168,7 +180,6 @@ export default function SearchPage() {
     setVisibleItems(5);
   }
 
-  // 모바일 필터 리셋 함수
   function resetSpecificFilter(type: "category" | "saleStatus"): void {
     if (type === "category") {
       setSelectedCategoryFilters([]);
@@ -190,7 +201,6 @@ export default function SearchPage() {
           검색 결과입니다.
         </p>
 
-        {/* 모바일 검색 필터 */}
         <section className="flex items-center gap-[9px]">
           <SearchOptionFilter
             onClick={() => handleSearchOption("category")}
@@ -208,18 +218,17 @@ export default function SearchPage() {
           </SearchOptionFilter>
         </section>
 
-        {/* 데스크탑 검색 필터 */}
         <DesktopSearchOptionSection
           onApply={(filter, type) => handleFilterSelection(filter, type)}
           onClick={resetFilters}
           category={category || ""}
           title={title || ""}
         />
-        {/* 검색 정보 */}
+
         <section className="border-b border-b-gray-300 py-1 flex items-center justify-between">
           <p className="font-semibold">
             공연
-            <span className="text-sm  ml-1">({filteredData.length})</span>
+            <span className="text-sm ml-1">({filteredData.length})</span>
           </p>
           <SortFilter
             selectedOption={selectedSortOption}
@@ -227,12 +236,10 @@ export default function SearchPage() {
           />
         </section>
 
-        {/* 검색 결과 목록 */}
-
         {isLoading ? (
           <Loading />
         ) : filteredData.length === 0 ? (
-          <p>검색 결과가 없습니다.</p> // 검색 결과가 없을 때 메시지
+          <p>검색 결과가 없습니다.</p>
         ) : (
           <section>
             <ul>
@@ -246,7 +253,6 @@ export default function SearchPage() {
           </section>
         )}
 
-        {/* 모바일: 더보기 버튼 */}
         {visibleItems < filteredData.length && isMobile && (
           <section className="md:hidden">
             <button
@@ -258,7 +264,6 @@ export default function SearchPage() {
           </section>
         )}
 
-        {/* 데스크탑: 페이지네이션 */}
         {!isMobile && (
           <div className="flex justify-center gap-2 px-4 py-6 mb-5 text-[18px]">
             {Array.from({ length: totalPages }, (_, i) => (
@@ -279,7 +284,6 @@ export default function SearchPage() {
       </main>
       <Footer />
 
-      {/* 검색 옵션 필터 모달 */}
       {isOpenSearchOption && (
         <>
           <div
@@ -299,5 +303,16 @@ export default function SearchPage() {
         </>
       )}
     </>
+  );
+}
+
+// 메인 페이지 컴포넌트
+export default function SearchPage() {
+  return (
+    <SearchParamsProvider>
+      <Suspense fallback={<Loading />}>
+        <SearchParamsConsumer />
+      </Suspense>
+    </SearchParamsProvider>
   );
 }

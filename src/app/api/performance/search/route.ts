@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import { postsIndex } from "@/lib/algolia";
 import { PerformanceData } from "@/app/api/performance/route";

@@ -50,7 +50,7 @@ export default function Header() {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const handleLogout = async (e) => {
+  const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     await signOut({ redirect: false });
     window.location.href = "/";

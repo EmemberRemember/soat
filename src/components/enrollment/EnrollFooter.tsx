@@ -63,9 +63,7 @@ export default function EnrollFooter() {
           formData.append(`image`, newfile);
         }
       });
-
-      const { files, ...rest } = { ...enrollResult, seats: seatResult };
-
+      const { files: _files, ...rest } = { ...enrollResult, seats: seatResult };
       const result = { ...rest };
       formData.append("data", JSON.stringify(result));
       const response = await axios.put("/api/enrollment", formData, {

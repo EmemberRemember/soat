@@ -1,10 +1,11 @@
-import { NextResponse, NextRequest } from "next/server";
+export const dynamic = "force-dynamic";
+
+import { NextResponse } from "next/server";
 import { adminDb } from "@/app/api/firebaseAdmin";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { create } from "domain";
+import { authOptions } from "@/auth/authOptions";
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     const session = await getServerSession(authOptions);
 

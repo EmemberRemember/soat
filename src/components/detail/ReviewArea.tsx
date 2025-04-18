@@ -70,8 +70,9 @@ export default function ReviewArea() {
 
       alert("리뷰가 성공적으로 등록되었습니다.");
     } catch (err) {
+      const error = err as Error;
       console.error("리뷰 작성 중 오류:", err);
-      setError(err.message || "리뷰 작성 중 오류가 발생했습니다.");
+      setError(error.message || "리뷰 작성 중 오류가 발생했습니다.");
     } finally {
       setIsSubmitting(false);
     }

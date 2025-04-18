@@ -1,11 +1,10 @@
 "use client";
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { JoinInput } from "@/components/controls/Inputs";
 import { Button } from "../controls/Button";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { validations } from "@/utils/validations";
-import { set } from "date-fns";
 
 type EmailUpdateState =
   | "initial"
@@ -30,6 +29,8 @@ export default function ManagerEdit() {
   const [emailUpdate, setEmailUpdate] = useState<EmailUpdateState>("initial");
   const [emailError, setEmailError] = useState<string>("");
   const [verifyNumError, setVerifyNumError] = useState<string>("");
+  const [emailBtnLabel, setEmailBtnLabel] =
+    useState<string>("이메일(아이디) 변경하기");
   const router = useRouter();
 
   useEffect(() => {
@@ -100,13 +101,16 @@ export default function ManagerEdit() {
     }
   }
 
-  async function handleEmailChange(e) {
-    const buttonName: string = e.target.textContent;
-    if (buttonName === "이메일(아이디) 변경하기") {
+  async function handleEmailChange() {
+    if (emailBtnLabel === "이메일(아이디) 변경하기") {
       setWantToChangeEmail(true);
       setEmail("");
-      e.target.textContent = "인증번호 전송";
-    } else if (buttonName.includes("인증번호")) {
+      setEmailBtnLabel("인증번호 전송");
+    } else if (emailBtnLabel.includes("인증번호")) {
+      if (!email || email.trim() === "") {
+        alert("이메일이 입력되지 않았습니다.");
+        return;
+      }
       // 이메일 인증 api 호출
       try {
         const response = await axios.post("/api/auth/email-verification", {
@@ -185,9 +189,9 @@ export default function ManagerEdit() {
             highlight
             className="absolute right-6  font-normal sm:font-bold"
             disabled={emailUpdate === "emailSent" || emailUpdate === "success"}
-            onClick={(e) => handleEmailChange(e)}
+            onClick={() => handleEmailChange()}
           >
-            이메일(아이디) 변경하기
+            {emailBtnLabel}
           </Button>
         </JoinInput>
         {wantToChangeEmail && (
