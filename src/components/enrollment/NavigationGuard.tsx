@@ -5,6 +5,7 @@ import React, { useEffect } from "react";
 import { useShowModal } from "@/hooks/useShowModal";
 import Modal from "../Modal";
 import { Button } from "../controls/Button";
+import { useRouter } from "next/navigation";
 
 interface NavigationGuardProps {
   isDirty?: boolean;
@@ -16,6 +17,7 @@ const NavigationGuard = ({
   onConfirm,
 }: NavigationGuardProps) => {
   const { handleShowModal, showModal } = useShowModal();
+  const router = useRouter();
   useEffect(() => {
     history.pushState(null, "", location.href);
   }, []); //마운트 시 현재 url 을 historyAPI 에 추가
@@ -43,6 +45,7 @@ const NavigationGuard = ({
   const handleConfirmNavigation = () => {
     handleShowModal(false);
     onConfirm();
+    router.back();
   };
 
   return (
