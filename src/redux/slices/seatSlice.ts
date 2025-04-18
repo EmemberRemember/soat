@@ -126,6 +126,9 @@ const seatSlice = createSlice({
     resetIsAllAisle: (state) => {
       state.isAllAisle = [];
     },
+    resetSeatState: () => {
+      return initialState;
+    },
   },
 });
 
@@ -139,6 +142,7 @@ export const {
   addIsAllAisle,
   removeIsAllAisle,
   resetIsAllAisle,
+  resetSeatState,
 } = seatSlice.actions;
 
 export default seatSlice.reducer;

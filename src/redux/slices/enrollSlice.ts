@@ -159,6 +159,9 @@ const enrollSlice = createSlice({
     setStep: (state, action: PayloadAction<EnrollStep>) => {
       state.step = action.payload;
     },
+    resetEnrollState: () => {
+      return EnrollInitialState;
+    },
   },
 });
 
@@ -180,6 +183,7 @@ export const {
   resetDirty,
   setPrice,
   setStep,
+  resetEnrollState,
 } = enrollSlice.actions;
 
 export default enrollSlice.reducer;
