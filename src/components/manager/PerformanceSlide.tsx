@@ -22,7 +22,20 @@ export default function PerformanceSlide({
 }: SliceProps) {
   const performId: string = data.id || "error";
   const bookingStartDate = data.bookingStartDate;
-  const isNotBookingDate = new Date(bookingStartDate) > new Date();
+  const bookingEndDate = data.bookingEndDate;
+  const isNotYetBookingDate = new Date(bookingStartDate) > new Date();
+
+  function getLastPerformanceDate() {
+    const performanceDates = Object.keys(data.performances).sort(
+      (a, b) => new Date(a).getTime() - new Date(b).getTime()
+    );
+    const finishPerformanceDate = performanceDates[0];
+    if (Object.keys(data.performances).length > 0) {
+      return finishPerformanceDate;
+    } else {
+      return bookingEndDate;
+    }
+  }
 
   return (
     <article
@@ -39,7 +52,16 @@ export default function PerformanceSlide({
           handleClick();
         }}
       >
-        <CardContent className="p-0">
+        <CardContent className="p-0 relative">
+          {new Date() > new Date(bookingEndDate) &&
+            new Date(getLastPerformanceDate()) < new Date() && (
+              <Badge
+                variant={"outline"}
+                className="absolute top-2 left-2 text-white font-normal text-[10px] sm:text-xs md:text-sm "
+              >
+                공연 종료
+              </Badge>
+            )}
           <img
             src={data.poster.url}
             alt={data.poster.fileName}
@@ -53,7 +75,7 @@ export default function PerformanceSlide({
             <span
               className={`
                 text-sm 
-                ${isNotBookingDate ? "text-destructive" : "text-gray-500"}
+                ${isNotYetBookingDate ? "text-destructive" : "text-gray-500"}
               `}
             >
               {/* {(data.createdAt instanceof Timestamp
