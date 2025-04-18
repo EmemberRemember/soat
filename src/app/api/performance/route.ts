@@ -1,9 +1,11 @@
 // /api/performance/route.ts
+export const dynamic = "force-dynamic";
 
 import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/app/api/firebaseAdmin";
 import { DailyPerformances } from "@/types/enrollment"; // 타입 import
 import { TheaterLayoutData } from "@/components/seats/TheaterLayoutManager";
+import { Timestamp } from "firebase-admin/firestore";
 
 // API 응답에 사용할 타입 정의
 export interface PerformanceData {
@@ -26,8 +28,8 @@ export interface PerformanceData {
   price: number;
   sellerId: string;
   sellerTeam: string;
-  createdAt: any;
-  updatedAt: any;
+  createdAt: string | number | Date | Timestamp;
+  updatedAt: string | number | Date | Timestamp;
   seats: TheaterLayoutData;
   // 기타 필요한 필드들
 }

@@ -44,7 +44,9 @@ export default function EnrollRehydration({
   useEffect(() => {
     const checkPersistedState = async () => {
       try {
-        const storedState = await getStoredState(enrollPersistConfig);
+        const storedState = (await getStoredState(
+          enrollPersistConfig
+        )) as typeof EnrollInitialState;
 
         if (!storedState) {
           // 값이 존재하지 않으면
@@ -54,7 +56,12 @@ export default function EnrollRehydration({
         }
 
         // `isDirty, step` 값을 제외한 비교를 위해 필터링
-        const { isDirty, step, _persist, ...filteredStoredState } = storedState;
+        const {
+          isDirty: _isDirty,
+          step: _step,
+          // _persist: __persist, // 값 오류로 주석처리
+          ...filteredStoredState
+        } = storedState;
         const {
           isDirty: ignoredIsDirty,
           step: ignoredStep,

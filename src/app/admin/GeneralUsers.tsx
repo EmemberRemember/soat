@@ -5,19 +5,13 @@ import ListTitle from "@/components/admin/ListTitle";
 import QueryButton from "@/components/admin/ QueryButton";
 import SubTabDescription from "@/components/admin/SubTabDescription";
 import AdminSearchInput from "@/components/admin/AdminSearchInput";
-import { buyerUsersList } from "../api/admin/users/route";
-
-export interface GeneralUser {
-  email: string;
-  id: string;
-  username: string;
-  phoneNumber: string;
-  createdAt: string;
-  password: undefined;
-}
+import { GeneralUser } from "@/types/admin";
 
 export default async function GeneralUsers() {
-  const generalUserData = (await buyerUsersList()) as GeneralUser[];
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/admin/users`
+  );
+  const generalUserData = (await response.json()) as GeneralUser[];
 
   return (
     <>

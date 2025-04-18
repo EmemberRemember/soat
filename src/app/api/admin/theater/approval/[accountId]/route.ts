@@ -1,7 +1,7 @@
+export const dynamic = "force-dynamic";
+
 import { NextRequest, NextResponse } from "next/server";
-import { adminDb, adminStorage } from "@/app/api/firebaseAdmin";
-import NextCrypto from "next-crypto";
-import { NewTheaterAdmin } from "@/types/admin";
+import { adminDb } from "@/app/api/firebaseAdmin";
 
 const SECRET_KEY = process.env.NEXT_CRYPTO_SECRET_KEY;
 
@@ -9,7 +9,7 @@ if (!SECRET_KEY) {
   throw new Error("NEXT_CRYPTO_SECRET_KEY 환경 변수가 설정되지 않았습니다.");
 }
 
-export async function approveId({ accountId }: { accountId: string }) {
+async function approveId({ accountId }: { accountId: string }) {
   try {
     const userDoc = await adminDb
       .collection("sellerUsers")
@@ -55,13 +55,13 @@ export async function approveId({ accountId }: { accountId: string }) {
 
 // Admin 권한 개발 후 주석 해제
 
-// export async function PUT(
-//   request: NextRequest,
-//   { params }: { params: { accountId: string } }
-// ) {
-//   const { accountId } = params;
+export async function PUT(
+  request: NextRequest,
+  { params }: { params: { accountId: string } }
+) {
+  const { accountId } = params;
 
-//   const result = await approveId({ accountId });
+  const result = await approveId({ accountId });
 
-//   return result;
-// }
+  return result;
+}

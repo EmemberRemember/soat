@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Button, CloseButton } from "@/components/controls/Button";
 import {
   Checkbox,
@@ -221,14 +221,7 @@ export default function Designs() {
         <br />
         회원가입 텍스트 Input 내부에도 보조 버튼을 추가 할 수 있습니다.
       </p>
-      <JoinInput
-        label="이메일"
-        validation="이메일 주소 양식에 맞게 작성해주세요"
-        type="email"
-        onChange={setEmail}
-        value={email}
-        invalid
-      >
+      <JoinInput label="이메일" type="email" onChange={setEmail} value={email}>
         <Button
           highlight={true}
           onClick={() => alert("버튼이 작동했습니다!")}

@@ -15,8 +15,8 @@ export default function TheaterAdminUsersTable({
   const fieldMapping: Record<(typeof headers)[number], keyof TheaterAdminUser> =
     {
       이메일: "email",
-      이름: "name",
-      가입날짜: "joinDate",
+      이름: "username",
+      가입날짜: "createdAt",
       가입유형: "joinType",
     };
 

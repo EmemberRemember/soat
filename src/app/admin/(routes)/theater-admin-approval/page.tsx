@@ -1,14 +1,17 @@
+export const dynamic = "force-dynamic"; // 동적 렌더링 강제 설정
+
 import AdminHeader from "../../../../components/admin/AdminHeader";
 import AdminMain from "@/components/admin/AdminMain";
 import TheaterAdminApprovalTable from "@/components/admin/TheaterAdminApprovalTable";
 import ListTitle from "@/components/admin/ListTitle";
 import SubTabDescription from "@/components/admin/SubTabDescription";
-import { getTheaterWaitingList } from "@/app/api/admin/theater/approval/route";
 import { NewTheaterAdmin } from "@/types/admin";
 
 export default async function TheaterAdminApprovalPage() {
-  const newTheaterAdminData =
-    (await getTheaterWaitingList()) as NewTheaterAdmin[];
+  const response = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/admin/theater/approval`
+  );
+  const newTheaterAdminData = (await response.json()) as NewTheaterAdmin[];
 
   return (
     <>

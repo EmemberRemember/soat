@@ -1,8 +1,10 @@
+export const dynamic = "force-dynamic";
+
 import { NextRequest, NextResponse } from "next/server";
 import { adminDb } from "@/app/api/firebaseAdmin";
 import { compare, hash } from "bcryptjs";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/auth/authOptions";
 
 export async function PATCH(request: NextRequest) {
   try {

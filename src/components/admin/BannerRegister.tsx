@@ -1,18 +1,12 @@
 import { useState } from "react";
 import { Radio } from "../controls/Inputs";
 import { Button, CloseButton } from "../controls/Button";
+import { NewBanner } from "@/types/admin";
 import Modal from "../Modal";
 
 interface BannerRegisterProps {
   onClose: () => void;
-  onRegister: (banner: {
-    bannerTitle: string;
-    bannerImage: File | null;
-    alternativeText: string;
-    bannerLink: string;
-    bannerStatus: string;
-    registrationDate: string;
-  }) => void;
+  onRegister: (banner: NewBanner) => void;
 }
 
 export default function BannerRegister({
@@ -89,6 +83,7 @@ export default function BannerRegister({
     });
 
     onRegister({
+      id: Date.now(), // 임시로 고유 ID 생성
       ...formData,
       bannerStatus: radio,
       registrationDate: formattedDate, // 등록일을 yyyy.mm.dd 형식으로

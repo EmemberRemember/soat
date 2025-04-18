@@ -1,7 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
-import { adminDb, adminStorage } from "@/app/api/firebaseAdmin";
+export const dynamic = "force-dynamic";
 
-export async function adminUserData() {
+import { NextRequest, NextResponse } from "next/server";
+import { adminDb } from "@/app/api/firebaseAdmin";
+
+async function adminUserData() {
   try {
     const adminUsers = await adminDb.collection("admin").doc("users").get();
     const adminUsersData = adminUsers.data();
@@ -23,7 +25,7 @@ export async function adminUserData() {
   }
 }
 
-export async function addAdminUser({ userId }: { userId: string }) {
+async function addAdminUser({ userId }: { userId: string }) {
   try {
     const adminUsers = await adminDb.collection("admin").doc("users").get();
     const adminUsersData = adminUsers.data();
@@ -61,7 +63,7 @@ export async function addAdminUser({ userId }: { userId: string }) {
   }
 }
 
-export async function removeAdminUser({ userId }: { userId: string }) {
+async function removeAdminUser({ userId }: { userId: string }) {
   try {
     const adminUsers = await adminDb.collection("admin").doc("users").get();
     const adminUsersData = adminUsers.data();
@@ -101,7 +103,7 @@ export async function removeAdminUser({ userId }: { userId: string }) {
   }
 }
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   return await adminUserData();
 }
 

@@ -7,14 +7,7 @@ import type {
   TheaterLayoutData,
 } from "../seats/TheaterLayoutManager";
 import { DailyPerformances } from "@/types/enrollment";
-import {
-  doc,
-  getFirestore,
-  onSnapshot,
-  updateDoc,
-  getDoc,
-  setDoc,
-} from "firebase/firestore";
+import { doc, onSnapshot, updateDoc, getDoc } from "firebase/firestore";
 import { db } from "@/lib/firebaseConfig";
 import axios from "axios";
 

@@ -17,7 +17,7 @@ export default function BookMain({
   performanceData: PerformanceData;
 }) {
   const [process, setProcess] = useState("captcha");
-  const [captchaToken, setCaptchaToken] = useState("");
+  const [_captchaToken, setCaptchaToken] = useState("");
   const [layoutData, setLayoutData] = useState({} as TheaterLayoutData);
   const [selectedSeats, setSelectedSeats] = useState<Set<string>>(new Set());
   const [selectedDay, setSelectedDay] = useState("");

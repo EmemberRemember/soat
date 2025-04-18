@@ -3,11 +3,12 @@ import { useState } from "react";
 import { CloseButton, Button } from "../controls/Button";
 import { Radio } from "../controls/Inputs";
 import Modal from "../Modal";
+import { Banner, NewBanner } from "@/types/admin";
 
 interface BannerModifyProps {
   onClose: () => void;
-  bannerData: any; // 수정할 배너 데이터를 받는 prop
-  onUpdate: (updatedBanner: any) => void; // 수정된 데이터를 부모로 전달하는 콜백
+  bannerData: Banner; // 수정할 배너 데이터를 받는 prop
+  onUpdate: (updatedBanner: NewBanner) => void; // 수정된 데이터를 부모로 전달하는 콜백
 }
 
 export default function BannerModify({
@@ -25,8 +26,8 @@ export default function BannerModify({
   const [formData, setFormData] = useState({
     bannerTitle: bannerData.bannerTitle || "",
     bannerImage: null as File | null,
-    alternativeText: bannerData.alternativeText || "",
-    bannerLink: bannerData.bannerLink || "",
+    alternativeText: "",
+    bannerLink: "",
   });
 
   // 입력값 변경 핸들러

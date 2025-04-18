@@ -1,12 +1,14 @@
-"use client";
-import { useSearchParams } from "next/navigation";
 import Header from "@/components/home/Header";
 import Footer from "@/components/home/Footer";
 import ReservationListData from "@/components/account/ReservationItem";
 
-export default function Page() {
-  const searchParams = useSearchParams();
-  const book = searchParams.get("book");
+export default function Page({
+  searchParams,
+}: {
+  searchParams: { book?: string };
+}) {
+  const book = searchParams.book || "total"; // 기본값 설정
+
   return (
     <>
       <Header />

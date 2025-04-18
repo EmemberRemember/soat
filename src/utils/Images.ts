@@ -41,8 +41,11 @@ export const getImageURLIndexedDB = async (id: string) => {
       const blob = new Blob([image.imageData], { type: image.imageType });
       const imageUrl = URL.createObjectURL(blob);
       return imageUrl;
+    } else {
+      throw new Error("이미지를 찾을 수 없습니다.");
     }
   } catch (error) {
     console.error("이미지 미리보기 에러", error);
+    throw error;
   }
 };

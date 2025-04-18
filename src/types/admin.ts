@@ -6,6 +6,7 @@ export interface GeneralUser {
   username: string;
   createdAt: string;
   phoneNumber: string;
+  password?: undefined;
 }
 
 export interface TheaterAdminUser {
@@ -32,9 +33,16 @@ export interface Review {
 }
 
 export interface Banner {
+  id: number;
   bannerTitle: string;
   registrationDate: string;
   bannerStatus: string;
+}
+
+export interface NewBanner extends Banner {
+  bannerImage: File | null;
+  alternativeText: string;
+  bannerLink: string;
 }
 
 export interface SiteAdmin {

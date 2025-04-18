@@ -1,7 +1,14 @@
+export const dynamic = "force-dynamic";
+
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/auth/authOptions";
 import { adminDb } from "@/app/api/firebaseAdmin";
+import { SellerUserData } from "@/types/users";
+
+type SellerUpdateData = Partial<
+  Pick<SellerUserData, "teamName" | "managerName" | "updatedAt" | "email">
+>;
 
 export async function PATCH(request: NextRequest) {
   try {
@@ -34,7 +41,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // 업데이트할 필드 (teamName, managerName, updateAt)
-    const updateData: Record<string, any> = {
+    const updateData: SellerUpdateData = {
       teamName,
       managerName,
       updatedAt: new Date().toISOString(),
