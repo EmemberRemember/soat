@@ -43,8 +43,9 @@ const NavigationGuard = ({
     };
   }, [handleShowModal, isDirty]);
 
-  const handleConfirmNavigation = () => {
+  const handleConfirmNavigation = async () => {
     handleShowModal(false);
+    await persistor.flush();
     persistor.pause();
     onConfirm();
     router.back();
