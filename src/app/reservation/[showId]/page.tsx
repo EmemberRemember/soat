@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import BookHeader from "@/components/booking/BookHeader";
 import BookMain from "@/components/booking/BookMain";
 import { adminDb } from "@/app/api/firebaseAdmin";

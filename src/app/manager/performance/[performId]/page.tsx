@@ -14,15 +14,17 @@ export default async function page({ params }: myPerformanceProps) {
   const seatData = performanceData.seats;
 
   return (
-    <section>
-      <h2>{performanceTitle}</h2>
-      <PerformanceManagerDetail
-        performanceTimes={performanceTimes}
-        rows={seatData.rows}
-        rowsConfigs={seatData.rowsConfigs}
-        totalSeats={seatData.totalSeat}
-        isAllAisle={seatData.isAllAisle}
-      />
-    </section>
+    <main className="p-10">
+      <section className="m-auto w-full max-w-5xl p-4 border-2 border-gray-300 rounded-lg shadow-md bg-white flex flex-col space-y-4 overflow-auto">
+        <h2 className="font-bold">{performanceTitle}</h2>
+        <PerformanceManagerDetail
+          performanceTimes={performanceTimes}
+          rows={seatData.rows}
+          rowsConfigs={seatData.rowsConfigs}
+          totalSeats={seatData.totalSeat}
+          isAllAisle={seatData.isAllAisle}
+        />
+      </section>
+    </main>
   );
 }

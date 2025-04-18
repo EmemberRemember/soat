@@ -5,7 +5,7 @@ import JoinGreeting from "./JoinGreeting";
 import JoinForm from "./JoinForm";
 import Header from "@/components/Header";
 
-export default function page() {
+export default function Page() {
   const [userType, setUserType] = useState<"buyer" | "seller">("buyer");
   const [isJoin, setIsJoin] = useState<boolean>(false); // 회원가입 완료 시 회원가입완료 컴포넌트를 보여줍니다.
 

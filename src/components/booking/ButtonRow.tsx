@@ -10,7 +10,7 @@ export default function ButtonRow({
   buttons: { label: string; process: string; highlight: boolean }[];
 }) {
   return (
-    <ul className="w-full max-w-2xl flex gap-x-2 mt-12">
+    <ul className={`w-full max-w-2xl flex gap-x-2 mt-12` + className}>
       {buttons.map((button) => (
         <li key={button.label} className="flex-1">
           <Button

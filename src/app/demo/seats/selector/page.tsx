@@ -6,7 +6,7 @@ import { useState } from "react";
 
 const demoLayout = {
   rows: 6,
-  rowConfigs: {
+  rowsConfigs: {
     A: {
       seats: 10,
       aisles: [2, 6, 10],
@@ -57,6 +57,7 @@ export default function SeatsGeneratorDemo() {
         layoutData={demoLayout}
         selectedSeats={selectedSeats}
         onSeatToggle={handleSeatToggle}
+        occupiedSeats={[]}
       />
       <Button
         onClick={() => {

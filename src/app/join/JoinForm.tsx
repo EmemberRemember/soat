@@ -1,5 +1,5 @@
 import React from "react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/controls/Button";
 import { JoinInput, Checkbox } from "@/components/controls/Inputs";
 import { JoinSelect } from "@/components/controls/Select";
@@ -491,8 +491,8 @@ export default function JoinForm({
         </Checkbox>
         <Checkbox checked={checkIntermediary} onChange={setCheckIntermediary}>
           <span className="text-[10px] sm:text-base">
-            SO@은 '통신판매중개업자'로서 통신판매의 당사자가 아님을
-            확인하였습니다.
+            {`SO@은 '통신판매중개업자'로서 통신판매의 당사자가 아님을
+            확인하였습니다.`}
           </span>
         </Checkbox>
         <Button

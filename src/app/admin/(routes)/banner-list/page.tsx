@@ -9,11 +9,12 @@ import SubTabDescription from "@/components/admin/SubTabDescription";
 import BannerDisplayOrder from "./BannerDisplayOrder";
 import BannerRegister from "@/components/admin/BannerRegister";
 import BannerModify from "@/components/admin/BannerModify";
+import { Banner, NewBanner } from "@/types/admin";
 
 export default function BannerListPage() {
   const [isBannerRegisterOpen, setIsBannerRegisterOpen] = useState(false); // 배너 등록 모달 상태 관리
   const [isBannerModifyOpen, setIsBannerModifyOpen] = useState(false); // 배너 수정 모달 상태 관리
-  const [selectedBanner, setSelectedBanner] = useState(null); // 선택된 배너 정보 관리
+  const [selectedBanner, setSelectedBanner] = useState<Banner | null>(null); // 선택된 배너 정보 관리
 
   const [banners, setBanners] = useState([
     {
@@ -59,20 +60,20 @@ export default function BannerListPage() {
   };
 
   // 행 클릭 시 배너 수정 모달 열기
-  const handleRowClick = (banner: any) => {
+  const handleRowClick = (banner: Banner) => {
     setSelectedBanner(banner);
     setIsBannerModifyOpen(true);
   };
 
   // 새로운 배너 등록 핸들러
-  const handleBannerRegister = (newBanner: any) => {
+  const handleBannerRegister = (newBanner: NewBanner) => {
     // 새 배너 객체를 그대로 사용하면 bannerStatus 값이 유지됩니다.
     setBanners((prev) => [...prev, newBanner]);
     handleCloseRegisterModal(); // 등록 후 모달 닫기
   };
 
   // 배너 업데이트 핸들러
-  const handleBannerUpdate = (updatedBanner: any) => {
+  const handleBannerUpdate = (updatedBanner: NewBanner) => {
     // banners 배열에서 해당 배너를 업데이트하는 로직
     setBanners((prev) =>
       prev.map((banner) =>

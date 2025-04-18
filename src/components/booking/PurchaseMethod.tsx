@@ -1,8 +1,5 @@
 import { useState } from "react";
-
-import { Button } from "../controls/Button";
-import { Checkbox, Radio, TextInput } from "../controls/Inputs";
-import { Select } from "../controls/Select";
+import { Radio } from "../controls/Inputs";
 import BookSection from "./BookSection";
 import ButtonRow from "./ButtonRow";
 

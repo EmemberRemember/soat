@@ -70,7 +70,7 @@ export function TextInput({
       >
         {label}
         {children ? (
-          <InputContainer input={Input} children={children} />
+          <InputContainer input={Input}>{children}</InputContainer>
         ) : (
           Input
         )}
@@ -79,11 +79,9 @@ export function TextInput({
   } else {
     if (children) {
       return (
-        <InputContainer
-          input={Input}
-          children={children}
-          className={className}
-        />
+        <InputContainer input={Input} className={className}>
+          {children}
+        </InputContainer>
       );
     } else {
       return Input;

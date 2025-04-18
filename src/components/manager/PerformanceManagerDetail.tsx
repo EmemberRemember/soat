@@ -50,7 +50,10 @@ export default function PerformanceManagerDetail({
   console.log("selected", selectedOccupiedSeat);
   return (
     <>
-      <select onChange={(e) => handleSelectChange(e.target.value)}>
+      <select
+        className="border-2 border-gray-300 focus-within:border-flesh-300 rounded-md px-2 outline-none"
+        onChange={(e) => handleSelectChange(e.target.value)}
+      >
         {selectOptions.map((opt) => (
           <option key={opt.value} value={opt.value}>
             {opt.label}

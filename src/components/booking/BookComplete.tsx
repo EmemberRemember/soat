@@ -1,10 +1,5 @@
 import Image from "next/image";
-
-import { useState } from "react";
-
 import { Button } from "../controls/Button";
-import { Checkbox, Radio, TextInput } from "../controls/Inputs";
-import { Select } from "../controls/Select";
 import BookSection from "./BookSection";
 import ButtonRow from "./ButtonRow";
 import QRCode from "react-qr-code";
@@ -12,8 +7,6 @@ import { Card, CardContent, CardHeader } from "../ui/card";
 import { LucideMessageCircleWarning } from "lucide-react";
 
 export default function BookComplete() {
-  const [purchaseMethod, setPurchaseMethod] = useState("bank");
-
   return (
     <>
       <BookSection>

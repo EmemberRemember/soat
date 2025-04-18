@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import NextCrypto from "next-crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { adminDb, adminStorage } from "../../firebaseAdmin";
@@ -137,9 +139,13 @@ export async function POST(request: NextRequest) {
         bankAccount.accountNum
       );
 
-      const { isBusinessNumValid, ...dataWithoutValidation } = userData;
+      const {
+        isBusinessNumValid: _isBusinessNumValid,
+        ...dataWithoutValidation
+      } = userData;
 
-      const { accountImage, ...bankAccountWithoutAccountImage } = bankAccount;
+      const { accountImage: _accountImage, ...bankAccountWithoutAccountImage } =
+        bankAccount;
 
       userData = {
         ...dataWithoutValidation,
@@ -155,7 +161,7 @@ export async function POST(request: NextRequest) {
     const userRef = await adminDb.collection(collectionName).add(userData);
 
     // 응답에서 비밀번호 제외
-    const { password: _, ...userDataWithoutPassword } = userData;
+    const { password: _password, ...userDataWithoutPassword } = userData;
 
     // Firebase Storage에 암호화된 통장 사본 업로드
     if (userType === "seller" && restFormData.bankAccount.accountImage) {

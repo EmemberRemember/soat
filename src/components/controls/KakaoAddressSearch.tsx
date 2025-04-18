@@ -10,7 +10,7 @@ const KakaoAddressSearch = ({
   className = "break-keep h-fit inline bg-background border-flesh-200 text-foreground border-2 rounded-lg px-4 py-2 w-fit font-bold hover:bg-flesh-200 transition active:bg-flesh-300 active:border-flesh-300 transition focus-visible:bg-flesh-200 focus-visible:border-flesh-200 transition focus:outline-none",
 }: KakaoAddressProps) => {
   //로딩 처리 필요
-  const [isScriptLoaded, setIsScriptLoaded] = useState<boolean>(false);
+  const [_isScriptLoaded, setIsScriptLoaded] = useState<boolean>(false);
   const handleComplete = useCallback(
     (data: KakaoAddressData) => {
       onComplete({
