@@ -1,10 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Pencil, Eye, Trash } from "lucide-react";
+import { Pencil, Eye, Trash, CalendarX } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 interface PerformanceMoreBtnProps {
-  iconSrc?: string;
   label?: string;
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
   className?: string;
@@ -12,7 +11,6 @@ interface PerformanceMoreBtnProps {
 }
 
 export function PerformanceButton({
-  iconSrc,
   label,
   onClick,
   className,
@@ -30,18 +28,22 @@ export function PerformanceButton({
       console.log("수정 버튼 클릭됨");
     } else if (label?.includes("확인")) {
       router.push(`/manager/performance/${performId}`);
+    } else if (label?.includes("종료")) {
+      console.log("공연종료 버튼 클릭됨");
     } else if (label?.includes("삭제")) {
       console.log("삭제 버튼 클릭됨");
     }
   };
 
   const getIcon = () => {
-    if (iconSrc?.includes("pen")) {
-      return <Pencil className="h-4 w-4 mr-2" />;
-    } else if (iconSrc?.includes("reading-glasses")) {
-      return <Eye className="h-4 w-4 mr-2" />;
-    } else if (iconSrc?.includes("delete")) {
-      return <Trash className="h-4 w-4 mr-2" />;
+    if (label?.includes("수정")) {
+      return <Pencil className="h-4 w-4 mr-1" />;
+    } else if (label?.includes("확인")) {
+      return <Eye className="h-4 w-4 mr-1" />;
+    } else if (label?.includes("종료")) {
+      return <CalendarX className="h-4 w-4 mr-1" />;
+    } else if (label?.includes("삭제")) {
+      return <Trash className="h-4 w-4 mr-1" />;
     }
     return null;
   };
@@ -68,21 +70,25 @@ export default function PerformanceMoreBtn({
     <Card className="w-full border shadow-sm">
       <CardContent className="p-0">
         <PerformanceButton
-          iconSrc="/images/icons/pen.svg"
-          label="예매 정보 수정"
+          label="공연 정보 수정"
           onClick={onClick}
           performId={performId}
         />
         <div className="w-full h-px bg-border" />
         <PerformanceButton
-          iconSrc="/images/icons/reading-glasses.svg"
           label="예매 확인"
           onClick={onClick}
           performId={performId}
         />
         <div className="w-full h-px bg-border" />
         <PerformanceButton
-          iconSrc="/images/icons/delete.svg"
+          label="공연 종료"
+          onClick={onClick}
+          performId={performId}
+          className="text-destructive hover:text-destructive hover:bg-destructive/10"
+        />
+        <div className="w-full h-px bg-border" />
+        <PerformanceButton
           label="삭제"
           onClick={onClick}
           className="text-destructive hover:text-destructive hover:bg-destructive/10"
