@@ -1,5 +1,4 @@
 export const dynamic = "force-dynamic";
-import { sanitizeHTML } from "./../../../utils/sanitizer";
 import { NextResponse, NextRequest } from "next/server";
 import { adminDb, adminStorage } from "../firebaseAdmin";
 import { getServerSession } from "next-auth";
