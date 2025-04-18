@@ -39,27 +39,50 @@ export default function EmblaCarousel({ label }: CarouselDataProps) {
     async function fetchPerformanceList() {
       try {
         const response = await axios.get("/api/manager/performance");
+        const nowDate = new Date();
+
+        const getLastPerformanceDate = (performance: PerformanceData): Date => {
+          // 공연 일자가 등록되지 않거나 없는 경우 예매 종료일을 반환하도록 예외처리
+          if (
+            !performance.performances ||
+            Object.keys(performance.performances).length === 0
+          ) {
+            return new Date(performance.bookingEndDate);
+          } else {
+            // 실제 공연 종료일을 반환
+            const performanceDates = Object.keys(performance.performances);
+            const lastPerformanceDate = new Date(
+              Math.max(
+                ...performanceDates.map((date) => new Date(date).getTime())
+              )
+            );
+            return lastPerformanceDate;
+          }
+        };
 
         if (label.includes("현재")) {
+          // bookingStartDate이면서 실제 공연 종료일보다 적은 경우
           setPerformanceList(
             response.data.filter(
               (performance: PerformanceData) =>
-                new Date(performance.bookingStartDate) < new Date() &&
-                new Date(performance.bookingEndDate) > new Date()
+                new Date(performance.bookingStartDate) < nowDate &&
+                getLastPerformanceDate(performance) > nowDate
             )
           );
         } else if (label.includes("오픈 예정")) {
+          // bookingStartDate가 현재 일자보다 적은 경우
           setPerformanceList(
             response.data.filter(
               (performance: PerformanceData) =>
-                new Date(performance.bookingStartDate) > new Date()
+                new Date(performance.bookingStartDate) > nowDate
             )
           );
         } else if (label.includes("완료")) {
+          // 실제 공연 종료일이 현재 일자보다 적은 경우
           setPerformanceList(
             response.data.filter(
               (performance: PerformanceData) =>
-                new Date(performance.bookingEndDate) < new Date()
+                getLastPerformanceDate(performance) < nowDate
             )
           );
         }
