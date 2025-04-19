@@ -36,14 +36,16 @@ export default function UpcomingShowsSection({
         ))}
       </ul>
 
-      <button className="px-6 md:px-8 py-3 md:py-4 border rounded-xl flex gap-2 md:gap-3 items-center text-lg md:text-xl mx-auto my-6 md:my-8">
-        오픈 예정 공연 전체보기
-        <img
-          src="images/icons/next-icon-defaltcolor.svg"
-          alt="전체보기"
-          className="w-5 md:w-auto"
-        />
-      </button>
+      <Link href="/performances/upcoming">
+        <button className="px-6 md:px-8 py-3 md:py-4 border rounded-xl flex gap-2 md:gap-3 items-center text-lg md:text-xl mx-auto my-6 md:my-8 hover:bg-gray-50 active:bg-gray-100">
+          오픈 예정 공연 전체보기
+          <img
+            src="images/icons/next-icon-defaltcolor.svg"
+            alt="전체보기"
+            className="w-5 md:w-auto"
+          />
+        </button>
+      </Link>
     </section>
   );
 }
