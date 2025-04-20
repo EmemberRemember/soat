@@ -21,6 +21,7 @@ export default function BookMain({
   const [layoutData, setLayoutData] = useState({} as TheaterLayoutData);
   const [selectedSeats, setSelectedSeats] = useState<Set<string>>(new Set());
   const [selectedDay, setSelectedDay] = useState("");
+  const [purchaserInfo, setPurchaserInfo] = useState({} as any);
 
   useEffect(() => {
     // 테스트용 레이아웃 데이터
@@ -48,7 +49,13 @@ export default function BookMain({
           setSelectedDay={setSelectedDay}
         />
       )}
-      {process === "purchaserInfo" && <PurchaserInfo setProcess={setProcess} />}
+      {process === "purchaserInfo" && (
+        <PurchaserInfo
+          setProcess={setProcess}
+          purchaserInfo={purchaserInfo}
+          setPurchaserInfo={setPurchaserInfo}
+        />
+      )}
       {process === "purchaseMethod" && (
         <PurchaseMethod setProcess={setProcess} />
       )}
