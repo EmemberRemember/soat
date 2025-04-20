@@ -55,7 +55,6 @@ export default function PurchaserInfo({
           // setPurchaserYear(userInfo.birth.split("-")[0]);
           // setPurchaserMonth(userInfo.birth.split("-")[1]);
           // setPurchaserDay(userInfo.birth.split("-")[2]);
-          console.log(userInfo);
         }
       } catch (error) {
         console.error("Error fetching user info:", error);
