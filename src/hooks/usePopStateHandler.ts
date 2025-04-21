@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 interface usePopStateHandlerProps {
   onHandlePopState: () => void;
@@ -12,21 +12,22 @@ export const usePopStateHandler = ({
 }: usePopStateHandlerProps) => {
   const isClickedFirst = useRef(false);
 
-  const handlePopState = () => {
+  const handlePopState = useCallback(() => {
     onHandlePopState();
-  };
+  }, [onHandlePopState]);
 
   useEffect(() => {
     if (!isClickedFirst.current && isDirty) {
+      console.log(isDirty, "popstate");
       window.history.pushState(null, "", window.location.href);
+      isClickedFirst.current = true;
     }
-    isClickedFirst.current = true;
-  }, []); //마운트 시 현재 url 을 historyAPI 에 추가
+  }, [isDirty]); //마운트 시 현재 url 을 historyAPI 에 추가
 
   useEffect(() => {
     window.addEventListener("popstate", handlePopState);
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
-  }, []);
+  }, [handlePopState]);
 };
