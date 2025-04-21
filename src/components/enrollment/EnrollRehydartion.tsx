@@ -1,12 +1,16 @@
 "use client";
-import { EnrollInitialState } from "@/redux/slices/enrollSlice";
-import { enrollPersistConfig, persistor } from "@/redux/store";
 import React, { useEffect, useState } from "react";
-
-import { getStoredState } from "redux-persist";
-import Modal from "../Modal";
-import { Button } from "../controls/Button";
+import { EnrollInitialState, EnrollState } from "@/redux/slices/enrollSlice";
+import { seatInitialState, SeatState } from "@/redux/slices/seatSlice";
+import store, {
+  enrollPersistConfig,
+  persistor,
+  seatPersistConfig,
+} from "@/redux/store";
+import { getStoredState, REHYDRATE } from "redux-persist";
 import { useShowModal } from "@/hooks/useShowModal";
+import { Button } from "../controls/Button";
+import Modal from "../Modal";
 
 interface EnrollRehydrationProps {
   children: React.ReactNode;
@@ -16,18 +20,30 @@ export default function EnrollRehydration({
 }: EnrollRehydrationProps) {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [enrollStoredState, setEnrollStoredState] = useState<EnrollState>();
+  const [seatStoredState, setSeatStoredState] = useState<SeatState>();
   const { showModal, handleShowModal } = useShowModal();
   const { showModal: showErrorModal, handleShowModal: handleShowErrorModal } =
     useShowModal();
 
   const handleRehydration = () => {
+    store.dispatch({
+      type: REHYDRATE,
+      key: seatPersistConfig.key,
+      payload: seatStoredState,
+    });
+    store.dispatch({
+      type: REHYDRATE,
+      key: enrollPersistConfig.key,
+      payload: enrollStoredState,
+    });
     persistor.persist();
     handleShowModal(false);
   };
 
   const handleDoNotReHydration = () => {
     persistor.purge(); //
-    persistor.persist(); // 상태 초기화 후 저장소에 반영
+    persistor.persist();
     handleShowModal(false);
   };
 
@@ -41,56 +57,62 @@ export default function EnrollRehydration({
     window.location.reload();
   };
 
+  const compareStoredStateToInitialState = (storedState, initialState) => {
+    if (storedState == undefined) {
+      return false;
+    }
+    const { _persist, ...filteredStoredState } = storedState;
+    const {
+      isDirty: _isDirty,
+      step: _step,
+      ...filteredInitialState
+    } = initialState;
+
+    if (
+      JSON.stringify(filteredInitialState) !==
+      JSON.stringify(filteredStoredState)
+    ) {
+      return true;
+    }
+    return false;
+  };
+
   useEffect(() => {
     const checkPersistedState = async () => {
       try {
-        const storedState = (await getStoredState(
+        const enrollStore = (await getStoredState(
           enrollPersistConfig
-        )) as typeof EnrollInitialState;
+        )) as EnrollState;
+        const seatStore = (await getStoredState(
+          seatPersistConfig
+        )) as SeatState;
 
-        if (!storedState) {
-          // 값이 존재하지 않으면
+        setEnrollStoredState(enrollStore);
+        setSeatStoredState(seatStore);
+
+        if (enrollStore || seatStore) {
+          // 저장된 값이 있으면
+          if (
+            compareStoredStateToInitialState(enrollStore, EnrollInitialState) ||
+            compareStoredStateToInitialState(seatStore, seatInitialState)
+          ) {
+            handleShowModal(true);
+          } else {
+            persistor.persist();
+          }
+        } else {
           persistor.persist();
-          setIsLoading(false);
-          return;
         }
-
-        // `isDirty, step` 값을 제외한 비교를 위해 필터링
-        const {
-          isDirty: _isDirty,
-          step: _step,
-          // _persist: __persist, // 값 오류로 주석처리
-          ...filteredStoredState
-        } = storedState;
-        const {
-          isDirty: ignoredIsDirty,
-          step: ignoredStep,
-          ...filteredInitialState
-        } = EnrollInitialState;
-
-        if (
-          JSON.stringify(filteredStoredState) ===
-          JSON.stringify(filteredInitialState)
-        ) {
-          persistor.persist();
-          setIsLoading(false);
-          return; // 동일하면
-        }
-
-        handleShowModal(true);
-        setIsLoading(false);
       } catch (err) {
         // 에러 발생 시 처리
         console.error("Failed to get stored state:", err);
         setError("저장된 상태를 불러오는 중 오류가 발생했습니다.");
 
         // 에러 발생 시에도 앱은 계속 실행되어야 하므로 persist 실행
-        persistor.persist();
         handleShowErrorModal(true);
-        setIsLoading(false);
       }
+      setIsLoading(false);
     };
-
     checkPersistedState();
   }, []);
 
@@ -101,7 +123,7 @@ export default function EnrollRehydration({
   return (
     <>
       <Modal
-        onClose={() => handleShowModal(false)}
+        onClose={handleDoNotReHydration}
         isOpen={showModal}
         className="flex gap-4 flex-col items-center"
       >
