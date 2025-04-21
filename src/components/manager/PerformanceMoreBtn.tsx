@@ -32,14 +32,17 @@ export function PerformanceButton({
     } else if (label?.includes("종료")) {
       console.log("공연종료 버튼 클릭됨");
     } else if (label?.includes("삭제")) {
-      try {
-        const response = await axios.delete(
-          `/api/manager/performance/${performId}/delete`
-        );
-        alert("공연이 삭제 되었습니다.");
-        window.location.reload();
-      } catch (error) {
-        console.error(error);
+      const deleteConfirm = confirm("공연을 삭제하시겠습니까?");
+      if (deleteConfirm) {
+        try {
+          const response = await axios.delete(
+            `/api/manager/performance/${performId}/delete`
+          );
+          alert("공연이 삭제 되었습니다.");
+          window.location.reload();
+        } catch (error) {
+          console.error(error);
+        }
       }
     }
   };
