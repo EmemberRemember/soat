@@ -10,8 +10,14 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
+
+interface ManualPersistOptions extends PersistorOptions {
+  manualPersist: boolean;
+}
+
 import enrollReducer from "./slices/enrollSlice";
 import seatReducer from "./slices/seatSlice";
+import { PersistorOptions } from "redux-persist/es/types";
 export const enrollPersistConfig = {
   key: "enroll", // enroll 상태의 키
   storage, // localStorage 사용
@@ -48,8 +54,12 @@ export const store = configureStore({
   devTools: process.env.NODE_ENV !== "production",
 });
 // export const persistor = persistStore(store, { manualPersist: true }); //공식문서에는 존재하는 옵션인데 찾을 수 없다고 뜨네요..
-export const persistor = persistStore(store); // 52번줄 build error로 주석처리 해두었습니다.
+export const persistor = persistStore(store, {
+  manualPersist: true,
+} as ManualPersistOptions); // 52번줄 build error로 주석처리 해두었습니다.
+
 export type RootState = ReturnType<typeof store.getState>;
+
 export type AppDispatch = typeof store.dispatch;
 
 export default store;
