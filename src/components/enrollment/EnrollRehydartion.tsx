@@ -57,7 +57,10 @@ export default function EnrollRehydration({
     window.location.reload();
   };
 
-  const compareStoredStateToInitialState = (storedState, initialState) => {
+  const compareStoredStateToInitialState = (
+    storedState: EnrollState | SeatState | undefined,
+    initialState: EnrollState | SeatState
+  ) => {
     if (storedState == undefined) {
       return false;
     }
