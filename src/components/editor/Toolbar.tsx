@@ -49,7 +49,14 @@ export default function Toolbar({
       const imageUrl = await getImageURLIndexedDB(fileId);
       if (editor) {
         dispatch(addFile(fileId));
-        editor.chain().focus().setImage({ src: imageUrl }).run();
+        editor
+          .chain()
+          .focus()
+          .insertContent({
+            type: "customImage",
+            attrs: { src: imageUrl, key: fileId },
+          })
+          .run();
         //setImage 내 없는 속성으로, key: fileId 제거
       }
     } catch (err) {
