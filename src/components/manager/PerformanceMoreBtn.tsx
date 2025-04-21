@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Pencil, Eye, Trash, CalendarX } from "lucide-react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 interface PerformanceMoreBtnProps {
   label?: string;
@@ -17,7 +18,7 @@ export function PerformanceButton({
   performId,
 }: PerformanceMoreBtnProps) {
   const router = useRouter();
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = async (event: React.MouseEvent<HTMLButtonElement>) => {
     // 원래의 onClick 함수가 있을 경우 추가적으로 실행
     if (onClick) {
       onClick(event);
@@ -29,9 +30,31 @@ export function PerformanceButton({
     } else if (label?.includes("확인")) {
       router.push(`/manager/performance/${performId}`);
     } else if (label?.includes("종료")) {
-      console.log("공연종료 버튼 클릭됨");
+      const endConfirm = confirm("공연을 종료하시겠습니까?");
+      if (endConfirm) {
+        try {
+          const response = await axios.patch(
+            `/api/manager/performance/${performId}/end`
+          );
+          alert("공연이 종료 되었습니다.");
+          window.location.reload();
+        } catch (error) {
+          console.error(error);
+        }
+      }
     } else if (label?.includes("삭제")) {
-      console.log("삭제 버튼 클릭됨");
+      const deleteConfirm = confirm("공연을 삭제하시겠습니까?");
+      if (deleteConfirm) {
+        try {
+          const response = await axios.delete(
+            `/api/manager/performance/${performId}/delete`
+          );
+          alert("공연이 삭제 되었습니다.");
+          window.location.reload();
+        } catch (error) {
+          console.error(error);
+        }
+      }
     }
   };
 
