@@ -70,12 +70,16 @@ const contentChangeBlobUrlToPublicUrl = (
 ): string => {
   let newContent = content;
   uploadedImages.forEach((image) => {
-    const regex = new RegExp(`data-key="${image.id}"[^>]*src="[^"]*"`, "g");
+    const regex = new RegExp(
+      `(data-key="${image.id}"[^>]*src="blob:[^"]*"|src="blob:[^"]*"[^>]*data-key="${image.id}")`,
+      "g"
+    );
     newContent = newContent.replace(
       regex,
       `data-key="${image.id}" src="${image.url}"`
     );
   });
+
   return newContent;
 };
 
@@ -116,7 +120,6 @@ export async function PUT(request: NextRequest) {
     const bucket = adminStorage.bucket();
 
     const files = formData.getAll("image") as File[];
-
     const fileData = files.map((file) => {
       const [fileId, ...fileNameParts] = file.name.split("_"); // 파일명에서 ID 추출
       const fileName = fileNameParts.join("_"); // 원래 파일명 복원
@@ -159,7 +162,8 @@ export async function PUT(request: NextRequest) {
 
     if (data.content && fileData.length > 0) {
       const uploadImage = await handleImageUpload(fileData, userId);
-      const newContent = contentChangeBlobUrlToPublicUrl(
+      console.log("uploadImage", uploadImage);
+      const newContent = await contentChangeBlobUrlToPublicUrl(
         data.content,
         uploadImage
       );
@@ -168,7 +172,7 @@ export async function PUT(request: NextRequest) {
 
     const santizeContent = sanitizeHTML(data.content);
     data.content = santizeContent;
-    console.log(data.content);
+
     const performanceRef = await adminDb.collection("performances").add({
       ...data,
       sellerId: userId,
