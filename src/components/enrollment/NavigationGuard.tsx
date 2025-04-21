@@ -30,7 +30,7 @@ const NavigationGuard = ({ isDirty = false }: NavigationGuardProps) => {
     window.history.pushState(null, "", window.location.href);
   };
   useRefreshDetection();
-  usePopStateHandler({ onHandlePopState: handlePopState });
+  usePopStateHandler({ onHandlePopState: handlePopState, isDirty: isDirty });
 
   return (
     <Modal

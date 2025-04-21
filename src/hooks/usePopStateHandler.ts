@@ -3,9 +3,11 @@ import { useEffect, useRef } from "react";
 
 interface usePopStateHandlerProps {
   onHandlePopState: () => void;
+  isDirty: boolean;
 }
 
 export const usePopStateHandler = ({
+  isDirty,
   onHandlePopState,
 }: usePopStateHandlerProps) => {
   const isClickedFirst = useRef(false);
@@ -15,7 +17,7 @@ export const usePopStateHandler = ({
   };
 
   useEffect(() => {
-    if (!isClickedFirst.current) {
+    if (!isClickedFirst.current && isDirty) {
       window.history.pushState(null, "", window.location.href);
     }
     isClickedFirst.current = true;

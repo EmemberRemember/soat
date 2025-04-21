@@ -16,12 +16,14 @@ export default function EnrollMains() {
     dispatch(resetEnrollState());
     dispatch(resetSeatState());
   };
+
   const step = useSelector((state: RootState) => state.enroll.step);
+
   useEffect(() => {
     return () => {
       resetStoreState();
     };
-  });
+  }, []);
   return (
     <>
       {step === EnrollStep.EnrollPerformance && <EnrollPerformance />}
