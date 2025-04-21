@@ -57,13 +57,17 @@ export default function EnrollRehydration({
     window.location.reload();
   };
 
-  const compareStoredStateToInitialState = (
-    storedState: EnrollState | SeatState | undefined,
-    initialState: EnrollState | SeatState
-  ) => {
+  const compareStoredStateToInitialState = <
+    T extends { _persist?: any; [key: string]: any },
+    U extends { isDirty?: boolean; step?: number; [key: string]: any }
+  >(
+    storedState: T | undefined,
+    initialState: U
+  ): boolean => {
     if (storedState == undefined) {
       return false;
     }
+
     const { _persist, ...filteredStoredState } = storedState;
     const {
       isDirty: _isDirty,
