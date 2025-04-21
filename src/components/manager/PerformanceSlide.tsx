@@ -1,11 +1,11 @@
 import React from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PerformanceData } from "@/app/api/performance/route";
 import PerformanceMoreBtn from "./PerformanceMoreBtn";
+import { PerformanceDataWithStatus } from "./EmblaCarousel";
 
 interface SliceProps {
-  data: PerformanceData;
+  data: PerformanceDataWithStatus;
   isOpen: boolean;
   handleClick: () => void;
   handleCardOutsideClick: () => void;
@@ -68,14 +68,14 @@ export default function PerformanceSlide({
       >
         {/* nowDate > new Date(bookingEndDate)는 공연 일자가 등록되지 않았지만 예매일자가 긴 데이터가 있어서 임시 구현 */}
         <CardContent className="p-0 relative">
-          {isBookingEnded && isPerformanceEnded && (
+          {(isBookingEnded && isPerformanceEnded) || data.status === "ended" ? (
             <Badge
-              variant={"outline"}
-              className="absolute top-2 left-2 text-white font-normal text-[10px] sm:text-xs md:text-sm "
+              variant="outline"
+              className="absolute top-2 left-2 text-white font-normal text-[10px] sm:text-xs md:text-sm"
             >
               {"공연 종료"}
             </Badge>
-          )}
+          ) : null}
           <img
             src={data.poster.url}
             alt={data.poster.fileName}

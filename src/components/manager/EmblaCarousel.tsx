@@ -14,6 +14,10 @@ interface CarouselDataProps {
   label: string;
 }
 
+export interface PerformanceDataWithStatus extends PerformanceData {
+  status?: string;
+}
+
 export default function EmblaCarousel({ label }: CarouselDataProps) {
   const [clickedSlide, setClickedSlide] = useState<number | null>(null); // 클릭한 슬라이드 관리
   const [performanceList, setPerformanceList] = useState<PerformanceData[]>([]);
@@ -73,24 +77,27 @@ export default function EmblaCarousel({ label }: CarouselDataProps) {
           // bookingStartDate이면서 실제 공연 종료일보다 적은 경우
           setPerformanceList(
             response.data.filter(
-              (performance: PerformanceData) =>
+              (performance: PerformanceDataWithStatus) =>
                 new Date(performance.bookingStartDate) < nowDate &&
-                getLastPerformanceDate(performance) > nowDate
+                getLastPerformanceDate(performance) > nowDate &&
+                performance.status !== "ended"
             )
           );
         } else if (label.includes("오픈 예정")) {
           // bookingStartDate가 현재 일자보다 적은 경우
           setPerformanceList(
             response.data.filter(
-              (performance: PerformanceData) =>
-                new Date(performance.bookingStartDate) > nowDate
+              (performance: PerformanceDataWithStatus) =>
+                new Date(performance.bookingStartDate) > nowDate &&
+                performance.status !== "ended"
             )
           );
         } else if (label.includes("완료")) {
           // 실제 공연 종료일이 현재 일자보다 적은 경우
           setPerformanceList(
             response.data.filter(
-              (performance: PerformanceData) =>
+              (performance: PerformanceDataWithStatus) =>
+                performance.status === "ended" ||
                 getLastPerformanceDate(performance) < nowDate
             )
           );
@@ -197,19 +204,21 @@ export default function EmblaCarousel({ label }: CarouselDataProps) {
           </Button>
           <div className="overflow-hidden" ref={emblaRef}>
             <div className="flex gap-4" ref={carouselRef}>
-              {performanceList.map((data: PerformanceData, index: number) => {
-                const num = index + 1; // 슬라이드 번호
-                return (
-                  <PerformanceSlide
-                    key={data.id}
-                    data={data}
-                    isOpen={clickedSlide === num}
-                    handleClick={() => handleClick(num)}
-                    handleCardOutsideClick={() => handleClick(0)}
-                    handleButtonClick={handleButtonClick}
-                  />
-                );
-              })}
+              {performanceList.map(
+                (data: PerformanceDataWithStatus, index: number) => {
+                  const num = index + 1; // 슬라이드 번호
+                  return (
+                    <PerformanceSlide
+                      key={data.id}
+                      data={data}
+                      isOpen={clickedSlide === num}
+                      handleClick={() => handleClick(num)}
+                      handleCardOutsideClick={() => handleClick(0)}
+                      handleButtonClick={handleButtonClick}
+                    />
+                  );
+                }
+              )}
             </div>
           </div>
           <Button
