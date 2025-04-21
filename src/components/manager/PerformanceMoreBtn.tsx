@@ -30,7 +30,18 @@ export function PerformanceButton({
     } else if (label?.includes("확인")) {
       router.push(`/manager/performance/${performId}`);
     } else if (label?.includes("종료")) {
-      console.log("공연종료 버튼 클릭됨");
+      const endConfirm = confirm("공연을 종료하시겠습니까?");
+      if (endConfirm) {
+        try {
+          const response = await axios.patch(
+            `/api/manager/performance/${performId}/end`
+          );
+          alert("공연이 종료 되었습니다.");
+          window.location.reload();
+        } catch (error) {
+          console.error(error);
+        }
+      }
     } else if (label?.includes("삭제")) {
       const deleteConfirm = confirm("공연을 삭제하시겠습니까?");
       if (deleteConfirm) {
