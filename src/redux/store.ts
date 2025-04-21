@@ -15,15 +15,13 @@ import seatReducer from "./slices/seatSlice";
 export const enrollPersistConfig = {
   key: "enroll", // enroll 상태의 키
   storage, // localStorage 사용
-  throttle: 300,
   blacklist: ["isDirty", "step"],
 };
 
-const seatPersistConfig = {
+export const seatPersistConfig = {
   key: "seats",
   storage,
-  throttle: 300,
-  blacklist: ["isDirty"],
+  blacklist: ["isDirty", "step"],
 };
 
 const persistedEnrollReducer = persistReducer(
@@ -50,7 +48,7 @@ export const store = configureStore({
   devTools: process.env.NODE_ENV !== "production",
 });
 // export const persistor = persistStore(store, { manualPersist: true }); //공식문서에는 존재하는 옵션인데 찾을 수 없다고 뜨네요..
-export const persistor = persistStore(store); // 52번줄 build error로 주석처리 해두었습니다.
+export const persistor = persistStore(store, { manualPersist: true }); // 52번줄 build error로 주석처리 해두었습니다.
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
