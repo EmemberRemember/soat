@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useEditor, EditorContent, Editor as TsEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { EditMode, ToolbarButtonsConfig } from "@/types/editor";
@@ -36,11 +36,11 @@ import { deleteImage } from "@/services/indexedDBService";
 export default function Editor() {
   const [editMode, setEditMode] = useState<EditMode>("WYSIWYG");
   const [imageURL, setImageURL] = useState<string>("");
-  const isPersisted = useSelector((state: RootState) => state.enroll._persist);
+  const [isRestoredContent, setIsRestoredContent] = useState<boolean>(false);
   const content = useSelector((state: RootState) => state.enroll.content);
   const files = useSelector((state: RootState) => state.enroll.files);
   const { showModal, handleShowModal } = useShowModal();
-  const isRehydrated = isPersisted?.rehydrated;
+  const isInitialLoad = useRef(true); // 초기 로딩 여부 추적
   const dispatch = useDispatch();
 
   const editor = useEditor(
@@ -63,8 +63,17 @@ export default function Editor() {
         debounceUpdate(htmlString);
       },
     },
-    [isRehydrated, editMode]
+    [editMode]
   );
+
+  useEffect(() => {
+    if (content !== "" && editor && !isRestoredContent) {
+      console.log("first");
+      setIsRestoredContent(true);
+      isInitialLoad.current = false; // 초기 로딩 완료
+      editor?.commands.setContent(content);
+    }
+  }, [content, editor]);
 
   useEffect(() => {
     const replaceImageURL = async (): Promise<string> => {
@@ -72,6 +81,7 @@ export default function Editor() {
         content.matchAll(/<img[^>]*data-key="([^"]*)"[^>]*>/g)
       );
       let html = content;
+      console.log("html", content);
       for (const imgTag of imgTags) {
         const imageKey = imgTag[1];
         try {
@@ -88,14 +98,12 @@ export default function Editor() {
       }
       return html;
     };
-
-    if (isRehydrated) {
+    if (editor && !isInitialLoad.current && isRestoredContent) {
       replaceImageURL().then((newContent) => {
-        dispatch(setContent(newContent));
         editor?.commands.setContent(newContent);
       });
     }
-  }, [isRehydrated, editor]);
+  }, [editor, isRestoredContent]);
 
   const debounceUpdate = useDebounce((HtmlString: string) => {
     dispatch(setContent(HtmlString));
