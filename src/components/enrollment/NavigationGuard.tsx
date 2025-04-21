@@ -1,6 +1,6 @@
 // NavigationGuard.tsx
 "use client";
-import React from "react";
+import React, { useCallback } from "react";
 import { useShowModal } from "@/hooks/useShowModal";
 import Modal from "../Modal";
 import { Button } from "../controls/Button";
@@ -14,11 +14,11 @@ interface NavigationGuardProps {
 const NavigationGuard = ({ isDirty = false }: NavigationGuardProps) => {
   const { handleShowModal, showModal } = useShowModal();
 
-  const handlePopState = () => {
+  const handlePopState = useCallback(() => {
     if (isDirty) {
       handleShowModal(true);
     }
-  };
+  }, [handleShowModal, isDirty]);
 
   const handleConfirmNavigation = async () => {
     handleShowModal(false);
