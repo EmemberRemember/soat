@@ -42,19 +42,28 @@ export default function EmblaCarousel({ label }: CarouselDataProps) {
         const nowDate = new Date();
 
         const getLastPerformanceDate = (performance: PerformanceData): Date => {
+          const { performances, bookingEndDate } = performance;
           // 공연 일자가 등록되지 않거나 없는 경우 예매 종료일을 반환하도록 예외처리
-          if (
-            !performance.performances ||
-            Object.keys(performance.performances).length === 0
-          ) {
-            return new Date(performance.bookingEndDate);
+          if (!performances || Object.keys(performances).length === 0) {
+            const endDate = new Date(bookingEndDate);
+            endDate.setHours(23, 59, 59, 59);
+            return endDate;
           } else {
             // 실제 공연 종료일을 반환
-            const performanceDates = Object.keys(performance.performances);
-            const lastPerformanceDate = new Date(
-              Math.max(
-                ...performanceDates.map((date) => new Date(date).getTime())
-              )
+            const lastDay = Object.keys(performances).sort(
+              (a, b) => Date.parse(b) - Date.parse(a)
+            )[0];
+            const lastPerformances = performances[lastDay];
+            const lastTime = lastPerformances
+              .map(({ time }) => time)
+              .sort((a, b) => Number(b) - Number(a))[0]
+              .split(":");
+            const lastPerformanceDate = new Date(lastDay);
+            lastPerformanceDate.setHours(
+              Number(lastTime[0]),
+              Number(lastTime[1]),
+              59,
+              59
             );
             return lastPerformanceDate;
           }
