@@ -16,6 +16,7 @@ interface InputBaseProps extends BaseProps {
   type?: "text" | "password" | "email" | "number" | "tel" | "date" | "time";
   readOnly?: boolean;
   onEnter?: () => void;
+  name?: string;
 }
 
 export interface ButtonProps extends BaseProps {

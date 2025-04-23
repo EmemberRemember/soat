@@ -1,6 +1,10 @@
 "use client";
 import { Button } from "@/components/controls/Button";
-import { resetDirty, setStep } from "@/redux/slices/enrollSlice";
+import {
+  resetDirty,
+  setInvalidField,
+  setStep,
+} from "@/redux/slices/enrollSlice";
 import { RootState } from "@/redux/store";
 import { getImage } from "@/services/indexedDBService";
 import { EnrollStep } from "@/types/enrollment";
@@ -9,20 +13,66 @@ import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import NavigationGuard from "./NavigationGuard";
 import EnrollRehydration from "./EnrollRehydartion";
+import { useRouter } from "next/navigation";
+import { useValidationEnrollment } from "@/hooks/useValidationEnrollment";
 
 export default function EnrollFooter() {
+  const router = useRouter();
   const step = useSelector((state: RootState) => state.enroll.step);
   const enrollResult = useSelector((state: RootState) => state.enroll);
   const seatResult = useSelector((state: RootState) => state.seat);
   const imageFiles = enrollResult.files;
   const isDirty = enrollResult.isDirty || seatResult.isDirty;
+  const { isValid, invalidFieldName } = useValidationEnrollment({
+    enroll: enrollResult,
+  });
+
   const dispatch = useDispatch();
 
   const onClickTempStore = () => {
     dispatch(resetDirty());
   };
 
+  const validationNotify = () => {
+    if (!isValid) {
+      // 알림을 컴포넌트에서 처리
+      switch (invalidFieldName) {
+        case "enrollTitle":
+          alert("공연명을 입력해주세요");
+          break;
+        case "category":
+          alert("공연의 카테고리를 설정해주세요");
+          break;
+        case "bookingStartDate":
+          alert("공연 예약 시작 날짜를 설정해주세요.");
+          break;
+        case "enrollBookingEndDate":
+          alert("공연 예약 종료 날짜는 시작 날짜보다 빠를 수 없습니다.");
+          break;
+        case "enrollDetailAddress":
+          alert("주소를 입력해주세요.");
+          break;
+        case "poster":
+          alert("포스터를 추가해주세요.");
+          break;
+        case "performances":
+          alert("유효한 날짜에 공연을 등록해주세요");
+          break;
+        default:
+          break;
+      }
+    }
+  };
   const handleOnClickSeatButton = () => {
+    if (!isValid) {
+      validationNotify();
+    }
+
+    if (invalidFieldName) {
+      dispatch(setInvalidField(invalidFieldName));
+      return;
+    }
+
     dispatch(setStep(EnrollStep.EnrollSeats));
   };
 
@@ -53,7 +103,11 @@ export default function EnrollFooter() {
           formData.append(`image`, newfile);
         }
       });
-      const { files: _files, ...rest } = { ...enrollResult, seats: seatResult };
+
+      const { files: _files, ...rest } = {
+        ...enrollResult,
+        seats: seatResult,
+      };
       const result = { ...rest };
       formData.append("data", JSON.stringify(result));
       const response = await axios.put("/api/enrollment", formData, {
@@ -64,7 +118,7 @@ export default function EnrollFooter() {
 
       if (response.status === 201) {
         alert("공연 등록이 완료되었습니다.");
-        dispatch(setStep(EnrollStep.EnrollPerformance));
+        router.push("/manager/performance");
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {

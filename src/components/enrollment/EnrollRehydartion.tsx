@@ -72,6 +72,7 @@ export default function EnrollRehydration({
     const {
       isDirty: _isDirty,
       step: _step,
+      invalidField: _invalidField,
       ...filteredInitialState
     } = initialState;
 

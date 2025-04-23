@@ -22,6 +22,7 @@ export interface EnrollState {
   price: number;
   isDirty: boolean; //수정 상태를 관리하는 상태
   step: EnrollStep;
+  invalidField: string;
 }
 
 export const EnrollInitialState: EnrollState = {
@@ -39,6 +40,7 @@ export const EnrollInitialState: EnrollState = {
   price: 0,
   isDirty: false,
   step: 0,
+  invalidField: "",
 };
 
 const enrollSlice = createSlice({
@@ -162,6 +164,9 @@ const enrollSlice = createSlice({
     resetEnrollState: () => {
       return EnrollInitialState;
     },
+    setInvalidField: (state, action: PayloadAction<string>) => {
+      state.invalidField = action.payload;
+    },
   },
 });
 
@@ -184,6 +189,7 @@ export const {
   setPrice,
   setStep,
   resetEnrollState,
+  setInvalidField,
 } = enrollSlice.actions;
 
 export default enrollSlice.reducer;

@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "@/redux/store";
 import { useDispatch } from "react-redux";
@@ -28,7 +28,11 @@ export default function EnrollFormItems() {
     detailAddress,
     postCode,
     price,
+    invalidField,
   } = useSelector((state: RootState) => state.enroll);
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  const detailAddressInputRef = useRef<HTMLInputElement>(null);
+
   const dispatch = useDispatch();
 
   const handleSearchAddress = (data: KakaoAddressData) => {
@@ -42,7 +46,6 @@ export default function EnrollFormItems() {
   };
 
   const handleOnChangeCategory = (newCategory: string) => {
-    console.log(newCategory);
     dispatch(setCategory(newCategory));
   };
 
@@ -77,9 +80,26 @@ export default function EnrollFormItems() {
   const handleOnChangeDetailAddress = (newDetailAddress: string) => {
     dispatch(setDetailAddress(newDetailAddress));
   };
+
+  useEffect(() => {
+    if (invalidField === "enrollTitle") {
+      titleInputRef.current?.focus();
+    }
+
+    if (invalidField === "enrollDetailAddress") {
+      detailAddressInputRef.current?.focus();
+    }
+  }, [invalidField]);
+
   return (
     <>
-      <TextInput label="공연명" value={title} onChange={handleOnChangeTitle} />
+      <TextInput
+        label="공연명"
+        value={title}
+        onChange={handleOnChangeTitle}
+        ref={titleInputRef}
+        name="enrollTitle"
+      />
       <p>카테고리</p>
       <Category onClick={handleOnChangeCategory} />
       <TextInput
@@ -125,6 +145,8 @@ export default function EnrollFormItems() {
         placeholder="상세 주소"
         value={detailAddress}
         onChange={(e) => handleOnChangeDetailAddress(e.target.value)}
+        ref={detailAddressInputRef}
+        name="enrollDetailAddress"
       />
     </>
   );
