@@ -21,7 +21,7 @@ import { PersistorOptions } from "redux-persist/es/types";
 export const enrollPersistConfig = {
   key: "enroll", // enroll 상태의 키
   storage, // localStorage 사용
-  blacklist: ["isDirty", "step"],
+  blacklist: ["isDirty", "step", "invalidField"],
 };
 
 export const seatPersistConfig = {
