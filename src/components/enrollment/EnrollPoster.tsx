@@ -14,7 +14,7 @@ export default function EnrollPoster() {
 
   const imageToBase64 = (file: File): Promise<string> => {
     return new Promise((res) => {
-      const blob = new Blob([file]);
+      const blob = new Blob([file], { type: file.type });
       const reader = new FileReader();
       reader.readAsDataURL(blob);
       reader.onloadend = () => {
