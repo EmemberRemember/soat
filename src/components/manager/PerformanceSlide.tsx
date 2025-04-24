@@ -5,7 +5,7 @@ import PerformanceMoreBtn from "./PerformanceMoreBtn";
 import { PerformanceDataWithStatus } from "./Performance";
 import { useRouter } from "next/navigation";
 import axios from "axios";
-import useEditEnrollData from "@/hooks/useEditEnrollData";
+import useSetEditEnrollData from "@/hooks/useSetEditEnrollData";
 
 interface SliceProps {
   data: PerformanceDataWithStatus;
@@ -29,7 +29,7 @@ export default function PerformanceSlide({
   const isNotYetBookingDate = new Date(bookingStartDate) > nowDate;
   const isBookingEnded = new Date(bookingEndDate) < nowDate;
   const isPerformanceEnded = new Date(getLastPerformanceDate()) < nowDate;
-  const { setEditEnrollData } = useEditEnrollData(data)
+  const { setEditEnrollData } = useSetEditEnrollData(data)
   const router = useRouter();
 
   function getLastPerformanceDate() {
