@@ -9,8 +9,7 @@ export default function useSetEditEnrollData(performanceData: PerformanceDataWit
     const dispatch = useDispatch();
     
     const setEditEnrollData = () => {
-        const { status, ...enrolldata } =  {
-            isDirty : false, step:EnrollStep.EnrollPerformance, invalidField : "" , ...performanceData } 
+        const { status, ...enrolldata } =  {...performanceData ,isDirty : false, step:EnrollStep.EnrollPerformance, invalidField : "" , files : [] } 
          dispatch(setEnrollEditData(enrolldata))
     }
 
