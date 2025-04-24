@@ -23,6 +23,8 @@ interface UseEnrollmentDataResult {
   step: EnrollState["step"] | EnrollEditState["step"];
   invalidField: string;
   files: string[];
+  content: string;
+
 }
 
 export const useEnrollmentData = ({
@@ -45,6 +47,7 @@ export const useEnrollmentData = ({
     isDirty: isEdit ? editEnroll.isDirty : enroll.isDirty,
     step: isEdit ? editEnroll.step : enroll.step,
     invalidField: isEdit ? editEnroll.invalidField : enroll.invalidField,
-    files: isEdit? editEnroll.files : enroll.files,
+    files: isEdit ? editEnroll.files : enroll.files,
+    content : isEdit ? editEnroll.content : enroll.content
   };
 };
