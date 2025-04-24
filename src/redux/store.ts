@@ -17,6 +17,7 @@ interface ManualPersistOptions extends PersistorOptions {
 
 import enrollReducer from "./slices/enrollSlice";
 import seatReducer from "./slices/seatSlice";
+import enrollEditReducer from "./slices/enrollEditSlice"
 import { PersistorOptions } from "redux-persist/es/types";
 export const enrollPersistConfig = {
   key: "enroll", // enroll 상태의 키
@@ -24,12 +25,22 @@ export const enrollPersistConfig = {
   blacklist: ["isDirty", "step", "invalidField"],
 };
 
+const enrollEditPersistConfig = {
+  key: "enrollEdit",
+  storage,
+  blacklist: ["isDirty", "step", "invalidField"],
+}
+
 export const seatPersistConfig = {
   key: "seats",
   storage,
   blacklist: ["isDirty", "step"],
 };
 
+export const persistedEnrollEditReducer = persistReducer(
+  enrollEditPersistConfig,
+  enrollEditReducer
+)
 const persistedEnrollReducer = persistReducer(
   enrollPersistConfig,
   enrollReducer
@@ -40,6 +51,7 @@ const persistedSeatReducer = persistReducer(seatPersistConfig, seatReducer);
 const rootReducer = combineReducers({
   enroll: persistedEnrollReducer,
   seat: persistedSeatReducer,
+  enrollEdit : persistedEnrollEditReducer,
   //reducer 추가 부분
 });
 
