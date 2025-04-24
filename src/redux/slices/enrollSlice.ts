@@ -79,7 +79,7 @@ const enrollSlice = createSlice({
       state.price = action.payload;
       state.isDirty = true;
     },
-    setPoster: (state, action: PayloadAction<ImageFile>) => {
+    setPoster: (state, action: PayloadAction<ImageFile | null>) => {
       state.poster = action.payload;
       state.isDirty = true;
     },
