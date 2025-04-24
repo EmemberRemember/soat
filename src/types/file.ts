@@ -3,7 +3,7 @@ export interface ImageFile {
   fileName: string;
   fileSize: number;
   fileType: string;
-  base64Data: string;
+  url: string;
 }
 
 export interface ImageItem {
