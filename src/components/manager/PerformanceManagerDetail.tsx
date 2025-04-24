@@ -38,7 +38,7 @@ export default function PerformanceManagerDetail({
   }, [performanceTimes]);
 
   const [selected, setSelected] = useState(selectOptions[0]);
-  const selectedOccupiedSeat = selected.occupiedSeats;
+  const selectedOccupiedSeat = selected?.occupiedSeats;
   const handleSelectChange = (value: string) => {
     const selectedOption = selectOptions.find((opt) => opt.value === value);
     if (selectedOption) {
