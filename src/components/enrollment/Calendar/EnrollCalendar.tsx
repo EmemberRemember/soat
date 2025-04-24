@@ -5,7 +5,7 @@ import { Button } from "../../controls/Button";
 import { CalendarValue, EnrollModalMode } from "@/types/enrollment";
 import { Value } from "react-calendar/dist/esm/shared/types.js";
 import Modal from "@/components/Modal";
-import EnrollModal from "../write/EnrollModal";
+import EnrollModal from "../EnrollModal";
 import { format } from "date-fns";
 import PerformanceInfo from "../write/PerformanceInfo";
 import "./enrollCalendar.css";
