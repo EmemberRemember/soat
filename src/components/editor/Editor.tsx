@@ -19,10 +19,6 @@ import {
   ImageUp,
 } from "lucide-react";
 import Toolbar from "./Toolbar";
-import { useDispatch } from "react-redux";
-import { addFile, deleteFile, setContent } from "@/redux/slices/enrollSlice";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
 import CustomImage from "./CustomImage";
 import { useDebounce } from "@/hooks/useDebounce";
 import Modal from "../Modal";
@@ -70,10 +66,10 @@ import { useEditorActions } from "@/hooks/useEditorActions";
   };
 
 interface EditorProps {
-  isParentEdit: boolean;
+  isParentEdit?: boolean;
 } 
 
-export default function Editor({isParentEdit} : EditorProps) {
+export default function Editor({isParentEdit = false} : EditorProps) {
   const [editMode, setEditMode] = useState<EditMode>("WYSIWYG");
   const [imageURL, setImageURL] = useState<string>("");
   const [isRestoredContent, setIsRestoredContent] = useState<boolean>(false);
