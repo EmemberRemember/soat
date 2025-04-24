@@ -1,25 +1,17 @@
 "use client";
 import React, { useEffect, useRef } from "react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
-import { useDispatch } from "react-redux";
-import {
-  setAddress,
-  setBookingEndDate,
-  setBookingStartDate,
-  setCategory,
-  setDetailAddress,
-  setPostCode,
-  setPrice,
-  setTitle,
-} from "@/redux/slices/enrollSlice";
 import { KakaoAddressData } from "@/types/kakao";
 import { TextInput } from "../controls/Inputs";
 import KakaoAddressSearch from "../controls/KakaoAddressSearch";
 import { focusRings } from "@/styles/constants";
 import Category from "./Category";
+import { useEnrollFormActions } from "@/hooks/useEnrollFormActions";
+import { useEnrollmentData } from "@/hooks/useEnrollmentData";
 
-export default function EnrollFormItems() {
+interface EnrollFormItemsProps {
+  isEdit ?: boolean
+}
+export default function EnrollFormItems({isEdit = false} : EnrollFormItemsProps) {
   const {
     title,
     bookingStartDate,
@@ -29,56 +21,25 @@ export default function EnrollFormItems() {
     postCode,
     price,
     invalidField,
-  } = useSelector((state: RootState) => state.enroll);
+  } = useEnrollmentData({ isEdit })
+  const {
+    onChangeTitle,
+    onChangeCategory,
+    onChangePrice,
+    onChangeBookingStartDate,
+    onChangeBookingEndDate,
+    onSetAddress,
+    onSetPostCode,
+    onChangeDetailAddress,
+  } = useEnrollFormActions({ isEdit });
   const titleInputRef = useRef<HTMLInputElement>(null);
   const detailAddressInputRef = useRef<HTMLInputElement>(null);
 
-  const dispatch = useDispatch();
 
   const handleSearchAddress = (data: KakaoAddressData) => {
     const address = `${data.roadAddress} ${data.buildingName}`;
-    dispatch(setAddress(address));
-    dispatch(setPostCode(data.zonecode));
-  };
-
-  const handleOnChangeTitle = (newTitle: string) => {
-    dispatch(setTitle(newTitle));
-  };
-
-  const handleOnChangeCategory = (newCategory: string) => {
-    dispatch(setCategory(newCategory));
-  };
-
-  const handleOnChangePrice = (newPrice: string) => {
-    // 숫자 변환 후 상태 업데이트
-    if (isNaN(Number(newPrice))) {
-      return;
-    }
-    dispatch(setPrice(Number(newPrice)));
-  };
-
-  const handleOnChangeBookingStartDate = (newDate: string) => {
-    dispatch(setBookingStartDate(newDate));
-  };
-
-  const handleOnChangeBookingEndDate = (newDate: string) => {
-    if (!validationBookinedEndDate(newDate)) {
-      alert("예매 시작일보다 예매 종료일이 빠를 수 없습니다.");
-      return;
-    }
-    dispatch(setBookingEndDate(newDate));
-  };
-
-  const validationBookinedEndDate = (newDate: string): boolean => {
-    const endDate = new Date(newDate);
-    const startDate = new Date(bookingStartDate);
-    if (startDate > endDate) {
-      return false;
-    }
-    return true;
-  };
-  const handleOnChangeDetailAddress = (newDetailAddress: string) => {
-    dispatch(setDetailAddress(newDetailAddress));
+    onSetAddress(address);
+    onSetPostCode(data.zonecode);
   };
 
   useEffect(() => {
@@ -96,28 +57,28 @@ export default function EnrollFormItems() {
       <TextInput
         label="공연명"
         value={title}
-        onChange={handleOnChangeTitle}
+        onChange={onChangeTitle}
         ref={titleInputRef}
         name="enrollTitle"
       />
       <p>카테고리</p>
-      <Category onClick={handleOnChangeCategory} />
+      <Category onClick={onChangeCategory} />
       <TextInput
         label="가격"
         value={String(price)}
-        onChange={handleOnChangePrice}
+        onChange={onChangePrice}
       />
       <TextInput
         label="예매시작일"
         type="date"
         value={bookingStartDate}
-        onChange={handleOnChangeBookingStartDate}
+        onChange={onChangeBookingStartDate}
       />
       <TextInput
         label="예매종료일"
         type="date"
         value={bookingEndDate}
-        onChange={handleOnChangeBookingEndDate}
+        onChange={onChangeBookingEndDate}
       />
       <label className="block" htmlFor="detailLocation">
         위치
@@ -129,7 +90,7 @@ export default function EnrollFormItems() {
         readOnly
       />
       <KakaoAddressSearch
-        onComplete={(data: KakaoAddressData) => handleSearchAddress(data)}
+        onComplete={handleSearchAddress}
       />
       <TextInput
         className="mb-2"
@@ -144,7 +105,7 @@ export default function EnrollFormItems() {
         id="detailLocation"
         placeholder="상세 주소"
         value={detailAddress}
-        onChange={(e) => handleOnChangeDetailAddress(e.target.value)}
+        onChange={(e)=>onChangeDetailAddress(e.target.value)}
         ref={detailAddressInputRef}
         name="enrollDetailAddress"
       />
