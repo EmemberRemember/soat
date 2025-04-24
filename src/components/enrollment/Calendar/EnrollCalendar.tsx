@@ -7,7 +7,7 @@ import { Value } from "react-calendar/dist/esm/shared/types.js";
 import Modal from "@/components/Modal";
 import EnrollModal from "../EnrollModal";
 import { format } from "date-fns";
-import PerformanceInfo from "../write/PerformanceInfo";
+import PerformanceInfo from "../PerformanceInfo";
 import "./enrollCalendar.css";
 import { useShowModal } from "@/hooks/useShowModal";
 import { usePerformanceActions } from "@/hooks/usePerformanceActions";
