@@ -11,7 +11,7 @@ import { EnrollStep } from "@/types/enrollment";
 import axios from "axios";
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import NavigationGuard from "./NavigationGuard";
+import NavigationGuard from "../NavigationGuard";
 import EnrollRehydration from "./EnrollRehydartion";
 import { useRouter } from "next/navigation";
 import { useValidationEnrollment } from "@/hooks/useValidationEnrollment";
@@ -108,6 +108,7 @@ export default function EnrollFooter() {
         ...enrollResult,
         seats: seatResult,
       };
+      
       const result = { ...rest };
       formData.append("data", JSON.stringify(result));
       const response = await axios.put("/api/enrollment", formData, {
