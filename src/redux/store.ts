@@ -18,18 +18,14 @@ interface ManualPersistOptions extends PersistorOptions {
 import enrollReducer from "./slices/enrollSlice";
 import seatReducer from "./slices/seatSlice";
 import enrollEditReducer from "./slices/enrollEditSlice"
+import seatEditReducer from "./slices/seatEditSlice"
 import { PersistorOptions } from "redux-persist/es/types";
+
 export const enrollPersistConfig = {
   key: "enroll", // enroll 상태의 키
   storage, // localStorage 사용
   blacklist: ["isDirty", "step", "invalidField"],
 };
-
-const enrollEditPersistConfig = {
-  key: "enrollEdit",
-  storage,
-  blacklist: ["isDirty", "step", "invalidField"],
-}
 
 export const seatPersistConfig = {
   key: "seats",
@@ -37,21 +33,18 @@ export const seatPersistConfig = {
   blacklist: ["isDirty", "step"],
 };
 
-export const persistedEnrollEditReducer = persistReducer(
-  enrollEditPersistConfig,
-  enrollEditReducer
-)
+
 const persistedEnrollReducer = persistReducer(
   enrollPersistConfig,
   enrollReducer
 );
 
 const persistedSeatReducer = persistReducer(seatPersistConfig, seatReducer);
-
 const rootReducer = combineReducers({
   enroll: persistedEnrollReducer,
   seat: persistedSeatReducer,
-  enrollEdit : persistedEnrollEditReducer,
+  enrollEdit : enrollEditReducer,
+  seatEdit: seatEditReducer
   //reducer 추가 부분
 });
 
@@ -65,10 +58,10 @@ export const store = configureStore({
     }),
   devTools: process.env.NODE_ENV !== "production",
 });
-// export const persistor = persistStore(store, { manualPersist: true }); //공식문서에는 존재하는 옵션인데 찾을 수 없다고 뜨네요..
+
 export const persistor = persistStore(store, {
   manualPersist: true,
-} as ManualPersistOptions); // 52번줄 build error로 주석처리 해두었습니다.
+} as ManualPersistOptions);
 
 export type RootState = ReturnType<typeof store.getState>;
 
