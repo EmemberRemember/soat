@@ -1,16 +1,16 @@
 //hooks/useSetEditEnrollData.ts
-import { PerformanceDataWithStatus } from '@/components/manager/Performance';
-import { setEnrollEditData } from '@/redux/slices/enrollEditSlice';
+import { PerformanceData } from '@/app/api/performance/route';
+import {  setEnrollEditData } from '@/redux/slices/enrollEditSlice';
 import { EnrollStep } from '@/types/enrollment';
 import { useDispatch } from "react-redux";
 
-export default function useSetEditEnrollData(performanceData: PerformanceDataWithStatus) {
+export default function useSetEditEnrollData() {
     
     const dispatch = useDispatch();
     
-    const setEditEnrollData = () => {
-        const { status, ...enrolldata } =  {...performanceData ,isDirty : false, step:EnrollStep.EnrollPerformance, invalidField : "" , files : [] } 
-         dispatch(setEnrollEditData(enrolldata))
+    const setEditEnrollData = (data : PerformanceData) => {
+        const enrolldata = { ...data,id : data.id!, isDirty: false, step: EnrollStep.EnrollPerformance, invalidField: "", files: [] } 
+        dispatch(setEnrollEditData(enrolldata))
     }
 
     return {setEditEnrollData}
