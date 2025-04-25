@@ -1,8 +1,10 @@
 //hooks/useSetEditEnrollData.ts
 import { PerformanceData } from '@/app/api/performance/route';
 import {  setEnrollEditData } from '@/redux/slices/enrollEditSlice';
+import { SeatEditState, setSeatEditData } from '@/redux/slices/seatEditSlice';
 import { EnrollStep } from '@/types/enrollment';
 import { useDispatch } from "react-redux";
+
 
 export default function useSetEditEnrollData() {
     
@@ -13,5 +15,9 @@ export default function useSetEditEnrollData() {
         dispatch(setEnrollEditData(enrolldata))
     }
 
-    return {setEditEnrollData}
+    const setEditSeatData = (data: SeatEditState) => {
+        const seatData = { ...data, isDirty: false }
+        dispatch(setSeatEditData(seatData))
+    }
+    return {setEditEnrollData ,setEditSeatData}
 }
