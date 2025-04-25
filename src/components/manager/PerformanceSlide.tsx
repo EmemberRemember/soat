@@ -29,7 +29,7 @@ export default function PerformanceSlide({
   const isNotYetBookingDate = new Date(bookingStartDate) > nowDate;
   const isBookingEnded = new Date(bookingEndDate) < nowDate;
   const isPerformanceEnded = new Date(getLastPerformanceDate()) < nowDate;
-  const { setEditEnrollData } = useSetEditEnrollData()
+  const { setEditEnrollData , setEditSeatData } = useSetEditEnrollData()
   const router = useRouter();
 
   function getLastPerformanceDate() {
@@ -89,6 +89,7 @@ export default function PerformanceSlide({
   const handleOnEditPerformance = (e: React.MouseEvent<HTMLButtonElement>) => {
     handleButtonClick(e);
     setEditEnrollData(data)
+    setEditSeatData(data.seats)
     router.push(`/enrollment/edit/${performId}`)
   }
 
