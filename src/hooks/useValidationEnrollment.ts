@@ -24,14 +24,14 @@ export function useValidationEnrollment({
   let isValid = true;
 
   const isValidPoster = (poster: ImageFile) => {
-    const { fileName, fileSize, fileType, base64Data } = poster;
+    const { fileName, fileSize, fileType, url } = poster;
     return (
       !!fileName &&
       !!fileSize &&
       !!fileType &&
-      !!base64Data &&
+      !!url &&
       fileSize > 0 &&
-      /^data:image\/[a-z]+;base64,/.test(base64Data)
+      /^data:image\/[a-z]+;base64,|https:\/\//
     );
   };
 

@@ -1,19 +1,19 @@
 import { PerformanceInfoProps } from "@/types/enrollment";
 import React from "react";
 import { CloseButton } from "../controls/Button";
-import { useDispatch } from "react-redux";
-import { removePerformance } from "@/redux/slices/enrollSlice";
 import { Edit } from "lucide-react";
+import { usePerformanceActions } from "@/hooks/usePerformanceActions";
 export default function PerformanceInfo({
   date,
   performances,
   onEdit,
+  isParentEdit
 }: PerformanceInfoProps) {
-  const dispatch = useDispatch();
+  const { onDeletePerformance } = usePerformanceActions({isEdit :isParentEdit})
 
   const handleDel = (index: number) => {
-    const removedate = date.toString();
-    dispatch(removePerformance({ date: removedate, index }));
+    const removeDate = date.toString();
+    onDeletePerformance(removeDate, index)
   };
 
   return (

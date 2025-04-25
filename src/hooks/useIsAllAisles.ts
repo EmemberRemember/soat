@@ -1,15 +1,23 @@
 "use client";
 
-import { addIsAllAisle } from "@/redux/slices/seatSlice";
-import { RootState } from "@/redux/store";
+import { addIsAllAisle } from "@/redux/slices/seatSlice"; // 기본 슬라이스 액션
+import { addIsAllAisle as addIsAllAisleEdit } from "@/redux/slices/seatEditSlice"; // 편집 슬라이스 액션
 import { useDispatch } from "react-redux";
-import { useSelector } from "react-redux";
+import { RowConfigs } from "@/types/seat"; // RowsConfigs 타입 정의 필요
 
-export const useIsAllAisles = () => {
-  const rowConfigs = useSelector((state: RootState) => state.seat.rowsConfigs);
+interface UseIsAllAislesProps {
+  isEdit: boolean;
+}
+
+export const useIsAllAisles = ({ isEdit }: UseIsAllAislesProps) => {
   const dispatch = useDispatch();
-  const validateRemainingAisles = () => {
-    const targetSeats = Object.values(rowConfigs).slice(0, -1);
+
+  const dispatchAddIsAllAisle = (aisle: number) => {
+    dispatch(isEdit ? addIsAllAisleEdit(aisle) : addIsAllAisle(aisle));
+  };
+
+  const validateRemainingAisles = (rowsConfigs : RowConfigs) => {
+    const targetSeats = Object.values(rowsConfigs).slice(0, -1);
 
     const aislesSet = new Set(
       targetSeats
@@ -22,17 +30,17 @@ export const useIsAllAisles = () => {
         .filter((rowConfig) => rowConfig.seats >= aisle)
         .every((rowConfig) => rowConfig.aisles.includes(aisle));
       if (isAllAisle) {
-        dispatch(addIsAllAisle(aisle));
+        dispatchAddIsAllAisle(aisle);
       }
     });
   };
 
-  const isAisleInAllRows = (targetSeatLabel: string, targetAisles: number) => {
-    return Object.keys(rowConfigs)
+  const isAisleInAllRows = (targetSeatLabel: string, targetAisles: number , rowsConfigs : RowConfigs) => {
+    return Object.keys(rowsConfigs)
       .filter((seatLabel) => seatLabel !== targetSeatLabel)
-      .filter((seatLabel) => rowConfigs[seatLabel].seats >= targetAisles)
+      .filter((seatLabel) => rowsConfigs[seatLabel].seats >= targetAisles)
       .every((key) => {
-        const rowConfig = rowConfigs[key];
+        const rowConfig = rowsConfigs[key];
         return rowConfig.aisles.includes(targetAisles);
       });
   };

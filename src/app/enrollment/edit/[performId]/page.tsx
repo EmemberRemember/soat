@@ -1,9 +1,9 @@
 import React from "react";
 import Link from "next/link";
-import EnrollFooter from "@/components/enrollment/write/EnrollFooter";
-import EnrollMains from "@/components/enrollment/write/EnrollMains";
+import EnrollEditMains from "@/components/enrollment/Edit/EnrollEditMains";
+import EnrollEditFooter from "@/components/enrollment/Edit/EnrollEditFooter";
 
-export default function EnrollmentPage() {
+export default function page() {
   return (
     <>
       <header className="max-w-[1920px] m-auto px-[80px]">
@@ -11,8 +11,8 @@ export default function EnrollmentPage() {
           <h1 className="font-bold text-3xl italic py-5">SO@</h1>
         </Link>
       </header>
-      <EnrollMains />
-      <EnrollFooter />
+      <EnrollEditMains />
+      <EnrollEditFooter />
     </>
   );
 }

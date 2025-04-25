@@ -1,50 +1,45 @@
 "use client";
 import React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import SeatSetRow from "../seats/SeatSetRow";
-import ControlRowButton from "../seats/ControlRowButton";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
-import { useDispatch } from "react-redux";
-import {
-  addRowsConfigs,
-  deleteRowsConfigs,
-  setRows,
-  resetIsAllAisle,
-} from "@/redux/slices/seatSlice";
+import { Card, CardContent, CardHeader, CardTitle } from "../../ui/card";
+import SeatSetRow from "../../seats/SeatSetRow";
+import ControlRowButton from "../../seats/ControlRowButton";
 import { useIsAllAisles } from "@/hooks/useIsAllAisles";
+import { useSeatData } from "@/hooks/useSeatData";
+import { useSeatActions } from "@/hooks/useSeatActions";
 
-export default function EnrollSeat() {
-  const { rowsConfigs, rows, totalSeats } = useSelector(
-    (state: RootState) => state.seat
-  );
-  const dispatch = useDispatch();
+interface EnrollSeatProps {
+  isEdit?: boolean;
+}
+export default function EnrollSeat({isEdit = false }: EnrollSeatProps) {
+  const { rowsConfigs, rows, totalSeats } = useSeatData({
+    isEdit 
+  })
+  const { addRowsConfigs, deleteRowsConfigs, setRows, resetIsAllAisle } = useSeatActions({ isEdit });
+  const { validateRemainingAisles } = useIsAllAisles({ isEdit });
 
   const renderRows = () => {
     return Object.keys(rowsConfigs).map((rowsLabel, index) => {
-      return <SeatSetRow key={index} seatLabel={rowsLabel} />;
+      return <SeatSetRow key={index} seatLabel={rowsLabel} isEdit={isEdit} />;
     });
   };
 
-  const { validateRemainingAisles } = useIsAllAisles();
 
   const handleOnClickAddRowsBtn = () => {
     if (rows === 26) {
       return;
     }
-    dispatch(resetIsAllAisle());
-    dispatch(setRows(rows + 1));
-    dispatch(addRowsConfigs(rows));
+    resetIsAllAisle()
+    setRows(rows + 1)
+    addRowsConfigs(rows);
   };
 
   const handleOnClickRemoveRowsBtn = () => {
     if (rows <= 1) {
       return;
     }
-    dispatch(setRows(rows - 1));
-
-    dispatch(deleteRowsConfigs(rows - 1));
-    validateRemainingAisles();
+    setRows(rows - 1);
+    deleteRowsConfigs(rows - 1);
+    validateRemainingAisles(rowsConfigs);
   };
 
   return (

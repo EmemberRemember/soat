@@ -7,7 +7,8 @@ import {
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { format } from "date-fns";
 
-export interface EnrollState {
+export interface EnrollEditState {
+  id: string;
   title: string;
   category: string;
   bookingStartDate: string;
@@ -15,17 +16,18 @@ export interface EnrollState {
   postCode: string;
   address: string;
   detailAddress: string;
-  poster: ImageFile | null;
+  poster: ImageFile| null;
   performances: DailyPerformances;
   content: string;
-  files: string[];
   price: number;
-  isDirty: boolean; //수정 상태를 관리하는 상태
+  isDirty: boolean;
   step: EnrollStep;
   invalidField: string;
+  files: string[];
 }
 
-export const EnrollInitialState: EnrollState = {
+export const enrollEditInitialState: EnrollEditState = {
+  id : "",
   title: "",
   category: "",
   bookingStartDate: "",
@@ -36,58 +38,66 @@ export const EnrollInitialState: EnrollState = {
   poster: null,
   performances: {},
   content: "",
-  files: [],
   price: 0,
   isDirty: false,
   step: 0,
   invalidField: "",
+  files: [],
 };
 
-const enrollSlice = createSlice({
-  name: "enroll",
-  initialState: EnrollInitialState,
+const enrollEditSlice = createSlice({
+  name: "enrollEdit",
+  initialState : enrollEditInitialState,
   reducers: {
-    setTitle: (state, action: PayloadAction<string>) => {
+    setEditTitle: (state, action: PayloadAction<string>) => {
       state.title = action.payload;
       state.isDirty = true;
     },
-    setCategory: (state, action: PayloadAction<string>) => {
+    setEditCategory: (state, action: PayloadAction<string>) => {
       state.category = action.payload;
       state.isDirty = true;
     },
-    setBookingStartDate: (state, action: PayloadAction<string>) => {
+    setEditBookingStartDate: (state, action: PayloadAction<string>) => {
       state.bookingStartDate = action.payload;
       state.isDirty = true;
     },
-    setBookingEndDate: (state, action: PayloadAction<string>) => {
+    setEditBookingEndDate: (state, action: PayloadAction<string>) => {
       state.bookingEndDate = action.payload;
       state.isDirty = true;
     },
-    setAddress: (state, action: PayloadAction<string>) => {
+    setEditAddress: (state, action: PayloadAction<string>) => {
       state.address = action.payload;
       state.isDirty = true;
     },
-    setDetailAddress: (state, action: PayloadAction<string>) => {
+    setEditDetailAddress: (state, action: PayloadAction<string>) => {
       state.detailAddress = action.payload;
       state.isDirty = true;
     },
-    setPostCode: (state, action: PayloadAction<string>) => {
+    setEditPostCode: (state, action: PayloadAction<string>) => {
       state.postCode = action.payload;
       state.isDirty = true;
     },
-    setPrice: (state, action: PayloadAction<number>) => {
+    setEditPrice: (state, action: PayloadAction<number>) => {
       state.price = action.payload;
       state.isDirty = true;
     },
-    setPoster: (state, action: PayloadAction<ImageFile | null>) => {
+    setEditPoster: (state, action: PayloadAction<ImageFile | null>) => {
       state.poster = action.payload;
       state.isDirty = true;
     },
-    setContent: (state, action: PayloadAction<string>) => {
+    setEditContent: (state, action: PayloadAction<string>) => {
       state.content = action.payload;
       state.isDirty = true;
     },
-    addPerformance: (
+    addEditFile: (state, action: PayloadAction<string>) => {
+      state.files.push(action.payload);
+      state.isDirty = true;
+    },
+    deleteEditFile: (state, action: PayloadAction<string>) => {
+      state.files = state.files.filter((key) => key !== action.payload);
+      state.isDirty = true;
+    },
+    addEditPerformance: (
       state,
       action: PayloadAction<{
         dates: string[];
@@ -108,7 +118,7 @@ const enrollSlice = createSlice({
       state.isDirty = true;
     },
 
-    editPerformance: (
+    editEditPerformance: (
       state,
       action: PayloadAction<{
         date: string;
@@ -125,7 +135,7 @@ const enrollSlice = createSlice({
       state.isDirty = true;
     },
 
-    removePerformance: (
+    removeEditPerformance: (
       state,
       action: PayloadAction<{
         date: string;
@@ -147,49 +157,49 @@ const enrollSlice = createSlice({
       }
       state.isDirty = true;
     },
-    addFile: (state, action: PayloadAction<string>) => {
-      state.files.push(action.payload);
-      state.isDirty = true;
-    },
-    deleteFile: (state, action: PayloadAction<string>) => {
-      state.files = state.files.filter((key) => key !== action.payload);
-      state.isDirty = true;
-    },
-    resetDirty: (state) => {
+    resetEditDirty: (state) => {
       state.isDirty = false;
     },
-    setStep: (state, action: PayloadAction<EnrollStep>) => {
+    setEditStep: (state, action: PayloadAction<EnrollStep>) => {
       state.step = action.payload;
     },
-    resetEnrollState: () => {
-      return EnrollInitialState;
+    resetEnrollEditState: () => {
+      return enrollEditInitialState;
     },
-    setInvalidField: (state, action: PayloadAction<string>) => {
+    setEditInvalidField: (state, action: PayloadAction<string>) => {
       state.invalidField = action.payload;
     },
+    setEnrollEditData: (state, action: PayloadAction<EnrollEditState>) => {
+      return {
+        ...state,
+        ...action.payload,
+      }
+    }
+    
   },
 });
 
 export const {
-  setTitle,
-  setCategory,
-  setBookingStartDate,
-  setBookingEndDate,
-  setAddress,
-  setDetailAddress,
-  setPostCode,
-  setPoster,
-  setContent,
-  addPerformance,
-  editPerformance,
-  removePerformance,
-  addFile,
-  deleteFile,
-  resetDirty,
-  setPrice,
-  setStep,
-  resetEnrollState,
-  setInvalidField,
-} = enrollSlice.actions;
+  setEditTitle,
+  setEditCategory,
+  setEditBookingStartDate,
+  setEditBookingEndDate,
+  setEditAddress,
+  setEditDetailAddress,
+  setEditPostCode,
+  setEditPoster,
+  setEditContent,
+  addEditFile,
+  deleteEditFile,
+  addEditPerformance,
+  editEditPerformance,
+  removeEditPerformance,
+  resetEditDirty,
+  setEditPrice,
+  setEditStep,
+  resetEnrollEditState,
+  setEditInvalidField,
+  setEnrollEditData
+} = enrollEditSlice.actions;
 
-export default enrollSlice.reducer;
+export default enrollEditSlice.reducer;

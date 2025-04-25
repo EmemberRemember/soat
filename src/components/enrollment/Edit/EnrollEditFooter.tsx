@@ -1,37 +1,29 @@
 "use client";
 import { Button } from "@/components/controls/Button";
-import {
-  resetDirty,
-  setInvalidField,
-  setStep,
-} from "@/redux/slices/enrollSlice";
 import { RootState } from "@/redux/store";
 import { getImage } from "@/services/indexedDBService";
 import { EnrollStep } from "@/types/enrollment";
 import axios from "axios";
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import NavigationGuard from "./NavigationGuard";
-import EnrollRehydration from "./EnrollRehydartion";
+import NavigationGuard from "../NavigationGuard";
 import { useRouter } from "next/navigation";
 import { useValidationEnrollment } from "@/hooks/useValidationEnrollment";
+import { setEditInvalidField, setEditStep } from "@/redux/slices/enrollEditSlice";
 
-export default function EnrollFooter() {
+export default function EnrollEditFooter() {
   const router = useRouter();
-  const step = useSelector((state: RootState) => state.enroll.step);
-  const enrollResult = useSelector((state: RootState) => state.enroll);
-  const seatResult = useSelector((state: RootState) => state.seat);
-  const imageFiles = enrollResult.files;
+  const step = useSelector((state: RootState) => state.enrollEdit.step);  
+  const enrollResult = useSelector((state: RootState) => state.enrollEdit);
+  const seatResult = useSelector((state: RootState) => state.seatEdit);
   const isDirty = enrollResult.isDirty || seatResult.isDirty;
+  const imageFiles = enrollResult.files;
+
   const { isValid, invalidFieldName } = useValidationEnrollment({
     enroll: enrollResult,
   });
 
   const dispatch = useDispatch();
-
-  const onClickTempStore = () => {
-    dispatch(resetDirty());
-  };
 
   const validationNotify = () => {
     if (!isValid) {
@@ -63,21 +55,22 @@ export default function EnrollFooter() {
       }
     }
   };
+    
   const handleOnClickSeatButton = () => {
     if (!isValid) {
       validationNotify();
     }
 
     if (invalidFieldName) {
-      dispatch(setInvalidField(invalidFieldName));
+      dispatch(setEditInvalidField(invalidFieldName));
       return;
     }
 
-    dispatch(setStep(EnrollStep.EnrollSeats));
+    dispatch(setEditStep(EnrollStep.EnrollSeats));
   };
 
   const handleOnClickPrevButton = () => {
-    dispatch(setStep(EnrollStep.EnrollPerformance));
+    dispatch(setEditStep(EnrollStep.EnrollPerformance));
   };
 
   const getImageFileIndexedDB = async () => {
@@ -117,7 +110,7 @@ export default function EnrollFooter() {
       });
 
       if (response.status === 201) {
-        alert("공연 등록이 완료되었습니다.");
+        alert("공연 수정이 완료되었습니다.");
         router.push("/manager/performance");
       }
     } catch (error) {
@@ -127,28 +120,25 @@ export default function EnrollFooter() {
     }
   };
 
-  return (
-    <EnrollRehydration>
+    return (
+      <>
       <NavigationGuard isDirty={isDirty} />
       <footer className="fixed left-0 bottom-0 bg-flesh-200 w-full h-[120px] flex justify-end items-center pr-[60px] gap-14">
-        <Button onClick={onClickTempStore} type="button">
-          임시 저장
-        </Button>
         {step === EnrollStep.EnrollSeats && (
-          <Button type="button" onClick={handleOnClickPrevButton}>
+            <Button type="button" onClick={handleOnClickPrevButton}>
             이전으로
           </Button>
         )}
         {step === EnrollStep.EnrollPerformance ? (
-          <Button type="button" onClick={handleOnClickSeatButton}>
+            <Button type="button" onClick={handleOnClickSeatButton}>
             좌석 배치하기
           </Button>
         ) : (
-          <Button type="button" onClick={handleSubmit}>
-            공연 등록
+            <Button type="button" onClick={handleSubmit}>
+            공연 수정
           </Button>
         )}
       </footer>
-    </EnrollRehydration>
+    </>
   );
 }

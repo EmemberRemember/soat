@@ -3,6 +3,9 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import PerformanceMoreBtn from "./PerformanceMoreBtn";
 import { PerformanceDataWithStatus } from "./Performance";
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import useSetEditEnrollData from "@/hooks/useSetEditEnrollData";
 
 interface SliceProps {
   data: PerformanceDataWithStatus;
@@ -26,6 +29,8 @@ export default function PerformanceSlide({
   const isNotYetBookingDate = new Date(bookingStartDate) > nowDate;
   const isBookingEnded = new Date(bookingEndDate) < nowDate;
   const isPerformanceEnded = new Date(getLastPerformanceDate()) < nowDate;
+  const { setEditEnrollData , setEditSeatData } = useSetEditEnrollData()
+  const router = useRouter();
 
   function getLastPerformanceDate() {
     const performanceDates = Object.keys(data.performances).sort(
@@ -49,6 +54,58 @@ export default function PerformanceSlide({
     } else {
       return bookingEndDate;
     }
+  }
+
+  const terminatePerformance = async() => {
+    const endConfirm = confirm("공연을 종료하시겠습니까?");
+    if (endConfirm) {
+        try {
+          const response = await axios.patch(
+            `/api/manager/performance/${performId}/end`
+          );
+          alert("공연이 종료 되었습니다.");
+          window.location.reload();
+        } catch (error) {
+          console.error(error);
+        }
+      }
+  }
+
+  const deletePerformance = async () => {
+       const deleteConfirm = confirm("공연을 삭제하시겠습니까?");
+      if (deleteConfirm) {
+        try {
+          const response = await axios.delete(
+            `/api/manager/performance/${performId}/delete`
+          );
+          alert("공연이 삭제 되었습니다.");
+          window.location.reload();
+        } catch (error) {
+          console.error(error);
+        }
+      }
+  }
+  
+  const handleOnEditPerformance = (e: React.MouseEvent<HTMLButtonElement>) => {
+    handleButtonClick(e);
+    setEditEnrollData(data)
+    setEditSeatData(data.seats)
+    router.push(`/enrollment/edit/${performId}`)
+  }
+
+  const handleOnCheckPerformance = (e: React.MouseEvent<HTMLButtonElement>) => {
+    handleButtonClick(e);
+    router.push(`/manager/performance/${performId}`);
+  }
+
+  const handleOnTerminatePerformance = (e: React.MouseEvent<HTMLButtonElement>) => {
+    handleButtonClick(e);
+    terminatePerformance();
+  }
+
+  const handleOnDeletePerformance = (e: React.MouseEvent<HTMLButtonElement>) => {
+    handleButtonClick(e);
+    deletePerformance();
   }
 
   return (
@@ -97,8 +154,10 @@ export default function PerformanceSlide({
             {isOpen && (
               <div className="mt-3">
                 <PerformanceMoreBtn
-                  onClick={handleButtonClick}
-                  performId={performId}
+                  onClickEditBtn={handleOnEditPerformance}
+                  onClickCheckBtn={handleOnCheckPerformance}
+                  onClickDeleteBtn={handleOnDeletePerformance}
+                  onClickTerminateBtn={handleOnTerminatePerformance}
                 />
               </div>
             )}

@@ -2,7 +2,7 @@
 import { persistor, RootState } from "@/redux/store";
 import React, { useEffect } from "react";
 import { useSelector } from "react-redux";
-import EnrollPerformance from "./EnrollPerformance";
+import EnrollPerformance from "../EnrollPerformance";
 import EnrollSeat from "./EnrollSeat";
 import { EnrollStep } from "@/types/enrollment";
 import { useDispatch } from "react-redux";

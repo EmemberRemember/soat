@@ -1,14 +1,17 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, {  useRef, useState } from "react";
 import TextArea from "../controls/TextArea";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
 import { useDispatch } from "react-redux";
 import { setContent } from "@/redux/slices/enrollSlice";
 import { useDebounce } from "@/hooks/useDebounce";
+import { useEnrollmentData } from "@/hooks/useEnrollmentData";
 
-export default function HtmlEditor() {
-  const content = useSelector((state: RootState) => state.enroll.content);
+interface HtmlEditorProps {
+  isParentEdit: boolean;
+}
+
+export default function HtmlEditor({isParentEdit} : HtmlEditorProps) {
+  const { content } = useEnrollmentData({ isEdit: isParentEdit })
   const [htmlContent, setHtmlContent] = useState<string>(content);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const dispatch = useDispatch();

@@ -1,12 +1,12 @@
 "use client";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 export const useShowModal = () => {
   const [showModal, setShowModal] = useState<boolean>(false);
 
-  const handleShowModal = (state: boolean): void => {
+  const handleShowModal = useCallback((state: boolean): void => {
     setShowModal(state);
-  };
+  }, [setShowModal]);
 
   return { showModal, handleShowModal };
 };
