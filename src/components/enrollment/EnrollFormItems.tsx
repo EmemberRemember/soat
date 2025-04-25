@@ -21,6 +21,7 @@ export default function EnrollFormItems({isEdit = false} : EnrollFormItemsProps)
     postCode,
     price,
     invalidField,
+    category
   } = useEnrollmentData({ isEdit })
   const {
     onChangeTitle,
@@ -62,7 +63,7 @@ export default function EnrollFormItems({isEdit = false} : EnrollFormItemsProps)
         name="enrollTitle"
       />
       <p>카테고리</p>
-      <Category onClick={onChangeCategory} />
+      <Category onClick={onChangeCategory} selectedItemStr={category} />
       <TextInput
         label="가격"
         value={String(price)}
