@@ -8,6 +8,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { format } from "date-fns";
 
 export interface EnrollEditState {
+  id: string;
   title: string;
   category: string;
   bookingStartDate: string;
@@ -25,7 +26,8 @@ export interface EnrollEditState {
   files: string[];
 }
 
-const initialState: EnrollEditState = {
+export const enrollEditInitialState: EnrollEditState = {
+  id : "",
   title: "",
   category: "",
   bookingStartDate: "",
@@ -45,7 +47,7 @@ const initialState: EnrollEditState = {
 
 const enrollEditSlice = createSlice({
   name: "enrollEdit",
-  initialState,
+  initialState : enrollEditInitialState,
   reducers: {
     setEditTitle: (state, action: PayloadAction<string>) => {
       state.title = action.payload;
@@ -162,7 +164,7 @@ const enrollEditSlice = createSlice({
       state.step = action.payload;
     },
     resetEnrollEditState: () => {
-      return initialState;
+      return enrollEditInitialState;
     },
     setEditInvalidField: (state, action: PayloadAction<string>) => {
       state.invalidField = action.payload;
