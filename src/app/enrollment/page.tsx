@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import EnrollFooter from "@/components/enrollment/EnrollFooter";
-import EnrollMains from "@/components/enrollment/EnrollMains";
+import EnrollFooter from "@/components/enrollment/write/EnrollFooter";
+import EnrollMains from "@/components/enrollment/write/EnrollMains";
 
 export default function EnrollmentPage() {
   return (
