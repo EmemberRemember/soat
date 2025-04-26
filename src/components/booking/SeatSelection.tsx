@@ -190,7 +190,7 @@ export default function SeatSelection({
         const newSeat = {
           seatId,
           occupantId: userId,
-          occupiedAt: new Date().toLocaleString(),
+          occupiedAt: new Date().getTime(), // 밀리초 단위로 저장
           status: "processing" as const,
           reservationId,
         };
@@ -242,7 +242,7 @@ export default function SeatSelection({
             .map((e, index) => {
               return datesButton({
                 date: e,
-                highlight: selectedDay ? selectedDay === e : index === 0,
+                highlight: selectedDay ? selectedDay === e : false,
                 setSelectedDay,
               });
             })}
