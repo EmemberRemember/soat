@@ -1,0 +1,25 @@
+export interface bookResultType {
+  bookTitle: string;
+  bookingId: string;
+  performanceId: string;
+  performanceDate: string;
+  performanceTime: string;
+  performanceLocation: string;
+  selectedSeats: string[];
+  purchaserInfo: {
+    name: string;
+    phone: string;
+    email: string;
+  };
+  totalPrice: number;
+  paymentStatus: string;
+  sellerId: string;
+  purchasingInfo: {
+    method: "bankTransfer" | "creditCard" | "mobilePayment";
+    bankName: string;
+    accountNumber: string;
+    accountHolder: string;
+    amount: number;
+  };
+  dueDate: number;
+}

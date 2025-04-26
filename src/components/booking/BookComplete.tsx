@@ -5,8 +5,9 @@ import ButtonRow from "./ButtonRow";
 import QRCode from "react-qr-code";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import { LucideMessageCircleWarning } from "lucide-react";
+import { bookResultType } from "@/types/reservation";
 
-export default function BookComplete() {
+export default function BookComplete(reservationData: bookResultType) {
   return (
     <>
       <BookSection>
@@ -14,17 +15,47 @@ export default function BookComplete() {
         <p className="font-bold text-xl">예매가 완료되었습니다!</p>
         <dl>
           <dt className="font-bold">예매 번호</dt>
-          <dd className="mb-2">A32BC76G2FF45</dd>
+          <dd className="mb-2">{reservationData.bookingId}</dd>
           <dt className="font-bold">공연명</dt>
-          <dd className="mb-2">2025 주인님 단독 공연</dd>
+          <dd className="mb-2">{reservationData.bookTitle}</dd>
           <dt className="font-bold">공연 장소</dt>
-          <dd className="mb-2">인천광역시 어쩌구 멘토님 집</dd>
+          <dd className="mb-2">{reservationData.performanceLocation}</dd>
           <dt className="font-bold">관람 일시</dt>
-          <dd className="mb-2">2025년 1월 22일 오후 8시</dd>
+          <dd className="mb-2">
+            {new Date(reservationData.performanceDate).toLocaleDateString(
+              "ko-KR",
+              {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }
+            )}{" "}
+            {reservationData.performanceTime}
+          </dd>
           <dt className="font-bold">좌석번호</dt>
-          <dd className="mb-2">B4 / B5</dd>
+          <dd className="mb-2">
+            {reservationData.selectedSeats.map((seat) => {
+              return (
+                <span key={seat} className="mr-2">
+                  {seat}
+                </span>
+              );
+            })}
+          </dd>
           <dt className="font-bold">입금 기한</dt>
-          <dd className="mb-2">2025년 1월 21일 오후 11시 59분까지</dd>
+          {/*<dd className="mb-2">2025년 1월 21일 오후 11시 59분까지</dd>*/}
+          <dd className="mb-2">
+            {new Date(reservationData.dueDate)
+              .toLocaleTimeString("ko-KR", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+              })
+              .replace(":", "시 ")}
+            분까지
+          </dd>
         </dl>
       </BookSection>
       <BookSection>
@@ -35,10 +66,12 @@ export default function BookComplete() {
             value="https://example.com"
           />
           <ul className="font-bold">
-            <li>새마을금고</li>
-            <li>123-12-12345</li>
-            <li>예금주: 김지훈</li>
-            <li>18,000원</li>
+            <li>{reservationData.purchasingInfo.bankName}</li>
+            <li>{reservationData.purchasingInfo.accountNumber}</li>
+            <li>예금주: {reservationData.purchasingInfo.accountHolder}</li>
+            <li>
+              {reservationData.purchasingInfo.amount.toLocaleString("ko-KR")}원
+            </li>
           </ul>
           {/* 아래 버튼은 모바일에서만 보입니다. */}
           <Button className="col-span-2 ml-auto mr-auto">

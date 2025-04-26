@@ -4,9 +4,11 @@ export default function ButtonRow({
   className,
   setProcess,
   buttons,
+  bookCompleteHandler,
 }: {
   className?: string;
   setProcess: (process: string) => void;
+  bookCompleteHandler?: () => void;
   buttons: { label: string; process: string; highlight: boolean }[];
 }) {
   return (
@@ -16,7 +18,13 @@ export default function ButtonRow({
           <Button
             size="full"
             highlight={button.highlight}
-            onClick={() => setProcess(button.process)}
+            onClick={() => {
+              if (button.process === "bookComplete" && bookCompleteHandler) {
+                bookCompleteHandler();
+              } else {
+                setProcess(button.process);
+              }
+            }}
           >
             {button.label}
           </Button>
