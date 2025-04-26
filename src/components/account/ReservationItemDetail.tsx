@@ -1,3 +1,4 @@
+"use client"
 import React from "react";
 import { Button } from "../controls/Button";
 
@@ -15,18 +16,35 @@ function DetailDataLi({ label, data }: DetailDataProps) {
   );
 }
 
+ const handleCancelBooking = (e: React.MouseEvent<HTMLButtonElement>) => {
+console.log('예매 취소!');
+
+  }
+
 export default function ReservationItemDetail() {
   return (
     <>
       <section className="relative border-b-2">
         <h2 className="sm:text-xl md:text-2xl sm:font-bold">예매 내역</h2>
+        <ul className="absolute top-0 right-0 text-xs flex gap-2">
+          <li><Button
+          onClick={(e) => handleCancelBooking(e)}
+          className="font-normal py-[2.5px] py-4 sm:text-base sm:font-bold"
+        >
+          예매 취소
+        </Button>
+        </li>
+        <li>
         <Button
           highlight
           href="/demo/ticket"
-          className="absolute top-0 right-0 text-xs font-normal py-[2.5px] py-4 sm:text-base sm:font-bold"
+          className="font-normal py-[2.5px] py-4 sm:text-base sm:font-bold"
+          
         >
-          티켓 확인
+          QR 확인
         </Button>
+        </li>
+        </ul>
         <div className="flex items-center gap-6 my-4">
           <img
             src={`/imageUrl`}
