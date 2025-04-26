@@ -8,6 +8,7 @@ import PurchaseMethod from "./PurchaseMethod";
 import BookComplete from "./BookComplete";
 import type { TheaterLayoutData } from "@/components/seats/TheaterLayoutManager";
 import { PerformanceData } from "@/app/api/performance/route";
+import { SeatState } from "@/redux/slices/seatSlice";
 
 export default function BookMain({
   showId,
@@ -18,13 +19,12 @@ export default function BookMain({
 }) {
   const [process, setProcess] = useState("captcha");
   const [_captchaToken, setCaptchaToken] = useState("");
-  const [layoutData, setLayoutData] = useState({} as TheaterLayoutData);
+  const [layoutData, setLayoutData] = useState({} as SeatState);
   const [selectedSeats, setSelectedSeats] = useState<Set<string>>(new Set());
   const [selectedDay, setSelectedDay] = useState("");
   const [purchaserInfo, setPurchaserInfo] = useState({} as any);
 
   useEffect(() => {
-    // 테스트용 레이아웃 데이터
     setLayoutData(performanceData.seats);
   }, []);
 
