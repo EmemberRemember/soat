@@ -17,10 +17,14 @@ function datesButton({
   date,
   highlight,
   setSelectedDay,
+  selectedTime,
+  setSelectedTime,
 }: {
   date: string;
   highlight?: boolean;
   setSelectedDay: (date: string) => void;
+  selectedTime: string;
+  setSelectedTime: (time: string) => void;
 }) {
   return (
     <li key={date}>
@@ -43,6 +47,8 @@ export default function SeatSelection({
   setSelectedSeats,
   selectedDay,
   setSelectedDay,
+  selectedTime,
+  setSelectedTime,
   performanceId,
 }: {
   performanceDates: DailyPerformances;
@@ -52,6 +58,8 @@ export default function SeatSelection({
   setSelectedSeats: (selectedSeats: Set<string>) => void;
   selectedDay: string;
   setSelectedDay: (selectedDay: string) => void;
+  selectedTime: string;
+  setSelectedTime: (selectedTime: string) => void;
   performanceId: string;
 }) {
   // userId 상태는 TheaterSeatSelector에 전달하기 위해 유지할 수 있습니다.
@@ -76,7 +84,6 @@ export default function SeatSelection({
   }, []);
 
   const [occupiedSeats, setOccupiedSeats] = useState<OccupiedSeat[]>([]);
-  const [selectedTime, setSelectedTime] = useState<string>("");
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isUpdating, setIsUpdating] = useState<boolean>(false); // API 호출 중 상태
 
