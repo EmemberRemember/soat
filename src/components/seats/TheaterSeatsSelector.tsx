@@ -81,10 +81,20 @@ function TheaterSeatSelector({
       occupiedSeats.some(
         (seat) => seat.seatId === seatId && seat.occupantId === userId
       );
+    const notAvailable =
+      isOccupied &&
+      occupiedSeats.some(
+        (seat) => seat.status === "pending" || seat.status === "booked"
+      );
 
     if (isOccupied && !isMySeat) {
       return "bg-gray-300 text-gray-500 cursor-not-allowed";
     }
+
+    if (notAvailable) {
+      return "bg-gray-300 text-gray-500 cursor-not-allowed";
+    }
+
     if (isMySeat) {
       return "bg-flesh-500 text-white hover:bg-flesh-600 hover:text-white";
     }
@@ -96,15 +106,15 @@ function TheaterSeatSelector({
 
   // 좌석이 선택 가능한지 확인
   const isSeatDisabled = (seatId: string) => {
-    const isOccupied = occupiedSeats.some((seat) => seat.seatId === seatId);
-    const isMySeat =
+    const occupiedSeat = occupiedSeats.find((seat) => seat.seatId === seatId);
+    const isOccupied = !!occupiedSeat;
+    const isMySeat = isOccupied && occupiedSeat.occupantId === userId;
+    const isPendingOrBooked =
       isOccupied &&
-      occupiedSeats.some(
-        (seat) => seat.seatId === seatId && seat.occupantId === userId
-      );
+      (occupiedSeat.status === "pending" || occupiedSeat.status === "booked");
 
-    // 다른 사람이 점유한 좌석만 비활성화
-    return isOccupied && !isMySeat;
+    // 다른 사람이 점유했거나, 상태가 pending 또는 booked이면 비활성화
+    return (isOccupied && !isMySeat) || isPendingOrBooked;
   };
 
   return (
