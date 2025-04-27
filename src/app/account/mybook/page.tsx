@@ -17,7 +17,7 @@ export default function Page({
           <h2 className="my-[10px] sm:text-3xl sm:my-6 font-bold">
             {book === "total" ? "전체" : "지난"} 예매 내역
           </h2>
-          <ReservationListData isViewComplete={book !== "total"} />
+          {/* <ReservationListData data={} /> */}
         </section>
       </main>
       <Footer />
