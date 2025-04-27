@@ -1,6 +1,6 @@
 export interface bookResultType {
   bookTitle: string;
-  bookingId: string;
+  id: string;
   performanceId: string;
   performanceDate: string;
   performanceTime: string;
