@@ -26,6 +26,7 @@ export interface bookResultType {
 }
 
 export interface bookWithPerformance  extends bookResultType {
+  id?:string
   performanceDetails: {
     address: string;
     category: string;
