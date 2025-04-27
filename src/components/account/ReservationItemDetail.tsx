@@ -1,6 +1,8 @@
 "use client"
-import React from "react";
+import React, {useState, useEffect} from "react";
 import { Button } from "../controls/Button";
+import axios from "axios";
+import { bookWithPerformance } from "@/types/reservation";
 
 interface DetailDataProps {
   label: string;
@@ -21,9 +23,28 @@ console.log('예매 취소!');
 
   }
 
-export default function ReservationItemDetail() {
+export default function ReservationItemDetail({ bookId }: { bookId: string }) {
+  const [detailData, setDetailData] = useState<bookWithPerformance | null>(null);
+  
+
+  useEffect(()=>{
+    async function fetchDetailData() {
+      try {
+        const response = await axios.get(`/api/account/book/${bookId}`);
+        setDetailData(response.data.booking); 
+        console.log(response.data.booking);
+        
+      } catch (error) {
+        console.error("Error fetching booking details:", error);
+      }
+    }
+
+    fetchDetailData();
+  }, []);
+const paymentStatus = detailData?.paymentStatus === "pending" ? "미입금" : "결제 완료";
   return (
     <>
+     {detailData ? <>
       <section className="relative border-b-2">
         <h2 className="sm:text-xl md:text-2xl sm:font-bold">예매 내역</h2>
         <ul className="absolute top-0 right-0 text-xs flex gap-2">
@@ -47,17 +68,17 @@ export default function ReservationItemDetail() {
         </ul>
         <div className="flex items-center gap-6 my-4">
           <img
-            src={`/imageUrl`}
-            alt="공연 info"
+            src={detailData.performanceDetails.poster}
+            alt={detailData.performanceDetails.title + "포스터"}
             className={`bg-flesh-500 rounded-[10px] mb-1 w-full max-w-[90px] sm:max-w-[320px] aspect-[90/130] object-cover`}
           />
           <ul className="text-xs w-full sm:text-base md:text-xl sm:px-6">
-            <DetailDataLi label="예매번호" data="AB45ASDQ1E37" />
-            <DetailDataLi label="공연명" data="노는게 제일 조아" />
+            <DetailDataLi label="예매번호" data={detailData.bookingId} />
+            <DetailDataLi label="공연명" data={detailData.performanceDetails.title} />
             <DetailDataLi label="연령 제한" data="전체 관람가" />
-            <DetailDataLi label="공연 장소" data="뽀로로가 살던 하얀 마을" />
-            <DetailDataLi label="공연 일시" data="2025.06.03 18시" />
-            <DetailDataLi label="좌석 번호" data="B4 / B5" />
+            <DetailDataLi label="공연 장소" data={detailData.performanceDetails.address} />
+            <DetailDataLi label="공연 일시" data={detailData.performanceDate +' '+ detailData.performanceTime} />
+            <DetailDataLi label="좌석 번호" data={detailData.selectedSeats.join(", ")} />
           </ul>
         </div>
         <h3 className="text-xs sm:font-bold sm:text-base md:text-lg">
@@ -90,13 +111,22 @@ export default function ReservationItemDetail() {
         <ul className="text-xs sm:text-base md:text-xl">
           <DetailDataLi label="결제 번호" data="20250403001AQTFZ003" />
           <DetailDataLi label="결제 수단" data="무통장 입금" />
-          <DetailDataLi label="결제 확인" data="입금 완료 / 미입금" />
-          <DetailDataLi label="송금 하기" data="2025.06.03" />
+          <DetailDataLi label="결제 확인" data={paymentStatus} />
+          <DetailDataLi label="송금 기한" data= {new Date(detailData.dueDate)
+              .toLocaleTimeString("ko-KR", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
+              })
+              .replace(":", "시 ")+'분까지'} />
         </ul>
         <p className="text-[10px] text-flesh-500 sm:text-base md:text-lg">
           * 입금기한 내에 입금이 되지 않을 경우 티켓이 취소되니 주의바랍니다.
         </p>
       </section>
+     </> : <p>Loading</p> }
     </>
   );
 }
