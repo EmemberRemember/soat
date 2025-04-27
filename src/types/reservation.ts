@@ -1,6 +1,6 @@
 export interface bookResultType {
   bookTitle: string;
-  id: string;
+  bookingId: string;
   performanceId: string;
   performanceDate: string;
   performanceTime: string;
@@ -10,6 +10,7 @@ export interface bookResultType {
     name: string;
     phone: string;
     email: string;
+    userId : string;
   };
   totalPrice: number;
   paymentStatus: string;
