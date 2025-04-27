@@ -64,6 +64,8 @@ export default function SeatSelection({
 }) {
   const [userId, setUserId] = useState<string>("");
 
+  const [myBookedSeats, setMyBookedSeats] = useState<OccupiedSeat[]>([]);
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
@@ -132,6 +134,15 @@ export default function SeatSelection({
 
         setOccupiedSeats(currentOccupiedSeats); // 전체 점유 좌석 상태 업데이트
         setSelectedSeats(userProcessingSeats); // 사용자의 processing 좌석으로 selectedSeats 업데이트
+
+        // 내가 예매 완료한 좌석 정보도 업데이트
+        const bookedSeats = currentOccupiedSeats.filter(
+          (seat) =>
+            seat.occupantId === userId &&
+            (seat.status === "booked" || seat.status === "pending")
+        );
+        setMyBookedSeats(bookedSeats);
+
         setIsLoading(false);
       },
       (error) => {
@@ -171,8 +182,13 @@ export default function SeatSelection({
 
     const action = isCurrentlySelected ? "deselect" : "select";
 
-    if (action === "select" && selectedSeats.size >= maxSelectableSeats) {
-      alert(`최대 ${maxSelectableSeats}개의 좌석만 선택할 수 있습니다.`);
+    if (
+      action === "select" &&
+      selectedSeats.size >= maxSelectableSeats - myBookedSeats.length
+    ) {
+      alert(
+        `최대 ${maxSelectableSeats - myBookedSeats.length}개의 좌석만 선택할 수 있습니다.`
+      );
       return;
     }
 
@@ -287,6 +303,7 @@ export default function SeatSelection({
                 onSeatToggle={handleSeatToggle}
                 userId={userId}
                 disabled={isUpdating}
+                myBookedSeats={myBookedSeats.length}
               />
             </div>
           )

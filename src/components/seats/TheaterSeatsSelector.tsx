@@ -13,6 +13,7 @@ export interface TheaterSeatSelectorProps {
   onSeatToggle: (seatId: string) => void;
   userId?: string; // 현재 사용자 ID
   disabled?: boolean; // 전체 컴포넌트 비활성화 여부
+  myBookedSeats?: number;
 }
 
 // 좌석 상태에 따른 스타일 정의 (가독성을 위해 상수로 분리)
@@ -30,6 +31,7 @@ function TheaterSeatSelector({
   onSeatToggle,
   userId,
   disabled: componentDisabled, // prop 이름 충돌 방지 위해 변경
+  myBookedSeats = 0,
 }: TheaterSeatSelectorProps): JSX.Element {
   // 특정 열이 모든 행에서 통로인지 확인하는 함수 (기존 코드 유지)
   const isColumnAllAisles = useCallback(
@@ -269,7 +271,8 @@ function TheaterSeatSelector({
                 ))}
             </div>
             <div className="text-sm text-gray-600">
-              선택된 좌석 수: {selectedSeats.size} / {maxSelectableSeats}개
+              선택된 좌석 수: {selectedSeats.size} /{" "}
+              {maxSelectableSeats - myBookedSeats}개
             </div>
           </>
         ) : (
