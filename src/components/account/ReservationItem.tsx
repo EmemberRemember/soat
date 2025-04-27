@@ -41,7 +41,7 @@ function ReservationLi({
 
   return (
     <li  className="size-full w-[25vw] sm:w-[18vw]">
-      <Link href={`/account/mybook/${data.bookingId}`}>
+      <Link href={`/account/mybook/${data.id}`}>
         <article>
           <Card className="relative hover:shadow-lg transition-all duration-200 ">
             <CardContent className="p-0">
