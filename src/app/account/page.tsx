@@ -7,7 +7,7 @@ export default function page() {
     <>
       <Header />
       <main
-        className={`grid relative m-auto w-full py-5 px-[30px] sm:grid-flow-col sm:grid-rows-2 sm:gap-4 justify-center`}
+        className={`grid w-full py-5 px-6 sm:grid-flow-col sm:grid-rows-1 justify-center`}
       >
         <UserInfo />
         <MyReservation />
