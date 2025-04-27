@@ -23,3 +23,14 @@ export interface bookResultType {
   };
   dueDate: number;
 }
+
+export interface bookWithPerformance  extends bookResultType {
+  performanceDetails: {
+    address: string;
+    category: string;
+    detailAddress: string;
+    poster : string;
+    sellerTeam : string;
+    title : string;
+  };
+}
