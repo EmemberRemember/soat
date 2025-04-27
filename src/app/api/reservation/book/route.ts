@@ -4,7 +4,8 @@ import { adminDb } from "@/app/api/firebaseAdmin";
 import { FieldValue } from "firebase-admin/firestore";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/auth/authOptions";
-import type { PerformanceData } from "@/app/api/performance/route"; // 기존 타입 재사용
+import type { PerformanceData } from "@/app/api/performance/route";
+import NextCrypto from "next-crypto"; // 기존 타입 재사용
 
 // Firestore에 저장될 좌석 정보 타입 (update-seat와 유사하게 정의)
 interface OccupiedSeatData {
@@ -40,6 +41,15 @@ interface BookingRequestBody {
 export async function POST(request: NextRequest) {
   let session;
   let userId: string;
+
+  const SECRET_KEY = process.env.NEXT_CRYPTO_SECRET_KEY;
+
+  if (!SECRET_KEY) {
+    throw new Error("NEXT_CRYPTO_SECRET_KEY 환경 변수가 설정되지 않았습니다.");
+  }
+
+  const crypto = new NextCrypto(SECRET_KEY);
+
   try {
     session = await getServerSession(authOptions);
     if (!session || !session.user || !session.user.id) {
@@ -210,6 +220,33 @@ export async function POST(request: NextRequest) {
         [`performances.${selectedDay}`]: updatedDayPerformances,
       });
 
+      // 6. 예매 완료 후 판매자의 계좌 정보 로드
+      const sellerDoc = await adminDb
+        .collection("sellerUsers")
+        .doc(performanceData.sellerId)
+        .get();
+
+      if (!sellerDoc.exists) {
+        throw new Error("판매자 정보를 찾을 수 없습니다.");
+      }
+
+      const sellerData = sellerDoc.data();
+
+      if (
+        !sellerData ||
+        !sellerData.bankAccount ||
+        !sellerData.bankAccount.accountNum ||
+        !sellerData.bankAccount.depositor ||
+        !sellerData.bankAccount.bankName
+      ) {
+        throw new Error("판매자 계좌 정보가 올바르지 않습니다.");
+      }
+
+      // 계좌 정보 복호화
+      const decryptedAccountNum = await crypto.decrypt(
+        sellerData.bankAccount.accountNum
+      );
+
       // 트랜잭션 성공 시 반환할 값 (예: 생성된 booking ID)
       return {
         bookTitle: performanceData.title,
@@ -226,9 +263,9 @@ export async function POST(request: NextRequest) {
         // 예시 결제 정보
         purchasingInfo: {
           method: "bankTransfer", // 예시: 무통장 입금
-          bankName: "우리은행",
-          accountNumber: "123-456-789012",
-          accountHolder: "홍길동",
+          bankName: sellerData.bankAccount.bankName,
+          accountNumber: decryptedAccountNum,
+          accountHolder: sellerData.bankAccount.depositor,
           amount: totalPrice,
         },
         dueDate: new Date(Date.now() + 72 * 60 * 60 * 1000).getTime(),
