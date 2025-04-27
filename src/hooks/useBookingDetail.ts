@@ -22,7 +22,7 @@ export default function useBookingDetail(){
       const now = new Date();
       setBookingData(data)
       setCompletedBookingData(data.filter((bookData : bookWithPerformance)=>{
-        return now < new Date(`${bookData.performanceDate}T${bookData.performanceTime}:00`)
+        return now > new Date(`${bookData.performanceDate}T${bookData.performanceTime}:00`)
       }))     
       return data;
     } catch (error) {

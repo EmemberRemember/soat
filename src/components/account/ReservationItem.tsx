@@ -37,7 +37,7 @@ export default function ReservationListData({
 function ReservationLi({
  data
 }: {data : bookWithPerformance}) {
-  const isViewComplete = new Date() < new Date(`${data.performanceDate}T${data.performanceTime}:00`);
+  const isViewComplete = new Date() > new Date(`${data.performanceDate}T${data.performanceTime}:00`);
 
   return (
     <li  className="size-full w-[25vw] sm:w-[18vw]">
