@@ -116,7 +116,7 @@ function TheaterSeatSelector({
         return false;
       }
       // 3-2. 최대 선택 가능 좌석 수에 도달했고, 이 좌석이 선택되지 않았다면 비활성화 (추가 선택 불가)
-      if (selectedSeats.size >= maxSelectableSeats) {
+      if (selectedSeats.size >= maxSelectableSeats - myBookedSeats) {
         return true;
       }
 
