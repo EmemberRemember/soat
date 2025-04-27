@@ -21,6 +21,9 @@ export default function ButtonRow({
             onClick={() => {
               if (button.process === "bookComplete" && bookCompleteHandler) {
                 bookCompleteHandler();
+              }
+              if (button.process === "close") {
+                window.close();
               } else {
                 setProcess(button.process);
               }
