@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function UserInfo() {
   return (
-    <section className="sm:row-span-2 sm:flex sm:flex-col sm:border-r-2 sm:pr-6 w-full min-w-[290px] sm:min-w-[260px]">
+    <section className="sm:row-span-2 sm:flex sm:flex-col w-full sm:max-w-80">
       <h2 className="font-bold text-sm sm:text-3xl sm:my-6">회원 정보</h2>
       <div className="relative">
         <UserInfoItem />
