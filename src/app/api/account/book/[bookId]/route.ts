@@ -6,11 +6,11 @@ import { bookWithPerformance } from "@/types/reservation";
 import { PerformanceDataWithStatus } from "@/components/manager/Performance";
 
 interface PageParams {
-    params: {
-      bookId: string;
-    };
-  }
-export async function GET(request : NextResponse, { params } : PageParams) {
+  params: {
+    bookId: string;
+  };
+}
+export async function GET(request: NextResponse, { params }: PageParams) {
   try {
     const session = await getServerSession(authOptions);
     const { bookId } = params;
@@ -39,7 +39,7 @@ export async function GET(request : NextResponse, { params } : PageParams) {
       bookingId: bookingDoc.id,
       ...bookingDoc.data(),
     } as bookWithPerformance;
-    
+
     // 예매 정보의 소유자 확인 (보안)
     if (bookingData.purchaserInfo.userId !== userId) {
       return NextResponse.json(
@@ -55,10 +55,11 @@ export async function GET(request : NextResponse, { params } : PageParams) {
         .collection("performances")
         .doc(bookingData.performanceId)
         .get();
-      
+
       if (performanceDoc.exists) {
-        const performanceData = performanceDoc.data() as PerformanceDataWithStatus;
-        
+        const performanceData =
+          performanceDoc.data() as PerformanceDataWithStatus;
+
         performanceDetails = {
           id: performanceDoc.id,
           title: performanceData.title,
@@ -66,7 +67,7 @@ export async function GET(request : NextResponse, { params } : PageParams) {
           detailAddress: performanceData.detailAddress,
           poster: performanceData.poster.url,
           category: performanceData.category,
-          sellerTeam: performanceData.sellerTeam
+          sellerTeam: performanceData.sellerTeam,
         };
       }
     }
@@ -74,7 +75,7 @@ export async function GET(request : NextResponse, { params } : PageParams) {
     // 예매 정보와 공연 정보 병합
     const enrichedBooking = {
       ...bookingData,
-      performanceDetails
+      performanceDetails,
     };
 
     return NextResponse.json({ booking: enrichedBooking });

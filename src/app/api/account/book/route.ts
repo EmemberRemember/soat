@@ -28,20 +28,22 @@ export async function GET() {
     }
 
     // 예매 데이터 배열로 변환
-    const reservations = reservationsSnapshot.docs.map(doc => ({
+    const reservations = reservationsSnapshot.docs.map((doc) => ({
       id: doc.id,
-      ...(doc.data() as { performanceId?: string })
+      ...(doc.data() as { performanceId?: string }),
     }));
 
-
     // 중복 제거한 performanceIds 추출
-    const performanceIds : string[] = [];
-    reservations.forEach(booking => {
-      if (booking.performanceId && !performanceIds.includes(booking.performanceId)) {
+    const performanceIds: string[] = [];
+    reservations.forEach((booking) => {
+      if (
+        booking.performanceId &&
+        !performanceIds.includes(booking.performanceId)
+      ) {
         performanceIds.push(booking.performanceId);
       }
     });
-    
+
     // 공연 정보 일괄 조회
     const performancesData = [];
     for (const perfId of performanceIds) {
@@ -49,30 +51,34 @@ export async function GET() {
       if (performanceDoc.exists) {
         performancesData.push({
           id: performanceDoc.id,
-          ...performanceDoc.data()
+          ...performanceDoc.data(),
         });
       }
     }
 
     // 공연 정보를 ID를 키로 하는 객체로 변환
     const performancesMap: { [key: string]: any } = {};
-    performancesData.forEach(perf => {
+    performancesData.forEach((perf) => {
       performancesMap[perf.id] = perf;
     });
 
     // 예매 정보에 공연 정보 병합
-    const enrichedReservations = reservations.map(booking => {
-      const performance = booking.performanceId ? performancesMap[booking.performanceId] : null;
+    const enrichedReservations = reservations.map((booking) => {
+      const performance = booking.performanceId
+        ? performancesMap[booking.performanceId]
+        : null;
       return {
         ...booking,
-        performanceDetails: performance ? {
-          title: performance.title,
-          address: performance.address,
-          detailAddress: performance.detailAddress,
-          poster: performance.poster.url,
-          category: performance.category,
-          sellerTeam: performance.sellerTeam
-        } : null
+        performanceDetails: performance
+          ? {
+              title: performance.title,
+              address: performance.address,
+              detailAddress: performance.detailAddress,
+              poster: performance.poster.url,
+              category: performance.category,
+              sellerTeam: performance.sellerTeam,
+            }
+          : null,
       };
     });
 
