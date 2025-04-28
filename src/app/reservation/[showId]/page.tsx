@@ -37,9 +37,12 @@ export default async function ReservationPopup({
     }
 
     const today = new Date().toLocaleString();
-
-    const bookingStartDate = showData.bookingStartDate;
-    const bookingEndDate = showData.bookingEndDate;
+    
+    /* bookingStartdate 와 endDate가 단순 스트링 값으로 올바른 비교가 되지 않아서
+    startDate의 경우 시작날짜 00시로 종료날짜는 자정으로 비교하였습니다. 
+    시작날짜 27일 : 27일 00시부터 종료날짜28일 29일 00시까지*/
+    const bookingStartDate = new Date(showData.bookingStartDate).toLocaleString(); 
+    const bookingEndDate = (new Date(showData.bookingEndDate).getDate()+1).toLocaleString();
 
     if (today < bookingStartDate || today > bookingEndDate) {
       return (
