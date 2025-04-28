@@ -9,7 +9,18 @@ interface DetailDataProps {
   data: string;
 }
 
-function DetailDataLi({ label, data }: DetailDataProps) {
+function BookingDataLi({ label, data }: DetailDataProps) {
+  return (
+    <li className="flex gap-2 mb-1">
+      <p className="flex-1 whitespace-nowrap font-bold text-flesh-500">
+        {label}
+      </p>
+      <span className="flex-[3] sm:flex-[2]">{data}</span>
+    </li>
+  );
+}
+
+function PaymentDataLi({ label, data }: DetailDataProps) {
   return (
     <li className="flex gap-2 mb-1 whitespace-nowrap">
       <p className="flex-[1] font-bold text-flesh-500">{label}</p>
@@ -71,20 +82,20 @@ export default function ReservationItemDetail({ bookId }: { bookId: string }) {
               <img
                 src={detailData.performanceDetails.poster}
                 alt={detailData.performanceDetails.title + "포스터"}
-                className={`bg-flesh-500 rounded-[10px] mb-1 w-full max-w-[90px] sm:max-w-[320px] aspect-[90/130] object-cover`}
+                className={`bg-flesh-500 rounded-[10px] mb-1 aspect-[90/130] object-cover w-full max-w-[90px] sm:w-[45%] sm:max-w-full  `}
               />
-              <ul className="text-xs w-full sm:text-base md:text-xl sm:px-6">
-                <DetailDataLi label="예매번호" data={detailData.bookingId} />
-                <DetailDataLi
+              <ul className="text-xs w-full sm:text-base md:text-xl ">
+                <BookingDataLi label="예매번호" data={detailData.bookingId} />
+                <BookingDataLi
                   label="공연명"
                   data={detailData.performanceDetails.title}
                 />
-                <DetailDataLi label="연령 제한" data="전체 관람가" />
-                <DetailDataLi
+                <BookingDataLi label="연령 제한" data="전체 관람가" />
+                <BookingDataLi
                   label="공연 장소"
                   data={detailData.performanceDetails.address}
                 />
-                <DetailDataLi
+                <BookingDataLi
                   label="공연 일시"
                   data={
                     detailData.performanceDate +
@@ -92,7 +103,7 @@ export default function ReservationItemDetail({ bookId }: { bookId: string }) {
                     detailData.performanceTime
                   }
                 />
-                <DetailDataLi
+                <BookingDataLi
                   label="좌석 번호"
                   data={detailData.selectedSeats.join(", ")}
                 />
@@ -132,10 +143,10 @@ export default function ReservationItemDetail({ bookId }: { bookId: string }) {
               결제 내역
             </h2>
             <ul className="text-xs sm:text-base md:text-xl">
-              <DetailDataLi label="결제 번호" data="20250403001AQTFZ003" />
-              <DetailDataLi label="결제 수단" data="무통장 입금" />
-              <DetailDataLi label="결제 확인" data={paymentStatus} />
-              <DetailDataLi
+              <PaymentDataLi label="결제 번호" data="20250403001AQTFZ003" />
+              <PaymentDataLi label="결제 수단" data="무통장 입금" />
+              <PaymentDataLi label="결제 확인" data={paymentStatus} />
+              <PaymentDataLi
                 label="송금 기한"
                 data={
                   new Date(detailData.dueDate)
