@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/auth/authOptions";
 import { adminDb } from "../../../firebaseAdmin";
@@ -11,7 +11,7 @@ interface PageParams {
     bookId: string;
   };
 }
-export async function GET(request: NextResponse, { params }: PageParams) {
+export async function GET(request: NextRequest, { params }: PageParams) {
   try {
     const session = await getServerSession(authOptions);
     const { bookId } = params;
@@ -89,7 +89,7 @@ export async function GET(request: NextResponse, { params }: PageParams) {
   }
 }
 
-export async function DELETE(request: NextResponse, { params }: PageParams) {
+export async function DELETE(request: NextRequest, { params }: PageParams) {
   try {
     const session = await getServerSession(authOptions);
     const { bookId } = params;
