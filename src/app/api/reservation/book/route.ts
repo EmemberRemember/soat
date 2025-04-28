@@ -166,6 +166,8 @@ export async function POST(request: NextRequest) {
         occupiedSeats.map((seat) => [seat.seatId, seat])
       );
 
+      let reservationId;
+
       for (const seatId of selectedSeats) {
         const seat = updatedOccupiedSeatsMap.get(seatId);
 
@@ -184,6 +186,8 @@ export async function POST(request: NextRequest) {
         }
         // 상태를 'pending'으로 변경
         seat.status = "pending";
+
+        reservationId = seat.reservationId;
       }
 
       // Map을 다시 배열로 변환하여 업데이트할 데이터 준비
@@ -192,7 +196,7 @@ export async function POST(request: NextRequest) {
       );
 
       // 4. bookings 컬렉션에 새 예매 문서 생성 (트랜잭션 내에서)
-      const newBookingRef = bookingsRef.doc(); // 자동 ID 생성
+      const newBookingRef = bookingsRef.doc(`${reservationId}`);
       transaction.set(newBookingRef, {
         userId,
         performanceId,
