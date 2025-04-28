@@ -33,7 +33,7 @@ function ReservationList({ data, isPastData }: { data: bookWithPerformance[], is
         size="small"
         highlight
         className="rounded-[30px] py-[2.5px] px-[13px] absolute top-2 right-0 sm:right-6 2xl:right-0 sm:text-base sm:font-bold sm:top-6"
-        href={isPastData ? "/account/mybook?book=total" : "/account/mybook?book=past"}
+        href={isPastData ? "/account/mybook?book=past" : "/account/mybook?book=total"}
       >
         더보기
       </Button>
