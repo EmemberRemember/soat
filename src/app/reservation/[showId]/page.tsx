@@ -36,13 +36,25 @@ export default async function ReservationPopup({
       throw new Error("공연 정보를 불러올 수 없습니다.");
     }
 
-    const today = new Date().toLocaleString();
-    
+    // 오늘 날짜를 yyyy-mm-dd로
+    const today = new Date().toISOString().split("T")[0]; // 오늘 날짜
+
     /* bookingStartdate 와 endDate가 단순 스트링 값으로 올바른 비교가 되지 않아서
     startDate의 경우 시작날짜 00시로 종료날짜는 자정으로 비교하였습니다. 
     시작날짜 27일 : 27일 00시부터 종료날짜28일 29일 00시까지*/
-    const bookingStartDate = new Date(showData.bookingStartDate).toLocaleString(); 
-    const bookingEndDate = (new Date(showData.bookingEndDate).getDate()+1).toLocaleString();
+
+    const bookingStartDate = showData.bookingStartDate;
+    const bookingEndDateString = showData.bookingEndDate;
+
+    const bookingEndDateNumber = new Date().setFullYear(
+      parseInt(bookingEndDateString.split("-")[0]),
+      parseInt(bookingEndDateString.split("-")[1]) - 1,
+      parseInt(bookingEndDateString.split("-")[2]) + 1
+    );
+
+    const bookingEndDate = new Date(bookingEndDateNumber)
+      .toISOString()
+      .split("T")[0];
 
     if (today < bookingStartDate || today > bookingEndDate) {
       return (
