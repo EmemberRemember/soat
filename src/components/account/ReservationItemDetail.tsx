@@ -4,6 +4,8 @@ import { Button } from "../controls/Button";
 import axios from "axios";
 import { bookWithPerformance } from "@/types/reservation";
 import Loading from "../Loading";
+import { useRouter } from "next/navigation";
+
 interface DetailDataProps {
   label: string;
   data: string;
@@ -29,15 +31,11 @@ function PaymentDataLi({ label, data }: DetailDataProps) {
   );
 }
 
-const handleCancelBooking = (e: React.MouseEvent<HTMLButtonElement>) => {
-  console.log("예매 취소!");
-};
-
 export default function ReservationItemDetail({ bookId }: { bookId: string }) {
   const [detailData, setDetailData] = useState<bookWithPerformance | null>(
     null
   );
-
+  const router = useRouter();
   useEffect(() => {
     async function fetchDetailData() {
       try {
@@ -51,6 +49,17 @@ export default function ReservationItemDetail({ bookId }: { bookId: string }) {
 
     fetchDetailData();
   }, []);
+
+  const handleCancelBooking = async (bookId: string) => {
+    try {
+      const response = await axios.delete(`/api/account/book/${bookId}`);
+      alert("예매 취소가 완료되었습니다. 마이페이지로 이동합니다.");
+      router.push("/account");
+    } catch (error) {
+      console.error("Error fetching booking details:", error);
+    }
+  };
+
   const paymentStatus =
     detailData?.paymentStatus === "pending" ? "미입금" : "결제 완료";
   const isPerformanceEnded =
@@ -64,8 +73,8 @@ export default function ReservationItemDetail({ bookId }: { bookId: string }) {
             <ul className="absolute top-0 right-0 text-xs flex gap-2">
               <li>
                 <Button
-                  onClick={(e) => handleCancelBooking(e)}
-                  className="font-normal py-[2.5px] py-4 sm:text-base sm:font-bold"
+                  onClick={(e) => handleCancelBooking(bookId)}
+                  className="font-normal py-[2.5px] sm:text-base sm:font-bold"
                   disabled={isPerformanceEnded as boolean}
                 >
                   예매 취소
@@ -75,7 +84,7 @@ export default function ReservationItemDetail({ bookId }: { bookId: string }) {
                 <Button
                   highlight
                   href="/demo/ticket"
-                  className="font-normal py-[2.5px] py-4 sm:text-base sm:font-bold"
+                  className="font-normal py-[2.5px] sm:text-base sm:font-bold"
                 >
                   QR 확인
                 </Button>
