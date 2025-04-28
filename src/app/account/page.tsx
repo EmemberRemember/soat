@@ -7,9 +7,10 @@ export default function page() {
     <>
       <Header />
       <main
-        className={`grid relative m-auto w-full py-5 px-[30px] sm:grid-flow-col sm:grid-rows-2 sm:gap-4 justify-center`}
+        className={`flex flex-col sm:flex-row w-full py-5 px-6 justify-center`}
       >
         <UserInfo />
+        <div className="sm:border-r-2 mx-6"></div>
         <MyReservation />
       </main>
     </>
