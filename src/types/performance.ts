@@ -7,7 +7,7 @@ export type OccupiedSeat = {
 };
 
 export interface PerformanceTime {
-  occupiedSeats: OccupiedSeat[];
+  occupiedSeats?: OccupiedSeat[];
   time: string;
   casting: string[];
 }

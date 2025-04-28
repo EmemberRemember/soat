@@ -3,6 +3,7 @@ import React, { useMemo, useState } from "react";
 import SeatLayout from "../seats/SeatLayout";
 import { RowConfigs } from "@/types/seat";
 import { PerformanceTime } from "@/types/performance";
+import { PerformanceData } from "@/app/api/performance/route";
 
 interface PerformanceManagerDetailProps {
   rows: number;
@@ -10,13 +11,22 @@ interface PerformanceManagerDetailProps {
   rowsConfigs: RowConfigs;
   isAllAisle: number[];
   performanceTimes: Record<string, PerformanceTime[]>;
+  performanceData: PerformanceData;
 }
+
+interface SelectedPerformanceTime extends PerformanceTime {
+  label: string;
+  value: string;
+  date: string;
+}
+
 export default function PerformanceManagerDetail({
   rows,
   totalSeats,
   rowsConfigs,
   isAllAisle,
   performanceTimes,
+  performanceData,
 }: PerformanceManagerDetailProps) {
   const selectOptions = useMemo(() => {
     return Object.entries(performanceTimes)
@@ -26,7 +36,7 @@ export default function PerformanceManagerDetail({
           value: `${date}_${idx}`,
           date,
           time: item.time,
-          occupiedSeats: item.occupiedSeats,
+          occupiedSeats: item?.occupiedSeats,
           casting: item.casting,
         }))
       )
@@ -37,17 +47,17 @@ export default function PerformanceManagerDetail({
       });
   }, [performanceTimes]);
 
-  const [selected, setSelected] = useState(selectOptions[0]);
+  const [selected, setSelected] = useState<SelectedPerformanceTime>(selectOptions[0]);
   const selectedOccupiedSeat = selected?.occupiedSeats;
+
   const handleSelectChange = (value: string) => {
     const selectedOption = selectOptions.find((opt) => opt.value === value);
     if (selectedOption) {
       setSelected(selectedOption);
-      // 필요하면 occupiedSeats를 상위로 전달
-      //      setOccupiedSeats(selectedOption.occupiedSeats);
     }
   };
-  console.log("selected", selectedOccupiedSeat);
+  
+  console.log(selected, 'selected')
   return (
     <>
       <select
@@ -61,11 +71,14 @@ export default function PerformanceManagerDetail({
         ))}
       </select>
       <SeatLayout
+        performanceData={performanceData}
         occupiedSeat={selectedOccupiedSeat}
         rows={rows}
         rowsConfigs={rowsConfigs}
         totalSeats={totalSeats}
         isAllAisle={isAllAisle}
+        performanceTime={selected.time}
+        performanceDate={selected.date}
       />
     </>
   );

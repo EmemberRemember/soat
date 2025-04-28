@@ -1,3 +1,4 @@
+import { PerformanceData } from "@/app/api/performance/route";
 import PerformanceManagerDetail from "@/components/manager/PerformanceManagerDetail";
 import axios from "axios";
 import React from "react";
@@ -8,7 +9,7 @@ interface myPerformanceProps {
 export default async function page({ params }: myPerformanceProps) {
   const API_URL = process.env.NEXTAUTH_URL;
   const res = await axios.get(`${API_URL}/api/performance/${params.performId}`);
-  const performanceData = res.data.performance;
+  const performanceData = res.data.performance as PerformanceData;
   const performanceTitle = performanceData.title;
   const performanceTimes = performanceData.performances;
   const seatData = performanceData.seats;
@@ -18,11 +19,12 @@ export default async function page({ params }: myPerformanceProps) {
       <section className="m-auto w-full max-w-5xl p-4 border-2 border-gray-300 rounded-lg shadow-md bg-white flex flex-col space-y-4 overflow-auto">
         <h2 className="font-bold">{performanceTitle}</h2>
         <PerformanceManagerDetail
-          performanceTimes={performanceTimes}
+          performanceData={performanceData}
           rows={seatData.rows}
           rowsConfigs={seatData.rowsConfigs}
-          totalSeats={seatData.totalSeat}
+          totalSeats={seatData.totalSeats}
           isAllAisle={seatData.isAllAisle}
+          performanceTimes={performanceTimes}
         />
       </section>
     </main>

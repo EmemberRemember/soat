@@ -9,7 +9,7 @@ interface SeatRowProps {
   rowConfigs: RowConfig;
   isAllAisle: number[];
   onClickSeatItem: (seatLabel: string, seatNumber: number) => void;
-  occupiedSeat: OccupiedSeat[];
+  occupiedSeat?: OccupiedSeat[];
 }
 
 export default function SeatRow({
