@@ -5,6 +5,7 @@ import { adminDb } from "@/app/api/firebaseAdmin";
 // import { FieldValue } from "firebase-admin/firestore";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/auth/authOptions";
+import { nanoid } from "nanoid";
 
 interface UpdateSeatRequestBody {
   performanceId: string;
@@ -138,7 +139,7 @@ export async function POST(
           );
         }
 
-        const reservationId = crypto.randomUUID();
+        const reservationId = nanoid(10);
         const newSeat: OccupiedSeatData = {
           seatId,
           occupantId: userId,
