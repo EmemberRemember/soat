@@ -11,12 +11,16 @@ import { TicketPlus } from "lucide-react";
 interface CarouselDataProps {
   label: string;
   data: PerformanceDataWithStatus[];
+  isLoading: boolean;
 }
 
-export default function EmblaCarousel({ label, data }: CarouselDataProps) {
+export default function EmblaCarousel({
+  label,
+  data,
+  isLoading,
+}: CarouselDataProps) {
   const [clickedSlide, setClickedSlide] = useState<number | null>(null); // 클릭한 슬라이드 관리
   const carouselRef = useRef<HTMLDivElement | null>(null); // carouselRef의 타입을 명시
-  const [isLoading, setIsLoading] = useState(true);
 
   const handleClick = (num: number) => {
     // 클릭한 슬라이드가 이미 선택된 슬라이드라면 닫기, 아니면 열기
@@ -32,10 +36,6 @@ export default function EmblaCarousel({ label, data }: CarouselDataProps) {
   });
 
   const [currentIndex, setCurrentIndex] = useState(0);
-
-  useEffect(() => {
-    data && setIsLoading(false);
-  }, []);
 
   useEffect(() => {
     if (!emblaApi) return;
