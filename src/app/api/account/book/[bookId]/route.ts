@@ -124,10 +124,25 @@ export async function DELETE(request: NextRequest, { params }: PageParams) {
       );
     }
 
+    // 공연 일자와 오늘 날짜와 동일하거나 많은 경우 예매 취소 불가
+    const performanceDate = bookingData.performanceDate; // "2025-03-18" 형식
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const performanceDateTime = new Date(
+      `${performanceDate}T${bookingData.performanceTime}`
+    );
+    console.log(performanceDateTime);
+
+    if (performanceDateTime < today) {
+      return NextResponse.json(
+        { error: "예매 취소가 불가합니다." },
+        { status: 403 }
+      );
+    }
+
     // 2. 필요한 데이터 추출
     const selectedSeats = bookingData.selectedSeats || [];
     const performanceId = bookingData.performanceId;
-    const performanceDate = bookingData.performanceDate; // "2025-03-18" 형식
 
     // 3. 트랜잭션 시작 - 예매 기록 삭제 및 좌석 정보 업데이트
     await adminDb.runTransaction(async (transaction) => {
