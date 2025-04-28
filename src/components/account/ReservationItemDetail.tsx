@@ -53,6 +53,8 @@ export default function ReservationItemDetail({ bookId }: { bookId: string }) {
   }, []);
   const paymentStatus =
     detailData?.paymentStatus === "pending" ? "미입금" : "결제 완료";
+  const isPerformanceEnded =
+    detailData && new Date(detailData.performanceDate) < new Date();
   return (
     <>
       {detailData ? (
@@ -64,6 +66,7 @@ export default function ReservationItemDetail({ bookId }: { bookId: string }) {
                 <Button
                   onClick={(e) => handleCancelBooking(e)}
                   className="font-normal py-[2.5px] py-4 sm:text-base sm:font-bold"
+                  disabled={isPerformanceEnded as boolean}
                 >
                   예매 취소
                 </Button>
