@@ -13,7 +13,7 @@ import { bookWithPerformance } from "@/types/reservation";
 export default function Ticket(data: bookWithPerformance) {
   return (
     <article className="relative bg-white rounded-xl overflow-hidden shadow-xl border border-gray-200 flex flex-col justify-center items-center">
-      <div className="relative p-6 pb-4">
+      <div className="relative p-6 pb-0 w-full max-w-md">
         <h2 className="sr-only">티켓: {data.performanceDetails.title}</h2>
         <div className="flex items-center mb-2">
           <TicketIcon className="text-flesh-500 mr-2" size={20} />
@@ -46,13 +46,6 @@ export default function Ticket(data: bookWithPerformance) {
             </span>
           </p>
         </div>
-      </div>
-
-      {/* Perforation line */}
-      <div className="relative sm:py-2">
-        <div className="absolute left-0 w-full border-t border-dashed border-gray-300"></div>
-        <div className="absolute -left-2 top-0 w-4 h-4 bg-gray-50 rounded-full transform translate-y-(-50%)"></div>
-        <div className="absolute -right-2 top-0 w-4 h-4 bg-gray-50 rounded-full transform translate-y-(-50%)"></div>
       </div>
 
       {/* QR Code and seat information */}
