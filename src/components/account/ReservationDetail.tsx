@@ -110,7 +110,10 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
                 />
               </Link>
               <ul className="text-xs w-full sm:text-base md:text-xl ">
-                <BookingDataLi label="예매번호" data={detailData.bookingId} />
+                <BookingDataLi
+                  label="예매번호"
+                  data={detailData.reservationId}
+                />
                 <BookingDataLi
                   label="공연명"
                   data={detailData.performanceDetails.title}
