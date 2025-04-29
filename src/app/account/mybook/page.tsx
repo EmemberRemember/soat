@@ -2,9 +2,8 @@
 import { useEffect } from "react";
 import Header from "@/components/home/Header";
 import Footer from "@/components/home/Footer";
-import ReservationListData from "@/components/account/ReservationItem";
+import ReservationListData from "@/components/account/ReservationListData";
 import useBookingDetail from "@/hooks/useBookingDetail";
-import Loading from "@/components/Loading";
 
 export default function Page({
   searchParams,
@@ -28,13 +27,10 @@ export default function Page({
           <h2 className="my-[10px] sm:text-3xl sm:my-6 font-bold">
             {book === "total" ? "전체" : "지난"} 예매 내역
           </h2>
-          {isLoading ? (
-            <Loading />
-          ) : (
-            <ReservationListData
-              data={book === "total" ? bookingData : completedBookingData}
-            />
-          )}
+          <ReservationListData
+            data={book === "total" ? bookingData : completedBookingData}
+            isLoading={isLoading}
+          />
         </section>
       </main>
       <Footer />

@@ -6,11 +6,13 @@ import { bookWithPerformance } from "@/types/reservation";
 interface ReservationDataProps {
   data: bookWithPerformance[];
   isPastData?: boolean;
+  isLoading: boolean;
 }
 
 export default function ReservationList({
   data,
   isPastData,
+  isLoading,
 }: ReservationDataProps) {
   return (
     <section className="max-w-[1000px] relative sm:col-span-2 sm:row-start-1 min-w-[290px] ">
@@ -30,7 +32,7 @@ export default function ReservationList({
       >
         더보기
       </Button>
-      <ReservationListData slice={3} data={data} />
+      <ReservationListData slice={3} data={data} isLoading={isLoading} />
     </section>
   );
 }

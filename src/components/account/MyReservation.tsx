@@ -13,8 +13,12 @@ export default function MyReservation() {
 
   return (
     <div className="flex flex-col relative">
-      <ReservationList data={bookingData} />
-      <ReservationList data={completedBookingData} isPastData />
+      <ReservationList data={bookingData} isLoading={isLoading} />
+      <ReservationList
+        data={completedBookingData}
+        isPastData
+        isLoading={isLoading}
+      />
     </div>
   );
 }
