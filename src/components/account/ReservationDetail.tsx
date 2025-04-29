@@ -39,8 +39,11 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
     try {
       const response = await axios.delete(`/api/account/book/${bookId}`);
       if (response.status === 200) {
-        alert("예매 취소가 완료되었습니다. 마이페이지로 이동합니다.");
-        router.push("/account");
+        showToast(
+          "예매 취소가 완료되었습니다. 마이페이지로 이동합니다.",
+          "success",
+          () => router.push("/account")
+        );
       }
     } catch (error) {
       console.error("Error fetching booking details:", error);
@@ -61,7 +64,11 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
   };
 
   const paymentStatus =
-    detailData?.paymentStatus === "pending" ? "미입금" : "결제 완료";
+    detailData?.paymentStatus === "booked"
+      ? "결제 완료"
+      : detailData?.paymentStatus === "pending"
+        ? "미입금"
+        : "예약 오류";
   const isPerformanceEnded =
     detailData && new Date(detailData.performanceDate) < new Date();
 

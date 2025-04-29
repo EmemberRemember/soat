@@ -5,6 +5,7 @@ import ReviewList from "./ReviewList";
 import { Button } from "../controls/Button";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
+import { showToast } from "@/utils/toast";
 
 export default function ReviewArea() {
   const [isReview, setReview] = useState("");
@@ -33,12 +34,12 @@ export default function ReviewArea() {
   const handleSubmitReview = async () => {
     // 입력 검증
     if (rating === 0) {
-      alert("평점을 선택해주세요.");
+      showToast("평점을 선택해주세요.", "error");
       return;
     }
 
     if (!isReview.trim()) {
-      alert("리뷰 내용을 입력해주세요.");
+      showToast("리뷰 내용을 입력해주세요.", "error");
       return;
     }
 
@@ -62,13 +63,12 @@ export default function ReviewArea() {
         const errorData = await response.json();
         throw new Error(errorData.error || "리뷰 작성에 실패했습니다.");
       }
-
-      // 성공 시 폼 초기화
-      setReview("");
-      setRating(0);
-      window.location.reload();
-
-      alert("리뷰가 성공적으로 등록되었습니다.");
+      showToast("리뷰가 성공적으로 등록되었습니다.", "success", () => {
+        // 성공 시 폼 초기화
+        setReview("");
+        setRating(0);
+        window.location.reload();
+      });
     } catch (err) {
       const error = err as Error;
       console.error("리뷰 작성 중 오류:", err);

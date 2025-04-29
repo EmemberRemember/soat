@@ -11,6 +11,7 @@ import { validations } from "@/utils/validations";
 import axios from "axios";
 import { signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { showToast } from "@/utils/toast";
 
 export default function UserInfoUpdate() {
   const router = useRouter();
@@ -65,7 +66,7 @@ export default function UserInfoUpdate() {
         if (error.response?.status === 401) {
           setIsPasswordError("현재 비밀번호가 일치하지 않습니다.");
         } else {
-          alert("비밀번호 변경에 실패했습니다.");
+          showToast("비밀번호 변경에 실패했습니다.", "error");
         }
       }
     }
@@ -87,7 +88,7 @@ export default function UserInfoUpdate() {
         if (error.response?.status === 401) {
           setIsPasswordError("현재 비밀번호가 일치하지 않습니다.");
         } else {
-          alert("회원 탈퇴에 실패했습니다.");
+          showToast("회원 탈퇴에 실패했습니다.", "error");
         }
       }
     }
