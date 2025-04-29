@@ -214,6 +214,7 @@ export async function POST(request: NextRequest) {
         bookingTimestamp: FieldValue.serverTimestamp(), // 서버 시간 기록
         totalPrice,
         paymentStatus: "pending", // 초기 결제 상태 (무통장 입금 등 대기)
+        useTicket: false,
         sellerId: performanceData.sellerId, // 판매자 ID
         createdAt: FieldValue.serverTimestamp(), // 예매 생성 시간
         updatedAt: FieldValue.serverTimestamp(), // 예매 수정 시간
@@ -267,6 +268,7 @@ export async function POST(request: NextRequest) {
         purchaserInfo,
         totalPrice,
         paymentStatus: "pending", // 초기 결제 상태
+        useTicket: false, //티켓 사용 관리
         sellerId: performanceData.sellerId,
         // 예시 결제 정보
         purchasingInfo: {
