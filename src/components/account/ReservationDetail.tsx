@@ -11,34 +11,39 @@ import Modal from "../Modal";
 import { useShowModal } from "@/hooks/useShowModal";
 import { CloseButton } from "../controls/Button";
 import { showToast } from "@/utils/toast";
-import { JoinInput } from "@/components/controls/Inputs";
-import { JoinSelect } from "@/components/controls/Select";
-import { bankCodeList } from "@/lib/bankCodeList";
-import { validations } from "@/utils/validations";
+import { stat } from "fs";
 
 interface DetailDataProps {
   label: string;
   data: string;
 }
+type PaymentStatusType = "입금 대기" | "환불 대기" | "취소 완료" | "결제 완료";
 
 export default function ReservationDetail({ bookId }: { bookId: string }) {
   const [detailData, setDetailData] = useState<bookWithPerformance | null>(
     null
   );
+  const [paymentStatus, setPaymentStatus] =
+    useState<PaymentStatusType>("입금 대기");
   const { showModal, handleShowModal } = useShowModal();
-  const [modalType, setModalType] = useState<"qr" | "account" | null>(null);
-  const [selectAccount, setSelectAccount] = useState("000");
-  const [accountNum, setAccountNum] = useState("");
-  const [depositor, setDepositor] = useState("");
   const router = useRouter();
-  const isAccountNumInputValid =
-    validations.accountNum.safeParse(accountNum).success;
 
   useEffect(() => {
     async function fetchDetailData() {
       try {
         const response = await axios.get(`/api/account/book/${bookId}`);
         setDetailData(response.data);
+        const status = response.data.paymentStatus;
+
+        if (status === "pending" || status === "processing") {
+          setPaymentStatus("입금 대기");
+        } else if (status === "booked") {
+          setPaymentStatus("결제 완료");
+        } else if (status === "pendingRefund") {
+          setPaymentStatus("환불 대기");
+        } else if (status === "cancel") {
+          setPaymentStatus("취소 완료");
+        }
       } catch (error) {
         console.error("Error fetching booking details:", error);
       }
@@ -48,17 +53,17 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
   }, []);
 
   const handleCancelBooking = async (status: string, bookId: string) => {
-    if (status === "booked") {
-      showToast("환불 계좌 입력 후 취소를 진행해주세요");
-      handleShowModal(true);
-      setModalType("account");
+    if (status === "pendingRefund") {
+      showToast("환불 대기 상태 이므로 예매 취소가 불가합니다.", "error");
       return;
+    } else if (status === "cancel") {
+      showToast("취소가 완료된 공연입니다.", "error");
     } else {
       try {
         const response = await axios.delete(`/api/account/book/${bookId}`);
         if (response.status === 200) {
           showToast(
-            "예매 취소가 완료되었습니다. 마이페이지로 이동합니다.",
+            `${status !== "booked" ? "예매 취소가 완료되었습니다. 마이페이지로 이동합니다." : "환불 요청이 완료되었습니다. 마이 페이지로 이동합니다."}`,
             "success",
             () => router.push("/account")
           );
@@ -76,19 +81,12 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
     //   handleShowModal(true);
     // }
     handleShowModal(true);
-    setModalType("qr");
   };
 
   const handleModalClose = () => {
     handleShowModal(false);
   };
 
-  const paymentStatus =
-    detailData?.paymentStatus === "booked"
-      ? "결제 완료"
-      : detailData?.paymentStatus === "pending"
-        ? "미입금"
-        : "예약 오류";
   const isPerformanceEnded =
     detailData && new Date(detailData.performanceDate) < new Date();
 
@@ -218,7 +216,7 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
           </section>
           {/* QR 확인 모달 */}
           <Modal
-            isOpen={showModal && modalType === "qr"}
+            isOpen={showModal}
             onClose={() => handleModalClose()}
             className="relative p-[0px]"
           >
@@ -228,57 +226,6 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
                 className="absolute top-6 right-6"
                 onClick={() => handleModalClose()}
               />
-            </>
-          </Modal>
-          {/* 계좌정보 입력 모달 */}
-          <Modal
-            isOpen={showModal && modalType === "account"}
-            onClose={() => handleModalClose()}
-            className="relative p-8"
-          >
-            <>
-              <form>
-                <CloseButton
-                  className="absolute top-4 right-4"
-                  onClick={() => handleModalClose()}
-                />
-                <JoinSelect
-                  label="은행정보"
-                  value={selectAccount}
-                  onChange={setSelectAccount}
-                  className="mb-5"
-                  options={bankCodeList}
-                />
-                <JoinInput
-                  label="계좌번호"
-                  value={accountNum}
-                  onChange={setAccountNum}
-                  validation={validations.accountNum}
-                  placeholder="숫자 (‘-’ 문자 제외)"
-                  max={14}
-                />
-                <JoinInput
-                  label="예금주"
-                  value={depositor}
-                  onChange={setDepositor}
-                  placeholder="10자 이내"
-                  validation={validations.depositor}
-                  max={10}
-                />
-                <Button
-                  className="float-right py-2 px-4"
-                  size="small"
-                  highlight
-                  disabled={
-                    selectAccount === "000" ||
-                    !isAccountNumInputValid ||
-                    !depositor
-                  }
-                  type="submit"
-                >
-                  환불요청
-                </Button>
-              </form>
             </>
           </Modal>
         </>
