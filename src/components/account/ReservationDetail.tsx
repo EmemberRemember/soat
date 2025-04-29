@@ -6,7 +6,10 @@ import { bookWithPerformance } from "@/types/reservation";
 import Loading from "../Loading";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-
+import Ticket from "../ticket/Ticket";
+import Modal from "../Modal";
+import { useShowModal } from "@/hooks/useShowModal";
+import { CloseButton } from "../controls/Button";
 interface DetailDataProps {
   label: string;
   data: string;
@@ -16,6 +19,7 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
   const [detailData, setDetailData] = useState<bookWithPerformance | null>(
     null
   );
+  const { showModal, handleShowModal } = useShowModal();
   const router = useRouter();
   useEffect(() => {
     async function fetchDetailData() {
@@ -42,6 +46,18 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
     }
   };
 
+  const handleCheckQrCode = () => {
+    if (paymentStatus === "미입금") {
+      alert("결제 완료 후 QR 확인이 가능합니다.");
+    } else if (paymentStatus === "결제 완료") {
+      handleShowModal(true);
+    }
+  };
+
+  const handleModalClose = () => {
+    handleShowModal(false);
+  };
+
   const paymentStatus =
     detailData?.paymentStatus === "pending" ? "미입금" : "결제 완료";
   const isPerformanceEnded =
@@ -66,7 +82,7 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
               <li>
                 <Button
                   highlight
-                  href="/demo/ticket"
+                  onClick={(e) => handleCheckQrCode()}
                   className="font-normal py-[2.5px] sm:text-base sm:font-bold"
                 >
                   QR 확인
@@ -166,6 +182,20 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
               주의바랍니다.
             </p>
           </section>
+          {/* QR 확인 모달 */}
+          <Modal
+            isOpen={showModal}
+            onClose={() => handleModalClose()}
+            className="relative p-[0px]"
+          >
+            <>
+              <Ticket {...detailData} />
+              <CloseButton
+                className="absolute top-6 right-6"
+                onClick={() => handleModalClose()}
+              />
+            </>
+          </Modal>
         </>
       ) : (
         <Loading />
