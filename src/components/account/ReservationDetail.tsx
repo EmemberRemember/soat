@@ -61,7 +61,11 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
   };
 
   const paymentStatus =
-    detailData?.paymentStatus === "pending" ? "미입금" : "결제 완료";
+    detailData?.paymentStatus === "booked"
+      ? "결제 완료"
+      : detailData?.paymentStatus === "pending"
+        ? "미입금"
+        : "예약 오류";
   const isPerformanceEnded =
     detailData && new Date(detailData.performanceDate) < new Date();
 
