@@ -4,6 +4,7 @@ import { useShowModal } from "@/hooks/useShowModal";
 import { Button } from "../../controls/Button";
 import Modal from "../../Modal";
 import { useEnrollRehydration } from "@/hooks/useEnrollRehydration";
+import Loading from "@/components/Loading";
 
 interface EnrollRehydrationProps {
   children: React.ReactNode;
@@ -14,7 +15,7 @@ export default function EnrollRehydration({
   const { showModal, handleShowModal } = useShowModal();
   const { showModal: showErrorModal, handleShowModal: handleShowErrorModal } =
     useShowModal();
-  
+
   const {
     isLoading,
     error,
@@ -24,9 +25,8 @@ export default function EnrollRehydration({
     handleRefreshPage,
   } = useEnrollRehydration({ handleShowModal, handleShowErrorModal });
 
-  
   if (isLoading) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   return (
