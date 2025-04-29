@@ -1,12 +1,22 @@
+"use client";
+import { useEffect } from "react";
 import Header from "@/components/home/Header";
 import Footer from "@/components/home/Footer";
-import ReservationListData from "@/components/account/ReservationItem";
+import ReservationListData from "@/components/account/ReservationListData";
+import useBookingDetail from "@/hooks/useBookingDetail";
 
 export default function Page({
   searchParams,
 }: {
   searchParams: { book?: string };
 }) {
+  const { bookingData, completedBookingData, isLoading, fetchAllBookings } =
+    useBookingDetail();
+
+  useEffect(() => {
+    fetchAllBookings();
+  }, [fetchAllBookings]);
+
   const book = searchParams.book || "total"; // 기본값 설정
 
   return (
@@ -17,7 +27,10 @@ export default function Page({
           <h2 className="my-[10px] sm:text-3xl sm:my-6 font-bold">
             {book === "total" ? "전체" : "지난"} 예매 내역
           </h2>
-          <ReservationListData isViewComplete={book !== "total"} />
+          <ReservationListData
+            data={book === "total" ? bookingData : completedBookingData}
+            isLoading={isLoading}
+          />
         </section>
       </main>
       <Footer />

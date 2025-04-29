@@ -1,15 +1,16 @@
 import Header from "@/components/home/Header";
-import UserInfo from "./UserInfo";
-import MyReservation from "./MyReservation";
+import UserInfo from "@/components/account/UserInfo";
+import MyReservation from "@/components/account/MyReservation";
 
 export default function page() {
   return (
     <>
       <Header />
       <main
-        className={`grid relative m-auto w-full py-5 px-[30px] sm:grid-flow-col sm:grid-rows-2 sm:gap-4 justify-center`}
+        className={`flex flex-col sm:flex-row w-full py-5 px-6 justify-center`}
       >
         <UserInfo />
+        <div className="sm:border-r-2 mx-6"></div>
         <MyReservation />
       </main>
     </>

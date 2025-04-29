@@ -15,6 +15,7 @@ export default function Performance() {
     []
   );
   const [endedList, setEndedList] = useState<PerformanceDataWithStatus[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     async function fetchPerformanceList() {
@@ -74,6 +75,8 @@ export default function Performance() {
         );
       } catch (error) {
         console.error("공연 목록 불러오기 실패:", error);
+      } finally {
+        setIsLoading(false);
       }
     }
 
@@ -82,9 +85,21 @@ export default function Performance() {
 
   return (
     <main>
-      <EmblaCarousel label="현재 진행중인 공연" data={currentList} />
-      <EmblaCarousel label="오픈 예정인 공연" data={upcomingList} />
-      <EmblaCarousel label="완료된 공연" data={endedList} />
+      <EmblaCarousel
+        label="현재 진행중인 공연"
+        data={currentList}
+        isLoading={isLoading}
+      />
+      <EmblaCarousel
+        label="오픈 예정인 공연"
+        data={upcomingList}
+        isLoading={isLoading}
+      />
+      <EmblaCarousel
+        label="완료된 공연"
+        data={endedList}
+        isLoading={isLoading}
+      />
     </main>
   );
 }
