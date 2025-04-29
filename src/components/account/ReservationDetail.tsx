@@ -5,30 +5,11 @@ import axios from "axios";
 import { bookWithPerformance } from "@/types/reservation";
 import Loading from "../Loading";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface DetailDataProps {
   label: string;
   data: string;
-}
-
-function BookingDataLi({ label, data }: DetailDataProps) {
-  return (
-    <li className="flex gap-2 mb-1">
-      <p className="flex-1 whitespace-nowrap font-bold text-flesh-500">
-        {label}
-      </p>
-      <span className="flex-[3] sm:flex-[2]">{data}</span>
-    </li>
-  );
-}
-
-function PaymentDataLi({ label, data }: DetailDataProps) {
-  return (
-    <li className="flex gap-2 mb-1 whitespace-nowrap">
-      <p className="flex-[1] font-bold text-flesh-500">{label}</p>
-      <span className="flex-[3] sm:flex-[1] sm:text-end">{data}</span>
-    </li>
-  );
 }
 
 export default function ReservationDetail({ bookId }: { bookId: string }) {
@@ -52,8 +33,10 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
   const handleCancelBooking = async (bookId: string) => {
     try {
       const response = await axios.delete(`/api/account/book/${bookId}`);
-      alert("예매 취소가 완료되었습니다. 마이페이지로 이동합니다.");
-      router.push("/account");
+      if (response.status === 200) {
+        alert("예매 취소가 완료되었습니다. 마이페이지로 이동합니다.");
+        router.push("/account");
+      }
     } catch (error) {
       console.error("Error fetching booking details:", error);
     }
@@ -63,6 +46,7 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
     detailData?.paymentStatus === "pending" ? "미입금" : "결제 완료";
   const isPerformanceEnded =
     detailData && new Date(detailData.performanceDate) < new Date();
+
   return (
     <>
       {detailData ? (
@@ -90,11 +74,16 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
               </li>
             </ul>
             <div className="flex items-center gap-6 my-4">
-              <img
-                src={detailData.performanceDetails.poster}
-                alt={detailData.performanceDetails.title + "포스터"}
-                className={`bg-flesh-500 rounded-[10px] mb-1 aspect-[90/130] object-cover w-full max-w-[90px] sm:w-[45%] sm:max-w-full  `}
-              />
+              <Link
+                href={`/detail/${detailData.performanceId}`}
+                className="w-full max-w-[90px] sm:w-[45%] sm:max-w-full  "
+              >
+                <img
+                  src={detailData.performanceDetails.poster}
+                  alt={detailData.performanceDetails.title + "포스터"}
+                  className={`object-cover w-full aspect-[90/130] rounded-md`}
+                />
+              </Link>
               <ul className="text-xs w-full sm:text-base md:text-xl ">
                 <BookingDataLi label="예매번호" data={detailData.bookingId} />
                 <BookingDataLi
@@ -104,7 +93,7 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
                 <BookingDataLi label="연령 제한" data="전체 관람가" />
                 <BookingDataLi
                   label="공연 장소"
-                  data={detailData.performanceDetails.address}
+                  data={`${detailData.performanceDetails.address}, ${detailData.performanceDetails.detailAddress}`}
                 />
                 <BookingDataLi
                   label="공연 일시"
@@ -182,5 +171,25 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
         <Loading />
       )}
     </>
+  );
+}
+
+function BookingDataLi({ label, data }: DetailDataProps) {
+  return (
+    <li className="flex gap-2 mb-1">
+      <p className="flex-1 whitespace-nowrap font-bold text-flesh-500">
+        {label}
+      </p>
+      <span className="flex-[3] sm:flex-[2]">{data}</span>
+    </li>
+  );
+}
+
+function PaymentDataLi({ label, data }: DetailDataProps) {
+  return (
+    <li className="flex gap-2 mb-1 whitespace-nowrap">
+      <p className="flex-[1] font-bold text-flesh-500">{label}</p>
+      <span className="flex-[3] sm:flex-[1] sm:text-end">{data}</span>
+    </li>
   );
 }
