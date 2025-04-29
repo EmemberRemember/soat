@@ -10,6 +10,7 @@ import Ticket from "../ticket/Ticket";
 import Modal from "../Modal";
 import { useShowModal } from "@/hooks/useShowModal";
 import { CloseButton } from "../controls/Button";
+import { showToast } from "@/utils/toast";
 interface DetailDataProps {
   label: string;
   data: string;
@@ -48,7 +49,7 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
 
   const handleCheckQrCode = () => {
     // if (paymentStatus === "미입금") {
-    //   alert("결제 완료 후 QR 확인이 가능합니다.");
+    //   showToast("결제 완료 후 QR 확인이 가능합니다.", "error");
     // } else if (paymentStatus === "결제 완료") {
     //   handleShowModal(true);
     // }
