@@ -4,6 +4,7 @@ import SeatLayout from "../seats/SeatLayout";
 import { RowConfigs } from "@/types/seat";
 import { PerformanceTime } from "@/types/performance";
 import { PerformanceData } from "@/app/api/performance/route";
+import { Button } from "../controls/Button";
 
 interface PerformanceManagerDetailProps {
   rows: number;
@@ -47,7 +48,9 @@ export default function PerformanceManagerDetail({
       });
   }, [performanceTimes]);
 
-  const [selected, setSelected] = useState<SelectedPerformanceTime>(selectOptions[0]);
+  const [selected, setSelected] = useState<SelectedPerformanceTime>(
+    selectOptions[0]
+  );
   const selectedOccupiedSeat = selected?.occupiedSeats;
 
   const handleSelectChange = (value: string) => {
@@ -56,20 +59,33 @@ export default function PerformanceManagerDetail({
       setSelected(selectedOption);
     }
   };
-  
-  console.log(selected, 'selected')
+
+  console.log(selected, "selected");
+
+  const handleCancelPerformance = () => {
+    console.log("공연 취소", selected);
+  };
   return (
     <>
-      <select
-        className="border-2 border-gray-300 focus-within:border-flesh-300 rounded-md px-2 outline-none"
-        onChange={(e) => handleSelectChange(e.target.value)}
-      >
-        {selectOptions.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
+      <div className="flex gap-2">
+        <select
+          className="w-full border-2 border-gray-300 focus-within:border-flesh-300 rounded-md px-2 outline-none"
+          onChange={(e) => handleSelectChange(e.target.value)}
+        >
+          {selectOptions.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <Button
+          onClick={handleCancelPerformance}
+          size="small"
+          className="whitespace-nowrap"
+        >
+          공연 취소
+        </Button>
+      </div>
       <SeatLayout
         performanceData={performanceData}
         occupiedSeat={selectedOccupiedSeat}
