@@ -30,10 +30,10 @@ export default function RootLayout({
         <AuthProvider>
           <ReduxProvider>
             {children}
+            <ToastClient />
             <div id="modal-root"></div>
           </ReduxProvider>
         </AuthProvider>
-        <ToastClient />
       </body>
     </html>
   );
