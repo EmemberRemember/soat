@@ -39,8 +39,11 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
     try {
       const response = await axios.delete(`/api/account/book/${bookId}`);
       if (response.status === 200) {
-        alert("예매 취소가 완료되었습니다. 마이페이지로 이동합니다.");
-        router.push("/account");
+        showToast(
+          "예매 취소가 완료되었습니다. 마이페이지로 이동합니다.",
+          "goto",
+          () => router.push("/account")
+        );
       }
     } catch (error) {
       console.error("Error fetching booking details:", error);
