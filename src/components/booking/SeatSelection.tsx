@@ -257,6 +257,10 @@ export default function SeatSelection({
         <ul className="flex gap-x-3 flex-wrap">
           {Object.keys(performanceDates)
             .sort()
+            .filter((e) => {
+              const date = new Date(e);
+              return date >= new Date(); // 오늘 날짜 이후의 공연만 표시
+            })
             .map((date) => (
               <li key={date} className="mb-2">
                 <Button
@@ -298,6 +302,10 @@ export default function SeatSelection({
           isLoading ? (
             <div className="w-full h-64 flex items-center justify-center">
               <p>좌석 정보를 불러오는 중...</p>
+            </div>
+          ) : new Date(selectedDay) < new Date() ? (
+            <div className="w-full h-64 flex items-center justify-center mt-4 border-2 rounded-md">
+              <p>예매할 수 없는 날짜입니다.</p>
             </div>
           ) : (
             <div className="w-full h-fit rounded-md shadow-sm border-2 mt-4">
