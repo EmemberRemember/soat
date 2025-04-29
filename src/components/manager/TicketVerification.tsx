@@ -18,28 +18,17 @@ import axios from "axios";
 export default function TicketScanner() {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const scannerRef = useRef<QrScanner | null>(null);
-  const [scanResult, setScanResult] = useState<null | "valid" | "invalid">(
-    null
-  );
-  const [loading, setLoading] = useState(false);
+  const [scanResult, setScanResult] = useState<null | boolean>(null);
+  const [verifyLoading, setVerifyLoading] = useState(false);
   const [isFlashOn, setIsFlashOn] = useState(false);
-
-  async function verifyTicket(reservationId: string): Promise<boolean> {
-    try {
-      console.log(reservationId, "reservationId");
-      const response = await axios.post(
-        `/api/manager/verify-ticket/${reservationId}`
-      );
-      return response.data.valid;
-    } catch (error) {
-      console.error("API 요청 실패:", error);
-      return false;
-    }
-  }
+  const prevReservationId = useRef("");
+  const verifyLoadingRef = useRef(false); // 실시간 상태 추적용 ref
+  const resetTimerRef = useRef<NodeJS.Timeout | null>(null); // 타이머 저장용 ref
 
   function handleReset() {
     setScanResult(null);
-    setLoading(false);
+    setVerifyLoading(false);
+    verifyLoadingRef.current = false;
     scannerRef.current?.stop();
     scannerRef.current?.start();
   }
@@ -66,21 +55,51 @@ export default function TicketScanner() {
   }
 
   useEffect(() => {
+    async function verifyTicket(reservationId: string): Promise<boolean> {
+      setVerifyLoading(true);
+      try {
+        prevReservationId.current = reservationId;
+        if (resetTimerRef.current) {
+          clearTimeout(resetTimerRef.current);
+        }
+        // 새 타이머 등록 (10초 후 초기화)
+        resetTimerRef.current = setTimeout(() => {
+          prevReservationId.current = "";
+          resetTimerRef.current = null;
+        }, 10000); // 10초
+
+        const response = await axios.post(
+          `/api/manager/verify-ticket/${reservationId}`
+        );
+        return response.data.data.valid;
+      } catch (error) {
+        console.error("API 요청 실패:", error);
+        return false;
+      } finally {
+        setVerifyLoading(false);
+      }
+    }
+
     if (videoRef.current) {
       scannerRef.current = new QrScanner(
         videoRef.current,
         async (result) => {
-          if (loading) return;
-          setLoading(true);
+          if (verifyLoadingRef.current === true) {
+            return;
+          }
+          verifyLoadingRef.current = true;
           try {
             const scannedCode = result.data;
+            if (scannedCode === prevReservationId.current) {
+              return;
+            }
             const isValid = await verifyTicket(scannedCode);
-            setScanResult(isValid ? "valid" : "invalid");
+            setScanResult(isValid);
           } catch (error) {
             console.error("검증 오류:", error);
-            setScanResult("invalid");
+            setScanResult(false);
           } finally {
-            setLoading(false);
+            verifyLoadingRef.current = false;
           }
         },
         {
@@ -93,8 +112,11 @@ export default function TicketScanner() {
 
     return () => {
       scannerRef.current?.stop();
+      if (resetTimerRef.current) {
+        clearTimeout(resetTimerRef.current);
+      }
     };
-  }, []);
+  }, [prevReservationId]);
 
   return (
     <main className="flex flex-col items-center justify-center p-6 space-y-6 max-w-xl mx-auto">
@@ -120,13 +142,13 @@ export default function TicketScanner() {
           <p className="text-sm text-muted-foreground">
             카메라에 QR 코드를 비춰주세요
           </p>
-          {loading && (
+          {verifyLoading && (
             <Badge variant="secondary" className="flex items-center space-x-2">
               <Loader2 className="mr-1 h-4 w-4 animate-spin" />
               검증 중...
             </Badge>
           )}
-          {scanResult === "valid" && (
+          {scanResult && (
             <Alert variant="default" className="border-green-500">
               <CheckCircle className="h-5 w-5 text-green-600" />
               <AlertTitle className="text-green-600 font-bold">
@@ -135,7 +157,7 @@ export default function TicketScanner() {
               <AlertDescription>유효한 티켓입니다.</AlertDescription>
             </Alert>
           )}
-          {scanResult === "invalid" && (
+          {scanResult === false && (
             <Alert variant="destructive">
               <XCircle className="h-5 w-5" />
               <AlertTitle className="font-bold">검증 실패</AlertTitle>
