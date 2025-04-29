@@ -9,6 +9,7 @@ import { PerformanceData } from "@/app/api/performance/route";
 import { bookResultType } from "@/types/reservation";
 import { Timestamp } from "firebase/firestore";
 import { CloseButton } from "../controls/Button";
+import Loading from "../Loading";
 
 interface SeatLayoutProps {
   rows: number;
@@ -226,7 +227,7 @@ export default function SeatLayout({
   };
 
   const renderLoadingState = () => {
-    return <div>Loading...</div>;
+    return <Loading />;
   };
 
   // useEffect 수정
