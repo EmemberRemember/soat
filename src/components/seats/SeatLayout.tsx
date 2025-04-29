@@ -24,7 +24,7 @@ interface SeatLayoutProps {
   performanceDate: string;
 }
 
-interface BookResult extends bookResultType {
+export interface BookResult extends bookResultType {
   bookingTimestamp: Timestamp;
 }
 
@@ -153,6 +153,7 @@ export default function SeatLayout({
                 performanceTime={performanceTime}
                 bookingData={bookingData}
                 bookingError={bookingError}
+                performanceId={bookingData?.performanceId as string}
               />
             )
           ) : (
