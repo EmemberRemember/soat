@@ -47,11 +47,12 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
   };
 
   const handleCheckQrCode = () => {
-    if (paymentStatus === "미입금") {
-      alert("결제 완료 후 QR 확인이 가능합니다.");
-    } else if (paymentStatus === "결제 완료") {
-      handleShowModal(true);
-    }
+    // if (paymentStatus === "미입금") {
+    //   alert("결제 완료 후 QR 확인이 가능합니다.");
+    // } else if (paymentStatus === "결제 완료") {
+    //   handleShowModal(true);
+    // }
+    handleShowModal(true);
   };
 
   const handleModalClose = () => {
