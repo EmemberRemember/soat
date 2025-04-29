@@ -101,7 +101,7 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
             <div className="flex items-center gap-6 my-4">
               <Link
                 href={`/detail/${detailData.performanceId}`}
-                className="w-full max-w-[90px] sm:w-[45%] sm:max-w-full  "
+                className="w-full max-w-[90px] sm:w-[45%] sm:max-w-full shadow-sm rounded-md border border-gray-200 hover:shadow-lg transition-all duration-200"
               >
                 <img
                   src={detailData.performanceDetails.poster}

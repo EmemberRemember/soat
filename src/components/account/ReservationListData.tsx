@@ -52,7 +52,7 @@ export default function ReservationListData({
                         <img
                           src={book.performanceDetails.poster}
                           alt={`${book.performanceDetails.title} 포스터`}
-                          className={`bg-flesh-500 size-full rounded-t-md sm:mb-1  object-cover ${imgAspectStyle} ${
+                          className={`size-full rounded-t-md sm:mb-1 object-cover ${imgAspectStyle} ${
                             isViewComplete && "blur-[1px]"
                           }`}
                         />
