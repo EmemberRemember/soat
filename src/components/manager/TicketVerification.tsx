@@ -24,9 +24,12 @@ export default function TicketScanner() {
   const [loading, setLoading] = useState(false);
   const [isFlashOn, setIsFlashOn] = useState(false);
 
-  async function verifyTicket(code: string): Promise<boolean> {
+  async function verifyTicket(reservationId: string): Promise<boolean> {
     try {
-      const response = await axios.post("/api/verify-ticket", { code });
+      console.log(reservationId, "reservationId");
+      const response = await axios.post(
+        `/api/manager/verify-ticket/${reservationId}`
+      );
       return response.data.valid;
     } catch (error) {
       console.error("API 요청 실패:", error);
@@ -71,7 +74,6 @@ export default function TicketScanner() {
           setLoading(true);
           try {
             const scannedCode = result.data;
-            console.log("스캔된 QR:", scannedCode);
             const isValid = await verifyTicket(scannedCode);
             setScanResult(isValid ? "valid" : "invalid");
           } catch (error) {
@@ -92,7 +94,7 @@ export default function TicketScanner() {
     return () => {
       scannerRef.current?.stop();
     };
-  }, [loading]);
+  }, []);
 
   return (
     <main className="flex flex-col items-center justify-center p-6 space-y-6 max-w-xl mx-auto">
