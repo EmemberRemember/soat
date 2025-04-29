@@ -66,7 +66,6 @@ export default function ToastConfirm({
       >
         {buttonText}
       </Button>
-      <ToastContainer autoClose={false} />
     </div>
   );
 }
