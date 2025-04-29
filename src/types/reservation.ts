@@ -10,7 +10,7 @@ export interface bookResultType {
     name: string;
     phone: string;
     email: string;
-    userId : string;
+    userId: string;
   };
   totalPrice: number;
   paymentStatus: string;
@@ -25,14 +25,14 @@ export interface bookResultType {
   dueDate: number;
 }
 
-export interface bookWithPerformance  extends bookResultType {
-  id?:string
+export interface bookWithPerformance extends bookResultType {
+  id?: string;
   performanceDetails: {
     address: string;
     category: string;
     detailAddress: string;
-    poster : string;
-    sellerTeam : string;
-    title : string;
+    poster: string;
+    sellerTeam: string;
+    title: string;
   };
 }

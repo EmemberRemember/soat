@@ -1,6 +1,6 @@
 import Header from "@/components/home/Header";
-import UserInfo from "./UserInfo";
-import MyReservation from "./MyReservation";
+import UserInfo from "@/components/account/UserInfo";
+import MyReservation from "@/components/account/MyReservation";
 
 export default function page() {
   return (
