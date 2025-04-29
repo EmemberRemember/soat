@@ -31,18 +31,15 @@ export function useValidationEnrollment({
       !!fileType &&
       !!url &&
       fileSize > 0 &&
-      /^data:image\/[a-z]+;base64,|https:\/\//
+      /^data:image\/[a-z]+;base64/
     );
   };
 
   const isValidPerformances = (
     performances: DailyPerformances,
-    bookingStartDate: string,
-    bookingEndDate: string
+    bookingStartDate: string
   ) => {
     const bookingStart = new Date(bookingStartDate);
-    const bookingEnd = new Date(bookingEndDate);
-    bookingEnd.setHours(23, 59, 59, 999);
 
     if (Object.keys(performances).length <= 0) {
       return false;
@@ -50,7 +47,7 @@ export function useValidationEnrollment({
 
     for (const dateKey of Object.keys(performances)) {
       const date = new Date(dateKey);
-      if (bookingStart > date || date > bookingEnd) {
+      if (bookingStart > date) {
         return false;
       }
     }
@@ -79,9 +76,7 @@ export function useValidationEnrollment({
   } else if (poster === null || !isValidPoster(poster)) {
     invalidFieldName = "poster";
     isValid = false;
-  } else if (
-    !isValidPerformances(performances, bookingStartDate, bookingEndDate)
-  ) {
+  } else if (!isValidPerformances(performances, bookingStartDate)) {
     invalidFieldName = "performances";
     isValid = false;
   }
