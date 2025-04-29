@@ -9,15 +9,17 @@ import { RootState } from "@/redux/store";
 import { getImage } from "@/services/indexedDBService";
 import { EnrollStep } from "@/types/enrollment";
 import axios from "axios";
-import React from "react";
+import React, { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import NavigationGuard from "../NavigationGuard";
 import EnrollRehydration from "./EnrollRehydartion";
 import { useRouter } from "next/navigation";
 import { useValidationEnrollment } from "@/hooks/useValidationEnrollment";
+import Loading from "@/components/Loading";
 
 export default function EnrollFooter() {
   const router = useRouter();
+  const [loading, setLoading] = useState<boolean>(false);
   const step = useSelector((state: RootState) => state.enroll.step);
   const enrollResult = useSelector((state: RootState) => state.enroll);
   const seatResult = useSelector((state: RootState) => state.seat);
@@ -44,7 +46,7 @@ export default function EnrollFooter() {
           alert("공연의 카테고리를 설정해주세요");
           break;
         case "bookingStartDate":
-          alert("공연 예약 시작 날짜를 설정해주세요.");
+          alert("공연 예약 날짜를 설정해주세요.");
           break;
         case "enrollBookingEndDate":
           alert("공연 예약 종료 날짜는 시작 날짜보다 빠를 수 없습니다.");
@@ -86,6 +88,7 @@ export default function EnrollFooter() {
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
     try {
       const imagefiles = await getImageFileIndexedDB();
 
@@ -108,7 +111,7 @@ export default function EnrollFooter() {
         ...enrollResult,
         seats: seatResult,
       };
-      
+
       const result = { ...rest };
       formData.append("data", JSON.stringify(result));
       const response = await axios.put("/api/enrollment", formData, {
@@ -125,6 +128,8 @@ export default function EnrollFooter() {
       if (axios.isAxiosError(error)) {
         alert(error.response?.data.error);
       }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -145,11 +150,14 @@ export default function EnrollFooter() {
             좌석 배치하기
           </Button>
         ) : (
-          <Button type="button" onClick={handleSubmit}>
+          <Button type="button" onClick={handleSubmit} disabled={loading}>
             공연 등록
           </Button>
         )}
       </footer>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        {loading && <Loading />}
+      </div>
     </EnrollRehydration>
   );
 }
