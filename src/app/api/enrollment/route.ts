@@ -19,7 +19,13 @@ interface FilesData {
   originalName: string;
 }
 
-const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+const allowedMimeTypes = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/jpg",
+];
 
 // MIME 타입 검증 함수
 const validateMimeType = (mimeType: string) => {
