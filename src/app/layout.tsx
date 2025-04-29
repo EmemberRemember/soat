@@ -5,7 +5,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import ReduxProvider from "@/redux/ReduxProvider";
 import AuthProvider from "@/auth/Provider";
-import { ToastContainer } from "react-toastify";
+import { ToastContainer, Zoom } from "react-toastify";
 
 const pretendard = localFont({
   src: "./fonts/PretendardVariable.woff2",
@@ -33,7 +33,7 @@ export default function RootLayout({
             <div id="modal-root"></div>
           </ReduxProvider>
         </AuthProvider>
-        <ToastContainer />
+        <ToastContainer transition={Zoom} />
       </body>
     </html>
   );
