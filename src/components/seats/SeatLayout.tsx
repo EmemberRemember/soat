@@ -108,6 +108,15 @@ export default function SeatLayout({
     });
   };
 
+  const errorInfo = () => {
+    return (
+      <section className="border-t-2 py-2">
+        <h3 className="font-bold">Error</h3>
+        <p>{bookingError}</p>
+      </section>
+    );
+  };
+
   const renderBookedSeatInfo = () => {
     if (selectedSeatItem == undefined) {
       return;
@@ -139,47 +148,54 @@ export default function SeatLayout({
             </dd>
           </dl>
         </section>
+        {bookingError != null ? (
+          errorInfo()
+        ) : (
+          <>
+            <section className="border-t-2 py-2">
+              <h3 className="font-bold">예약 정보</h3>
+              <dl className="flex flex-wrap items-center justify-center">
+                <dt className="basis-[30%] text-gray-500 my-0.5">예약자명</dt>
+                <dd className="basis-[70%] my-0.5">
+                  {bookingData?.purchaserInfo.name}
+                </dd>
+                <dt className="basis-[30%] text-gray-500 my-0.5">이메일</dt>
+                <dd className="basis-[70%] my-0.5">
+                  {bookingData?.purchaserInfo.email}
+                </dd>
+                <dt className="basis-[30%] text-gray-500 my-0.5">연락처</dt>
+                <dd className="basis-[70%] my-0.5">
+                  {bookingData?.purchaserInfo.phone}
+                </dd>
+                <dt className="basis-[30%] text-gray-500 my-0.5">예약 상태</dt>
+                <dd className="basis-[70%] my-0.5">
+                  {bookingData?.paymentStatus &&
+                    BookingStatus[
+                      bookingData.paymentStatus as keyof typeof BookingStatus
+                    ]}
+                </dd>
+                <dt className="basis-[30%] text-gray-500 my-0.5">
+                  추가 예약 좌석
+                </dt>
+                <dd className="basis-[70%] my-0.5">
+                  {bookingData?.selectedSeats.filter(
+                    (seatlabel) => seatlabel !== selectedSeatLabel
+                  )}
+                </dd>
+              </dl>
+            </section>
 
-        <section className="border-t-2 py-2">
-          <h3 className="font-bold">예약 정보</h3>
-          <dl className="flex flex-wrap items-center justify-center">
-            <dt className="basis-[30%] text-gray-500 my-0.5">예약자명</dt>
-            <dd className="basis-[70%] my-0.5">
-              {bookingData?.purchaserInfo.name}
-            </dd>
-            <dt className="basis-[30%] text-gray-500 my-0.5">이메일</dt>
-            <dd className="basis-[70%] my-0.5">
-              {bookingData?.purchaserInfo.email}
-            </dd>
-            <dt className="basis-[30%] text-gray-500 my-0.5">연락처</dt>
-            <dd className="basis-[70%] my-0.5">
-              {bookingData?.purchaserInfo.phone}
-            </dd>
-            <dt className="basis-[30%] text-gray-500 my-0.5">예약 상태</dt>
-            <dd className="basis-[70%] my-0.5">
-              {bookingData?.paymentStatus &&
-                BookingStatus[
-                  bookingData.paymentStatus as keyof typeof BookingStatus
-                ]}
-            </dd>
-            <dt className="basis-[30%] text-gray-500 my-0.5">추가 예약 좌석</dt>
-            <dd className="basis-[70%] my-0.5">
-              {bookingData?.selectedSeats.filter(
-                (seatlabel) => seatlabel !== selectedSeatLabel
-              )}
-            </dd>
-          </dl>
-        </section>
-
-        <section className="border-t-2 py-2">
-          <h3 className="font-bold">결제 정보</h3>
-          <dl className="flex flex-wrap items-center justify-center">
-            <dt className="basis-[30%] my-0.5">총 결제 금액</dt>
-            <dd className="basis-[70%] my-0.5 text-right font-bold">
-              {bookingData?.totalPrice.toLocaleString()} 원
-            </dd>
-          </dl>
-        </section>
+            <section className="border-t-2 py-2">
+              <h3 className="font-bold">결제 정보</h3>
+              <dl className="flex flex-wrap items-center justify-center">
+                <dt className="basis-[30%] my-0.5">총 결제 금액</dt>
+                <dd className="basis-[70%] my-0.5 text-right font-bold">
+                  {bookingData?.totalPrice.toLocaleString()} 원
+                </dd>
+              </dl>
+            </section>
+          </>
+        )}
       </article>
     );
   };
