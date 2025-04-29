@@ -17,7 +17,7 @@ export default async function page({ params }: myPerformanceProps) {
   return (
     <main className="p-10">
       <section className="m-auto w-full max-w-5xl p-4 border-2 border-gray-300 rounded-lg shadow-md bg-white flex flex-col space-y-4 overflow-auto">
-        <h2 className="font-bold">{performanceTitle}</h2>
+        <h2 className="font-bold">{`공연명 : ${performanceTitle}`}</h2>
         <PerformanceManagerDetail
           performanceData={performanceData}
           rows={seatData.rows}
