@@ -41,7 +41,7 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
       if (response.status === 200) {
         showToast(
           "예매 취소가 완료되었습니다. 마이페이지로 이동합니다.",
-          "goto",
+          "success",
           () => router.push("/account")
         );
       }
