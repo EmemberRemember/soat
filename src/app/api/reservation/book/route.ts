@@ -167,10 +167,10 @@ export async function POST(request: NextRequest) {
       );
 
       let reservationId;
-
+      let isFirst = true;
       for (const seatId of selectedSeats) {
         const seat = updatedOccupiedSeatsMap.get(seatId);
-
+        console.log("seatId", seatId, "seat", seat);
         if (!seat) {
           throw new Error(`선택한 좌석(${seatId})이 점유 목록에 없습니다.`);
         }
@@ -186,8 +186,12 @@ export async function POST(request: NextRequest) {
         }
         // 상태를 'pending'으로 변경
         seat.status = "pending";
-
-        reservationId = seat.reservationId;
+        if (isFirst) {
+          reservationId = seat.reservationId;
+          isFirst = false;
+        } else if (isFirst === false && reservationId != undefined) {
+          seat.reservationId = reservationId;
+        }
       }
 
       // Map을 다시 배열로 변환하여 업데이트할 데이터 준비
