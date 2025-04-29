@@ -37,7 +37,7 @@ export async function GET(request: NextRequest, { params }: PageParams) {
     }
 
     const bookingData = {
-      bookingId: bookingDoc.id,
+      reservationId: bookingDoc.id,
       ...bookingDoc.data(),
     } as bookWithPerformance;
 
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest, { params }: PageParams) {
       performanceDetails,
     };
 
-    return NextResponse.json({ booking: enrichedBooking });
+    return NextResponse.json(enrichedBooking);
   } catch (error) {
     console.error("예매 내역 조회 오류:", error);
     return NextResponse.json(

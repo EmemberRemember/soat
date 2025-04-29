@@ -31,7 +31,7 @@ export async function GET() {
 
     // 예매 데이터 배열로 변환
     const reservations = reservationsSnapshot.docs.map((doc) => ({
-      id: doc.id,
+      reservationId: doc.id,
       ...(doc.data() as { performanceId?: string }),
     }));
 
@@ -84,7 +84,7 @@ export async function GET() {
       };
     });
 
-    return NextResponse.json({ reservations: enrichedReservations });
+    return NextResponse.json(enrichedReservations);
   } catch (error) {
     console.error("예매 내역 조회 오류:", error);
     return NextResponse.json(

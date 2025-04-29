@@ -26,7 +26,7 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
     async function fetchDetailData() {
       try {
         const response = await axios.get(`/api/account/book/${bookId}`);
-        setDetailData(response.data.booking);
+        setDetailData(response.data);
       } catch (error) {
         console.error("Error fetching booking details:", error);
       }
