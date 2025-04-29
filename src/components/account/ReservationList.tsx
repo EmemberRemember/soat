@@ -1,33 +1,17 @@
-"use client";
-import { useEffect } from "react";
+import React from "react";
 import { Button } from "@/components/controls/Button";
-import ReservationListData from "@/components/account/ReservationItem";
+import ReservationListData from "./ReservationListData";
 import { bookWithPerformance } from "@/types/reservation";
-import useBookingDetail from "@/hooks/useBookingDetail";
 
-export default function MyReservation() {
-  const { bookingData, completedBookingData, isLoading, fetchAllBookings } =
-    useBookingDetail();
-
-  useEffect(() => {
-    fetchAllBookings();
-  }, [fetchAllBookings]);
-
-  return (
-    <div className="flex flex-col relative">
-      <ReservationList data={bookingData} />
-      <ReservationList data={completedBookingData} isPastData />
-    </div>
-  );
-}
-
-function ReservationList({
-  data,
-  isPastData,
-}: {
+interface ReservationDataProps {
   data: bookWithPerformance[];
   isPastData?: boolean;
-}) {
+}
+
+export default function ReservationList({
+  data,
+  isPastData,
+}: ReservationDataProps) {
   return (
     <section className="max-w-[1000px] relative sm:col-span-2 sm:row-start-1 min-w-[290px] ">
       <h2 className="my-[10px] text-sm sm:text-3xl sm:my-6 font-bold">

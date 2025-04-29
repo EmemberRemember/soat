@@ -31,7 +31,7 @@ function PaymentDataLi({ label, data }: DetailDataProps) {
   );
 }
 
-export default function ReservationItemDetail({ bookId }: { bookId: string }) {
+export default function ReservationDetail({ bookId }: { bookId: string }) {
   const [detailData, setDetailData] = useState<bookWithPerformance | null>(
     null
   );
