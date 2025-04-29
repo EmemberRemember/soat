@@ -1,19 +1,14 @@
 // hooks/useEnrollRehydration.ts
 import { useEffect, useState } from "react";
-import {
-  EnrollInitialState,
-  EnrollState,
-} from "@/redux/slices/enrollSlice";
-import {
-  seatInitialState,
-  SeatState,
-} from "@/redux/slices/seatSlice";
+import { EnrollInitialState, EnrollState } from "@/redux/slices/enrollSlice";
+import { seatInitialState, SeatState } from "@/redux/slices/seatSlice";
 import store, {
   enrollPersistConfig,
   persistor,
   seatPersistConfig,
 } from "@/redux/store";
 import { getStoredState, REHYDRATE } from "redux-persist";
+import { clearAllImages } from "@/services/indexedDBService";
 
 type TypeEnrollStoredState = EnrollState;
 type TypeSeatStoredState = SeatState;
@@ -38,19 +33,19 @@ export const useEnrollRehydration = ({
 }: UseEnrollRehydrationProps): UseEnrollRehydrationResult => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [enrollStoredState, setEnrollStoredState] = useState<TypeEnrollStoredState>();
+  const [enrollStoredState, setEnrollStoredState] =
+    useState<TypeEnrollStoredState>();
   const [seatStoredState, setSeatStoredState] = useState<TypeSeatStoredState>();
-
 
   const handleRehydration = () => {
     store.dispatch({
       type: REHYDRATE,
-      key:  seatPersistConfig.key,
+      key: seatPersistConfig.key,
       payload: seatStoredState,
     });
     store.dispatch({
       type: REHYDRATE,
-      key:  enrollPersistConfig.key,
+      key: enrollPersistConfig.key,
       payload: enrollStoredState,
     });
     persistor.persist();
@@ -60,6 +55,7 @@ export const useEnrollRehydration = ({
   const handleDoNotReHydration = () => {
     persistor.purge();
     persistor.persist();
+    clearAllImages();
     handleShowModal(false);
   };
 
@@ -75,7 +71,7 @@ export const useEnrollRehydration = ({
 
   const compareStoredStateToInitialState = <
     T extends { _persist?: any; [key: string]: any },
-    U extends { isDirty?: boolean; step?: number; [key: string]: any }
+    U extends { isDirty?: boolean; step?: number; [key: string]: any },
   >(
     storedState: T | undefined,
     initialState: U
@@ -85,7 +81,7 @@ export const useEnrollRehydration = ({
     }
 
     const { _persist, ...filteredStoredState } = storedState;
-    
+
     const {
       isDirty: _isDirty,
       step: _step,
@@ -105,18 +101,21 @@ export const useEnrollRehydration = ({
   useEffect(() => {
     const checkPersistedState = async () => {
       try {
-        const enrollStore = (await getStoredState(enrollPersistConfig)) as EnrollState;
-        const seatStore = (await getStoredState(seatPersistConfig)) as SeatState;
-        
+        const enrollStore = (await getStoredState(
+          enrollPersistConfig
+        )) as EnrollState;
+        const seatStore = (await getStoredState(
+          seatPersistConfig
+        )) as SeatState;
+
         setEnrollStoredState(enrollStore);
         setSeatStoredState(seatStore);
 
         const enrollInitial = EnrollInitialState;
         const seatInitial = seatInitialState;
 
-            
         if (enrollStore || seatStore) {
-        if (
+          if (
             compareStoredStateToInitialState(enrollStore, enrollInitial) ||
             compareStoredStateToInitialState(seatStore, seatInitial)
           ) {
