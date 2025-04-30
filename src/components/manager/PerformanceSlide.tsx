@@ -6,6 +6,7 @@ import { PerformanceDataWithStatus } from "./Performance";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import useSetEditEnrollData from "@/hooks/useSetEditEnrollData";
+import { showToast } from "@/utils/toast";
 
 interface SliceProps {
   data: PerformanceDataWithStatus;
@@ -63,8 +64,10 @@ export default function PerformanceSlide({
         const response = await axios.patch(
           `/api/manager/performance/${performId}/end`
         );
-        alert("공연이 종료 되었습니다.");
-        window.location.reload();
+        showToast("공연이 종료 되었습니다.", "success", () => {
+          router.refresh();
+        });
+        // window.location.reload();
       } catch (error) {
         console.error(error);
       }
@@ -78,8 +81,9 @@ export default function PerformanceSlide({
         const response = await axios.delete(
           `/api/manager/performance/${performId}/delete`
         );
-        alert("공연이 삭제 되었습니다.");
-        window.location.reload();
+        showToast("공연이 삭제 되었습니다.", "success", () => {
+          window.location.reload();
+        });
       } catch (error) {
         console.error(error);
       }

@@ -4,6 +4,7 @@ import { Review } from "@/types/admin";
 import { CloseButton, Button } from "../controls/Button";
 import { Radio } from "../controls/Inputs";
 import Modal from "../Modal";
+import { showToast } from "@/utils/toast";
 
 export default function ReviewForm({
   review,
@@ -65,7 +66,7 @@ export default function ReviewForm({
                           <Button
                             className="h-[20px] text-xs flex items-center"
                             size="small"
-                            onClick={() => alert("상세보기 클릭")}
+                            onClick={() => showToast("상세보기 클릭")}
                           >
                             상세보기
                           </Button>
