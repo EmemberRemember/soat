@@ -96,10 +96,21 @@ export default function SearchPage() {
         selectedCategoryFilters.length === 0 ||
         selectedCategoryFilters.includes(item.category);
 
-      // 판매상태 필터 적용 (선택된 필터가 없으면 모두 통과)
+      // 판매상태별 필터 적용
+      const now = new Date();
+
+      let status: "판매예정" | "판매중" | "판매종료";
+      if (now < new Date(item.bookingStartDate)) {
+        status = "판매예정";
+      } else if (now <= new Date(item.bookingEndDate)) {
+        status = "판매중";
+      } else {
+        status = "판매종료";
+      }
+
       const matchesStatus =
         selectedStatusFilters.length === 0 ||
-        new Date() > new Date(item.bookingEndDate);
+        selectedStatusFilters.includes(status);
 
       // 두 조건을 모두 만족해야 함
       return matchesCategory && matchesStatus;
@@ -221,7 +232,9 @@ export default function SearchPage() {
         {isLoading ? (
           <Loading />
         ) : filteredData.length === 0 ? (
-          <p>검색 결과가 없습니다.</p> // 검색 결과가 없을 때 메시지
+          <p className="text-gray-500 mt-8 text-center">
+            검색 결과가 없습니다.
+          </p> // 검색 결과가 없을 때 메시지
         ) : (
           <section>
             <ul>
