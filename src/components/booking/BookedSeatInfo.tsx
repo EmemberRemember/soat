@@ -46,7 +46,7 @@ export default function BookedSeatInfo({
   const putReservationStatus = async (
     reservationId: string,
     performanceId: string,
-    status: "booked" | "pending",
+    status: "booked",
     performanceDate: string,
     performanceTime: string
   ) => {
@@ -168,7 +168,7 @@ export default function BookedSeatInfo({
               type="button"
               onClick={handleOnClickUpdateReservationStatus}
             >
-              예약 상태 변경
+              입금 완료
             </Button>
           </section>
 
