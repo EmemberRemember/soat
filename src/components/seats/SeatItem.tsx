@@ -6,7 +6,7 @@ interface SeatItemProps {
   seatNumber: number | null;
   isSeat: boolean;
   onClick: () => void;
-  status?: "processing" | "pending" | "booked";
+  status?: "processing" | "pending" | "booked" | 'cancel' |"pendingRefund" ;
   disabled?: boolean;
 }
 export default function SeatItem({
