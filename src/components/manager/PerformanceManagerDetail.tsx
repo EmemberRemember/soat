@@ -13,6 +13,7 @@ interface PerformanceManagerDetailProps {
   isAllAisle: number[];
   performanceTimes: Record<string, PerformanceTime[]>;
   performanceData: PerformanceData;
+  performanceId: string;
 }
 
 interface SelectedPerformanceTime extends PerformanceTime {
@@ -28,6 +29,7 @@ export default function PerformanceManagerDetail({
   isAllAisle,
   performanceTimes,
   performanceData,
+  performanceId,
 }: PerformanceManagerDetailProps) {
   const selectOptions = useMemo(() => {
     return Object.entries(performanceTimes)
