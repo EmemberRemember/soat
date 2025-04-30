@@ -77,6 +77,17 @@ export async function POST(
   }
 
   const { performanceId, day, time, seatId, action } = requestBody;
+
+  const today = new Date();
+  const performanceDate = new Date(day);
+
+  if (performanceDate < today) {
+    return NextResponse.json(
+      { success: false, message: "Cannot select past date" },
+      { status: 400 }
+    );
+  }
+
   const performanceRef = adminDb.collection("performances").doc(performanceId);
 
   try {

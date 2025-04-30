@@ -12,6 +12,7 @@ import { doc, onSnapshot } from "firebase/firestore"; // getDoc, updateDoc 제�
 import { db } from "@/lib/firebaseConfig";
 import axios from "axios";
 import { SeatState } from "@/redux/slices/seatSlice"; // axios import 확인
+import { showToast } from "@/utils/toast";
 
 function datesButton({
   date,
@@ -160,11 +161,11 @@ export default function SeatSelection({
   const handleSeatToggle = async (seatId: string) => {
     if (isUpdating) return;
     if (!userId) {
-      alert("로그인이 필요합니다.");
+      showToast("로그인이 필요합니다.", "error");
       return;
     }
     if (!selectedDay || !selectedTime) {
-      alert("날짜와 시간을 먼저 선택해주세요.");
+      showToast("날짜와 시간을 먼저 선택해주세요.", "error");
       return;
     }
 
@@ -176,7 +177,7 @@ export default function SeatSelection({
       seatInfo.status !== "processing"; // 다른 사람의 processing 좌석도 선택 불가
 
     if (isOccupiedByOther) {
-      alert("이미 다른 사용자가 선택했거나 예매 중인 좌석입니다.");
+      showToast("이미 다른 사용자가 선택했거나 예매 중인 좌석입니다.", "error");
       return;
     }
 
@@ -186,8 +187,9 @@ export default function SeatSelection({
       action === "select" &&
       selectedSeats.size >= maxSelectableSeats - myBookedSeats.length
     ) {
-      alert(
-        `최대 ${maxSelectableSeats - myBookedSeats.length}개의 좌석만 선택할 수 있습니다.`
+      showToast(
+        `최대 ${maxSelectableSeats - myBookedSeats.length}개의 좌석만 선택할 수 있습니다.`,
+        "error"
       );
       return;
     }
@@ -205,7 +207,10 @@ export default function SeatSelection({
 
       if (!response.data.success) {
         console.error("Failed to update seat:", response.data.message);
-        alert(response.data.message || "좌석 업데이트에 실패했습니다.");
+        showToast(
+          response.data.message || "좌석 업데이트에 실패했습니다.",
+          "error"
+        );
         // 실패 시 Firestore 리스너가 최신 상태를 반영하므로 별도 롤백 불필요
       }
       // 성공 시 Firestore 리스너가 자동으로 상태를 업데이트하므로
@@ -216,7 +221,7 @@ export default function SeatSelection({
       const message =
         error.response?.data?.message ||
         "좌석 업데이트 중 오류가 발생했습니다. 다시 시도해주세요.";
-      alert(message);
+      showToast(message, "error");
     } finally {
       setIsUpdating(false);
     }
@@ -224,7 +229,7 @@ export default function SeatSelection({
 
   const handleBooking = () => {
     if (selectedSeats.size === 0) {
-      alert("좌석을 선택해주세요.");
+      showToast("좌석을 선택해주세요.", "error");
       return;
     }
     setProcess("purchaserInfo");
@@ -252,6 +257,10 @@ export default function SeatSelection({
         <ul className="flex gap-x-3 flex-wrap">
           {Object.keys(performanceDates)
             .sort()
+            .filter((e) => {
+              const date = new Date(e);
+              return date >= new Date(); // 오늘 날짜 이후의 공연만 표시
+            })
             .map((date) => (
               <li key={date} className="mb-2">
                 <Button
@@ -293,6 +302,10 @@ export default function SeatSelection({
           isLoading ? (
             <div className="w-full h-64 flex items-center justify-center">
               <p>좌석 정보를 불러오는 중...</p>
+            </div>
+          ) : new Date(selectedDay) < new Date() ? (
+            <div className="w-full h-64 flex items-center justify-center mt-4 border-2 rounded-md">
+              <p>예매할 수 없는 날짜입니다.</p>
             </div>
           ) : (
             <div className="w-full h-fit rounded-md shadow-sm border-2 mt-4">

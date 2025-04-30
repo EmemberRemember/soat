@@ -4,6 +4,7 @@ import { getImageURLIndexedDB, saveImageIndexedDB } from "@/utils/Images";
 import { ChainedCommands } from "@tiptap/react";
 import React from "react";
 import { useDispatch } from "react-redux";
+import { showToast } from "@/utils/toast";
 
 export default function Toolbar({
   editor,
@@ -61,7 +62,7 @@ export default function Toolbar({
       }
     } catch (err) {
       console.error("이미지 업로드에 실패했습니다.", err);
-      alert("이미지 업로드에 실패했습니다.");
+      showToast("이미지 업로드에 실패했습니다.", "error");
     } finally {
       e.target.value = "";
     }

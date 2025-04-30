@@ -37,7 +37,7 @@ export async function GET(request: NextRequest, { params }: PageParams) {
     }
 
     const bookingData = {
-      bookingId: bookingDoc.id,
+      reservationId: bookingDoc.id,
       ...bookingDoc.data(),
     } as bookWithPerformance;
 
@@ -79,7 +79,7 @@ export async function GET(request: NextRequest, { params }: PageParams) {
       performanceDetails,
     };
 
-    return NextResponse.json({ booking: enrichedBooking });
+    return NextResponse.json(enrichedBooking);
   } catch (error) {
     console.error("예매 내역 조회 오류:", error);
     return NextResponse.json(
@@ -131,7 +131,6 @@ export async function DELETE(request: NextRequest, { params }: PageParams) {
     const performanceDateTime = new Date(
       `${performanceDate}T${bookingData.performanceTime}`
     );
-    console.log(performanceDateTime);
 
     if (performanceDateTime < today) {
       return NextResponse.json(
@@ -141,63 +140,58 @@ export async function DELETE(request: NextRequest, { params }: PageParams) {
     }
 
     // 2. 필요한 데이터 추출
-    const selectedSeats = bookingData.selectedSeats || [];
     const performanceId = bookingData.performanceId;
 
-    // 3. 트랜잭션 시작 - 예매 기록 삭제 및 좌석 정보 업데이트
+    // 3. 트랜잭션 시작 - 좌석 정보 업데이트 및 예매 상태 변경
     await adminDb.runTransaction(async (transaction) => {
-      // 공연 문서 참조
       const performanceRef = adminDb
         .collection("performances")
         .doc(performanceId);
+      const bookingRef = adminDb.collection("bookings").doc(bookId);
 
-      // 공연 정보 가져오기
       const performanceDoc = await transaction.get(performanceRef);
+      const bookingDocSnapshot = await transaction.get(bookingRef);
 
-      if (!performanceDoc.exists) {
-        throw new Error("공연 정보를 찾을 수 없습니다.");
+      if (!performanceDoc.exists || !bookingDocSnapshot.exists) {
+        throw new Error("공연 또는 예매 정보를 찾을 수 없습니다.");
       }
 
       const performanceData = performanceDoc.data();
+      const bookingData = bookingDocSnapshot.data() as bookWithPerformance;
 
-      // performances 필드에서 해당 날짜의 데이터 가져오기
       const performancesData = performanceData?.performances || {};
 
-      // 해당 날짜의 데이터가 있는지 확인
       if (performancesData[performanceDate]) {
-        // 해당 날짜의 모든 회차 데이터 순회
         for (let i = 0; i < performancesData[performanceDate].length; i++) {
           const timeSlot = performancesData[performanceDate][i];
 
-          // 해당 회차에 occupiedSeats 배열이 있는지 확인
           if (timeSlot.occupiedSeats && Array.isArray(timeSlot.occupiedSeats)) {
-            // 취소할 좌석과 관련된 항목 필터링
+            // reservationId를 기준으로 좌석 필터링
             const updatedOccupiedSeats = timeSlot.occupiedSeats.filter(
-              (seat: OccupiedSeat) => {
-                // 현재 사용자의 ID와 일치하는지 확인하고
-                // selectedSeats 배열에 있는 좌석인지 확인
-                return !(
-                  seat.occupantId === userId &&
-                  selectedSeats.includes(seat.seatId)
-                );
-              }
+              (seat: OccupiedSeat) => seat.reservationId !== bookId
             );
 
-            // 필터링된 배열로 업데이트
             performancesData[performanceDate][i].occupiedSeats =
               updatedOccupiedSeats;
           }
         }
 
-        // 공연 문서의 performances 필드 업데이트
         transaction.update(performanceRef, {
           [`performances.${performanceDate}`]:
             performancesData[performanceDate],
         });
       }
 
-      // 예매 기록 삭제
-      transaction.delete(adminDb.collection("bookings").doc(bookId));
+      // 예매 상태 업데이트
+      const newStatus =
+        bookingData.paymentStatus === "booked" ||
+        bookingData.paymentStatus === "pendingRefund"
+          ? "pendingRefund"
+          : "cancel";
+
+      transaction.update(bookingRef, {
+        paymentStatus: newStatus,
+      });
     });
 
     return NextResponse.json({

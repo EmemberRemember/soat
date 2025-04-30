@@ -8,6 +8,7 @@ import SubTabDescription from "@/components/admin/SubTabDescription";
 import { Checkbox, Radio } from "@/components/controls/Inputs";
 import { Button } from "@/components/controls/Button";
 import Modal from "@/components/Modal";
+import { showToast } from "@/utils/toast";
 
 export default function MaintenanceModePage() {
   const [modeRadio, setModeRadio] = useState("");
@@ -34,7 +35,7 @@ export default function MaintenanceModePage() {
   // 저장하기 버튼 클릭 시 유효성 검사
   const handleSaveClick = () => {
     if (!modeRadio || Object.values(checkedItems).every((value) => !value)) {
-      alert("모든 항목을 선택해주세요."); // 경고창 표시
+      showToast("모든 항목을 선택해주세요.", "error"); // 경고창 표시
     } else {
       setIsApplyModalOpen(true); // 모든 값이 선택되면 저장 완료 모달 표시
     }
@@ -79,10 +80,10 @@ export default function MaintenanceModePage() {
                     {key === "home"
                       ? "홈 (/)"
                       : key === "reservation"
-                      ? "예매 (/reservation)"
-                      : key === "enrollment"
-                      ? "공연등록 (/enrollment)"
-                      : "페이지 관리자 (/admin)"}
+                        ? "예매 (/reservation)"
+                        : key === "enrollment"
+                          ? "공연등록 (/enrollment)"
+                          : "페이지 관리자 (/admin)"}
                   </Checkbox>
                 </li>
               ))}

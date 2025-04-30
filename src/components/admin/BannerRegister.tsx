@@ -3,6 +3,7 @@ import { Radio } from "../controls/Inputs";
 import { Button, CloseButton } from "../controls/Button";
 import { NewBanner } from "@/types/admin";
 import Modal from "../Modal";
+import { showToast } from "@/utils/toast";
 
 interface BannerRegisterProps {
   onClose: () => void;
@@ -44,19 +45,19 @@ export default function BannerRegister({
 
   const handleSubmit = () => {
     if (!formData.bannerTitle.trim()) {
-      alert("배너 제목을 입력해주세요.");
+      showToast("배너 제목을 입력해주세요.", "error");
       return;
     }
     if (!formData.bannerImage) {
-      alert("배너 이미지를 선택해주세요.");
+      showToast("배너 이미지를 선택해주세요.", "error");
       return;
     }
     if (!formData.alternativeText.trim()) {
-      alert("대체 텍스트를 입력해주세요.");
+      showToast("대체 텍스트를 입력해주세요.", "error");
       return;
     }
     if (!formData.bannerLink.trim()) {
-      alert("배너 링크를 입력해주세요.");
+      showToast("배너 링크를 입력해주세요.", "error");
       return;
     }
 

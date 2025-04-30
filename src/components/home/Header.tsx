@@ -38,7 +38,7 @@ export default function Header() {
     ];
     if (!search) {
       setSearchValue("");
-      return alert("검색된 내용이 없습니다.");
+      return;
     } else if (category.includes(search)) {
       router.push(`/search?category=${search}`);
     } else {

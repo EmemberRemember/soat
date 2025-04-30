@@ -6,7 +6,7 @@ interface SeatItemProps {
   seatNumber: number | null;
   isSeat: boolean;
   onClick: () => void;
-  status?: "processing" | "pending" | "booked";
+  status?: "processing" | "pending" | "booked" | "cancel" | "pendingRefund";
   disabled?: boolean;
 }
 export default function SeatItem({
@@ -20,7 +20,9 @@ export default function SeatItem({
   const handleOnclickSeatItem = () => {
     onClick();
   };
-  const getStatusClass = (status?: "processing" | "pending" | "booked") => {
+  const getStatusClass = (
+    status?: "processing" | "pending" | "booked" | "cancel" | "pendingRefund"
+  ) => {
     switch (status) {
       case "booked":
         return "bg-red-500";
@@ -28,6 +30,10 @@ export default function SeatItem({
         return "bg-yellow-400";
       case "processing":
         return "bg-blue-400";
+      case "cancel":
+        return "bg-gray-400";
+      case "pendingRefund":
+        return "bg-green-600";
       default:
         return "bg-gray-200"; // 예약 안 된 좌석
     }

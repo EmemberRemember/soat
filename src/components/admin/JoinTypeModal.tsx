@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Button, CloseButton } from "../controls/Button";
 import { Radio } from "../controls/Inputs";
+import { showToast } from "@/utils/toast";
 
 export default function JoinTypeModal({ onClose }: { onClose: () => void }) {
   const [joinTypeRadio, setJoinTypeRadio] = useState("individual");
@@ -13,14 +14,17 @@ export default function JoinTypeModal({ onClose }: { onClose: () => void }) {
 
   const handleApplyJoinType = () => {
     if (joinTypeRadio === "entrepreneur" && !businessNumber) {
-      alert("사업자등록번호를 입력해주세요.");
+      showToast("사업자등록번호를 입력해주세요.", "error");
       return; // 사업자 등록번호가 없으면 처리되지 않음
     }
 
     if (joinTypeRadio === "individual") {
-      console.log("개인으로 변경");
+      showToast("예매 회원으로 변경되었습니다.", "success");
     } else if (joinTypeRadio === "entrepreneur") {
-      console.log(`사업자로 변경 (사업자번호: ${businessNumber})`);
+      showToast(
+        `사업자 회원으로 변경되었습니다. (사업자번호: ${businessNumber})`,
+        "success"
+      );
     }
     handleClose(); // 변경이 완료되면 모달을 닫음
   };
@@ -50,7 +54,7 @@ export default function JoinTypeModal({ onClose }: { onClose: () => void }) {
               onChange={(e) => {
                 const inputValue = e.target.value;
                 if (!/^\d*$/.test(inputValue)) {
-                  alert("숫자만 입력해주세요.");
+                  showToast("숫자만 입력해주세요.", "error");
                   return;
                 }
                 setBusinessNumber(inputValue);

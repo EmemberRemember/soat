@@ -23,6 +23,8 @@ const BookingStatus = {
   processing: "예매중",
   pending: "입금 대기",
   booked: "입금 완료",
+  cancel: "예약 취소",
+  pendingRefund: "환불 대기",
 };
 
 export default function BookedSeatInfo({

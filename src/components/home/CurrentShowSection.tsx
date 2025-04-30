@@ -87,7 +87,7 @@ export default function CurrentShowSection({
           <img
             src={show.poster.url}
             alt={show.title}
-            className="absolute top-0 left-0 w-full h-full rounded-xl cursor-pointer object-cover"
+            className="absolute top-0 left-0 w-full h-full rounded-xl cursor-pointer object-cover hover:shadow-md transition-all duration-200"
           />
         </div>
         <div className="flex flex-col flex-1">

@@ -22,7 +22,7 @@ export default function UpcomingShowsSection({
               <img
                 src={show.poster.url}
                 alt={show.title}
-                className="w-full h-[200px] md:h-[233px] rounded-xl mb-2 md:mb-3 object-cover"
+                className="w-full h-[200px] md:h-[233px] rounded-xl mb-2 md:mb-3 object-cover hover:shadow-md transition-all duration-200"
               />
               <p className="font-bold text-lg md:text-xl cursor-pointer">
                 {show.title}

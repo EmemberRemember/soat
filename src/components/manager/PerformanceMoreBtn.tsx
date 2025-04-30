@@ -32,21 +32,23 @@ export default function PerformanceMoreBtn({
           onClick={onClickCheckBtn}
           Icon={Eye}
         />
-        <div className="w-full h-px bg-border" />
+        {/* <div className="w-full h-px bg-border" /> */}
         {/* <PerformanceButton
           label="공연 종료"
           Icon={CalendarX}
           onClick={onClickTerminateBtn}
           className="text-destructive hover:text-destructive hover:bg-destructive/10"
         /> */}
-        <div className="w-full h-px bg-border" />
         {isPerformanceEnded && (
-          <PerformanceButton
-            label="삭제"
-            Icon={Trash}
-            onClick={onClickDeleteBtn}
-            className="text-destructive hover:text-destructive hover:bg-destructive/10"
-          />
+          <>
+            <div className="w-full h-px bg-border" />
+            <PerformanceButton
+              label="삭제"
+              Icon={Trash}
+              onClick={onClickDeleteBtn}
+              className="text-destructive hover:text-destructive hover:bg-destructive/10"
+            />
+          </>
         )}
       </CardContent>
     </Card>

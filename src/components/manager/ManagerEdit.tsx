@@ -5,6 +5,7 @@ import { JoinInput } from "@/components/controls/Inputs";
 import { Button } from "../controls/Button";
 import axios from "axios";
 import { validations } from "@/utils/validations";
+import { showToast } from "@/utils/toast";
 
 type EmailUpdateState =
   | "initial"
@@ -93,10 +94,11 @@ export default function ManagerEdit() {
           : { teamName, managerName };
 
       const response = await axios.patch("/api/manager/edit", formData);
-      console.log("수정 완료:", response.data);
-      alert("정보 수정이 완료되었습니다.");
-      router.push("/manager");
+      showToast("정보 수정이 완료되었습니다.", "success", () => {
+        router.push("/manager");
+      });
     } catch (error) {
+      showToast("정보 수정 중 오류가 발생했습니다.", "error");
       console.error("수정 오류:", error);
     }
   }
@@ -108,7 +110,7 @@ export default function ManagerEdit() {
       setEmailBtnLabel("인증번호 전송");
     } else if (emailBtnLabel.includes("인증번호")) {
       if (!email || email.trim() === "") {
-        alert("이메일이 입력되지 않았습니다.");
+        showToast("이메일이 입력되지 않았습니다.", "error");
         return;
       }
       // 이메일 인증 api 호출
@@ -118,9 +120,11 @@ export default function ManagerEdit() {
           userType: "seller",
         });
         console.log("인증번호 전송 성공:", response.data);
+        showToast("이메일 인증번호가 전송되었습니다.", "success");
         setEmailUpdate("emailSent");
       } catch (error) {
         console.error("인증번호 전송 오류:", error);
+        showToast("이메일 인증번호 전송에 실패했습니다.", "error");
         setEmailUpdate("error");
         if (axios.isAxiosError(error)) {
           setEmailError(error.response?.data.error);

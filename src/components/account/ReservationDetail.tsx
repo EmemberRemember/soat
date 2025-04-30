@@ -11,22 +11,44 @@ import Modal from "../Modal";
 import { useShowModal } from "@/hooks/useShowModal";
 import { CloseButton } from "../controls/Button";
 import { showToast } from "@/utils/toast";
+
 interface DetailDataProps {
   label: string;
   data: string;
 }
+type PaymentStatusType =
+  | "입금 대기"
+  | "환불 대기"
+  | "예매 취소"
+  | "결제 완료"
+  | "예매중";
 
 export default function ReservationDetail({ bookId }: { bookId: string }) {
   const [detailData, setDetailData] = useState<bookWithPerformance | null>(
     null
   );
+  const [paymentStatus, setPaymentStatus] =
+    useState<PaymentStatusType>("예매중");
   const { showModal, handleShowModal } = useShowModal();
   const router = useRouter();
+
   useEffect(() => {
     async function fetchDetailData() {
       try {
         const response = await axios.get(`/api/account/book/${bookId}`);
-        setDetailData(response.data.booking);
+        setDetailData(response.data);
+        const status = response.data.paymentStatus;
+        if (status === "pending") {
+          setPaymentStatus("입금 대기");
+        } else if (status === "booked") {
+          setPaymentStatus("결제 완료");
+        } else if (status === "pendingRefund") {
+          setPaymentStatus("환불 대기");
+        } else if (status === "cancel") {
+          setPaymentStatus("예매 취소");
+        } else {
+          setPaymentStatus("예매중");
+        }
       } catch (error) {
         console.error("Error fetching booking details:", error);
       }
@@ -35,15 +57,25 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
     fetchDetailData();
   }, []);
 
-  const handleCancelBooking = async (bookId: string) => {
-    try {
-      const response = await axios.delete(`/api/account/book/${bookId}`);
-      if (response.status === 200) {
-        alert("예매 취소가 완료되었습니다. 마이페이지로 이동합니다.");
-        router.push("/account");
+  const handleCancelBooking = async (status: string, bookId: string) => {
+    if (status === "pendingRefund") {
+      showToast("환불 대기 상태 이므로 예매 취소가 불가합니다.", "error");
+      return;
+    } else if (status === "cancel") {
+      showToast("취소가 완료된 공연입니다.", "error");
+    } else {
+      try {
+        const response = await axios.delete(`/api/account/book/${bookId}`);
+        if (response.status === 200) {
+          showToast(
+            `${status !== "booked" ? "예매 취소가 완료되었습니다. 마이페이지로 이동합니다." : "환불 요청이 완료되었습니다. 마이 페이지로 이동합니다."}`,
+            "success",
+            () => router.push("/account")
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching booking details:", error);
       }
-    } catch (error) {
-      console.error("Error fetching booking details:", error);
     }
   };
 
@@ -60,8 +92,6 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
     handleShowModal(false);
   };
 
-  const paymentStatus =
-    detailData?.paymentStatus === "pending" ? "미입금" : "결제 완료";
   const isPerformanceEnded =
     detailData && new Date(detailData.performanceDate) < new Date();
 
@@ -74,7 +104,9 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
             <ul className="absolute top-0 right-0 text-xs flex gap-2">
               <li>
                 <Button
-                  onClick={(e) => handleCancelBooking(bookId)}
+                  onClick={(e) =>
+                    handleCancelBooking(detailData.paymentStatus, bookId)
+                  }
                   className="font-normal py-[2.5px] sm:text-base sm:font-bold"
                   disabled={isPerformanceEnded as boolean}
                 >
@@ -94,7 +126,7 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
             <div className="flex items-center gap-6 my-4">
               <Link
                 href={`/detail/${detailData.performanceId}`}
-                className="w-full max-w-[90px] sm:w-[45%] sm:max-w-full  "
+                className="w-full max-w-[90px] sm:w-[45%] sm:max-w-full shadow-sm rounded-md border border-gray-200 hover:shadow-lg transition-all duration-200"
               >
                 <img
                   src={detailData.performanceDetails.poster}
@@ -103,7 +135,10 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
                 />
               </Link>
               <ul className="text-xs w-full sm:text-base md:text-xl ">
-                <BookingDataLi label="예매번호" data={detailData.bookingId} />
+                <BookingDataLi
+                  label="예매번호"
+                  data={detailData.reservationId}
+                />
                 <BookingDataLi
                   label="공연명"
                   data={detailData.performanceDetails.title}

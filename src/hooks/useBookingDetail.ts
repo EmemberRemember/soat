@@ -16,7 +16,7 @@ export default function useBookingDetail() {
 
     try {
       const response = await axios.get("/api/account/book");
-      const data = response.data.reservations.sort(
+      const data = response.data.sort(
         (a: bookWithPerformance, b: bookWithPerformance) => {
           const dateA = new Date(
             `${a.performanceDate}T${a.performanceTime}:00`

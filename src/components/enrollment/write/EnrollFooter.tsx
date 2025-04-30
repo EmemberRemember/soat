@@ -16,6 +16,7 @@ import EnrollRehydration from "./EnrollRehydartion";
 import { useRouter } from "next/navigation";
 import { useValidationEnrollment } from "@/hooks/useValidationEnrollment";
 import Loading from "@/components/Loading";
+import { showToast } from "@/utils/toast";
 
 export default function EnrollFooter() {
   const router = useRouter();
@@ -41,25 +42,28 @@ export default function EnrollFooter() {
       // 알림을 컴포넌트에서 처리
       switch (invalidFieldName) {
         case "enrollTitle":
-          alert("공연명을 입력해주세요");
+          showToast("공연명을 입력해주세요", "error");
           break;
         case "category":
-          alert("공연의 카테고리를 설정해주세요");
+          showToast("공연의 카테고리를 설정해주세요", "error");
           break;
         case "bookingStartDate":
-          alert("공연 예약 날짜를 설정해주세요.");
+          showToast("공연 예약 날짜를 설정해주세요.", "error");
           break;
         case "enrollBookingEndDate":
-          alert("공연 예약 종료 날짜는 시작 날짜보다 빠를 수 없습니다.");
+          showToast(
+            "공연 예약 종료 날짜는 시작 날짜보다 빠를 수 없습니다.",
+            "error"
+          );
           break;
         case "enrollDetailAddress":
-          alert("주소를 입력해주세요.");
+          showToast("주소를 입력해주세요.", "error");
           break;
         case "poster":
-          alert("포스터를 추가해주세요.");
+          showToast("포스터를 추가해주세요.", "error");
           break;
         case "performances":
-          alert("유효한 날짜에 공연을 등록해주세요");
+          showToast("유효한 날짜에 공연을 등록해주세요", "error");
           break;
         default:
           break;
@@ -138,14 +142,15 @@ export default function EnrollFooter() {
       });
 
       if (response.status === 201) {
-        alert("공연 등록이 완료되었습니다.");
         persistor.purge();
         await clearAllImages();
-        router.push("/manager/performance");
+        showToast("공연 등록이 완료되었습니다.", "success", () => {
+          router.push("/manager/performance");
+        });
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        alert(error.response?.data.error);
+        showToast(error.response?.data.error, "error");
       }
     } finally {
       setLoading(false);
