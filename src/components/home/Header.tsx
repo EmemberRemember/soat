@@ -26,11 +26,23 @@ export default function Header() {
   const isSeller = userType === "seller";
 
   const handleSearch = async () => {
-    if (!searchValue.trim()) {
+    const search: string = searchValue.trim();
+    const category: string[] = [
+      "콘서트",
+      "뮤지컬",
+      "연극",
+      "전시/행사",
+      "전시",
+      "행사",
+      "팬미팅",
+    ];
+    if (!search) {
       setSearchValue("");
-      return alert("검색된 내용이 없습니다.");
+      return;
+    } else if (category.includes(search)) {
+      router.push(`/search?category=${search}`);
     } else {
-      router.push(`/search?title=${searchValue}`);
+      router.push(`/search?title=${search}`);
     }
   };
 
@@ -38,7 +50,7 @@ export default function Header() {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  const handleLogout = async (e) => {
+  const handleLogout = async (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     await signOut({ redirect: false });
     window.location.href = "/";
@@ -103,10 +115,7 @@ export default function Header() {
                 </li>
               ) : isSeller ? (
                 <li className="cursor-pointer">
-                  <Link
-                    href="/performances"
-                    className="text-black flex gap-[5px]"
-                  >
+                  <Link href="/manager" className="text-black flex gap-[5px]">
                     <Ticket color="#fc4c13" />내 공연
                   </Link>
                 </li>

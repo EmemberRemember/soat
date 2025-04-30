@@ -5,6 +5,7 @@ import { CloseButton, Button } from "../controls/Button";
 import { Radio } from "../controls/Inputs";
 import JoinTypeModal from "./JoinTypeModal";
 import Modal from "../Modal";
+import { showToast } from "@/utils/toast";
 
 export default function TheaterAdminUserForm({
   user,
@@ -29,7 +30,7 @@ export default function TheaterAdminUserForm({
     if (adminUserRadioState) {
       setIsOpenJoinTypeModal(true);
     } else {
-      alert("라디오 버튼을 선택하세요.");
+      showToast("라디오 버튼을 선택하세요.", "error");
     }
   };
 
@@ -43,7 +44,7 @@ export default function TheaterAdminUserForm({
         <div className="w-[330px] h-[80%] max-h-[560px] p-4 bg-white rounded-md z-60">
           <div className="relative flex justify-center w-full">
             <h2 className="font-semibold text-center">
-              <span>{user.name}</span>님의 회원정보
+              <span>{user.username}</span>님의 회원정보
             </h2>
             <CloseButton onClick={onClose} className="absolute right-0" />
           </div>
@@ -51,11 +52,11 @@ export default function TheaterAdminUserForm({
             <h3 className="sr-only">회원정보</h3>
             <dl className="flex flex-wrap gap-x-1 gap-y-1">
               {[
-                { label: "이름", value: user.name },
+                { label: "이름", value: user.username },
                 { label: "이메일", value: user.email },
                 { label: "휴대폰번호", value: "-" },
                 { label: "회원유형", value: "-" },
-                { label: "가입날짜", value: user.joinDate },
+                { label: "가입날짜", value: user.createdAt },
                 { label: "가입유형", value: user.joinType, withButton: true },
                 { label: "사업자등록번호", value: "-" },
                 { label: "팀명", value: "-" },

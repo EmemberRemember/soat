@@ -1,9 +1,12 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import DetailPost from "./DetailPost";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { Edit2, Trash2, X, Check } from "lucide-react"; // 아이콘 추가
 import { Star } from "lucide-react";
+import Modal from "../Modal";
+import { Button, CloseButton } from "../controls/Button";
+import { useShowModal } from "@/hooks/useShowModal";
 
 // API로부터 가져올 리뷰 데이터 타입 정의
 interface ReviewData {
@@ -24,9 +27,10 @@ interface EditingReview {
   ratings: number;
 }
 
-export default function ReviewList() {
+export default function ReviewList({ session }: { session: string }) {
   const params = useParams();
   const performId = params.performId;
+  const router = useRouter();
 
   const [reviews, setReviews] = useState<ReviewData[]>([]);
   const [isReviewAlign, setReviewAlign] = useState("LASTEST");
@@ -36,6 +40,7 @@ export default function ReviewList() {
     loading: boolean;
     error: string;
   }>({ loading: false, error: "" });
+  const { showModal, handleShowModal } = useShowModal();
 
   // 수정 상태 관리
   const [editingReview, setEditingReview] = useState<EditingReview | null>(
@@ -92,8 +97,18 @@ export default function ReviewList() {
     setReviews(sortedReviews);
   }, [isReviewAlign]);
 
+  // 비회원 로그인 안내 모달 종료 핸들러
+  const handleModalClose = () => {
+    handleShowModal(false);
+  };
+
   // 좋아요 처리 핸들러
   const handleLike = async (reviewId: string) => {
+    if (!session) {
+      handleShowModal(true);
+      return;
+    }
+
     try {
       // 현재 리뷰 찾기
       const reviewIndex = reviews.findIndex((r) => r.id === reviewId);
@@ -349,7 +364,7 @@ export default function ReviewList() {
                   <p className="font-bold text-lg">{data.username}</p>
                 </div>
                 <textarea
-                  className="w-full mt-4 p-2 border rounded-md min-h-[100px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full mt-4 p-2 border rounded-md min-h-[100px] focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                   value={editingReview.content}
                   onChange={handleContentChange}
                   placeholder="리뷰 내용을 입력하세요"
@@ -415,6 +430,42 @@ export default function ReviewList() {
           </div>
         ))}
       </section>
+      <Modal
+        isOpen={showModal}
+        onClose={handleModalClose}
+        className="flex flex-col justify-center items-center relative gap-4 py-10"
+      >
+        <>
+          <CloseButton
+            onClick={() => handleModalClose()}
+            className="absolute top-4 right-4"
+          />
+          <p className="text-center">
+            로그인 후 좋아요 기능을 이용할 수 있습니다.
+            <br />
+            로그인 하시겠습니까?
+          </p>
+          <ul className="flex text-sm gap-1">
+            <li>
+              <Button
+                onClick={() => router.push("/login")}
+                className="max-w-20 px-[28.5px] py-[7.5px]"
+              >
+                예
+              </Button>
+            </li>
+            <li>
+              <Button
+                highlight
+                onClick={() => handleModalClose()}
+                className="max-w-20 px-[28.5px] py-[7.5px]"
+              >
+                아니오
+              </Button>
+            </li>
+          </ul>
+        </>
+      </Modal>
     </div>
   );
 }

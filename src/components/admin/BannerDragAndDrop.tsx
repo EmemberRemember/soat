@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Banner } from "@/types/admin";
 
 export default function BannerDragAndDrop({ data }: { data: Banner[] }) {

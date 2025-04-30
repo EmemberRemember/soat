@@ -41,12 +41,14 @@ export interface EnrollModalProps {
   initTime?: string;
   initCasting?: string[];
   mode: EnrollModalMode;
+  isParentEdit: boolean;
 }
 
 export interface PerformanceInfoProps {
   date: Date;
   performances: Performance[];
   onEdit: (time: string, casting: string[], index: number) => void;
+  isParentEdit: boolean;
 }
 
 export type CalendarValuePiece = Date | null;

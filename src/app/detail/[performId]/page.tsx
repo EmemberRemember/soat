@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import React from "react";
 import Header from "@/components/home/Header";
 import Footer from "@/components/home/Footer";
@@ -6,6 +8,7 @@ import ShowDetailSection from "@/components/detail/ShowDetailSection";
 import { getPerformanceById } from "@/lib/performance";
 import { PerformanceData } from "@/app/api/performance/route";
 import { sanitizeHTML } from "@/utils/sanitizer";
+import { Timestamp } from "firebase-admin/firestore";
 
 interface PageParams {
   params: {
@@ -33,9 +36,10 @@ export default async function PerformanceDetailPage({ params }: PageParams) {
 
   const dateParsedPerformanceData = {
     ...performanceData,
-    createdAt: performanceData.createdAt.toDate().toISOString(),
-    updatedAt: performanceData.updatedAt.toDate().toISOString(),
+    createdAt: (performanceData.createdAt as Timestamp).toDate().toISOString(),
+    updatedAt: (performanceData.updatedAt as Timestamp).toDate().toISOString(),
     content: sanitizeHTML(performanceData.content),
+    id: performId,
   } as PerformanceData;
 
   return (

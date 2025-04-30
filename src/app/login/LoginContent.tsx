@@ -66,7 +66,7 @@ export default function LoginContent() {
     if (status === "authenticated" && !session?.user?.isDeleteUser) {
       router.push("/");
     }
-  }, [status]);
+  }, [status, session]);
 
   const lineStyles: LineStyles = {
     width: userType === UserType.TICKETUSER ? "264px" : "264px",

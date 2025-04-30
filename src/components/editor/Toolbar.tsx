@@ -4,6 +4,7 @@ import { getImageURLIndexedDB, saveImageIndexedDB } from "@/utils/Images";
 import { ChainedCommands } from "@tiptap/react";
 import React from "react";
 import { useDispatch } from "react-redux";
+import { showToast } from "@/utils/toast";
 
 export default function Toolbar({
   editor,
@@ -42,15 +43,29 @@ export default function Toolbar({
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const file = e.target.files;
-    if (file) {
+    if (!file || file.length === 0) return;
+
+    try {
       const fileId = await saveImageIndexedDB(file[0]);
       const imageUrl = await getImageURLIndexedDB(fileId);
       if (editor) {
         dispatch(addFile(fileId));
-        editor.chain().focus().setImage({ src: imageUrl, key: fileId }).run();
+        editor
+          .chain()
+          .focus()
+          .insertContent({
+            type: "customImage",
+            attrs: { src: imageUrl, key: fileId },
+          })
+          .run();
+        //setImage 내 없는 속성으로, key: fileId 제거
       }
+    } catch (err) {
+      console.error("이미지 업로드에 실패했습니다.", err);
+      showToast("이미지 업로드에 실패했습니다.", "error");
+    } finally {
+      e.target.value = "";
     }
-    e.target.value = "";
   };
 
   const handleUploadImageURL = () => {

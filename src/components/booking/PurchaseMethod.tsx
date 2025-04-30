@@ -1,15 +1,24 @@
 import { useState } from "react";
-
-import { Button } from "../controls/Button";
-import { Checkbox, Radio, TextInput } from "../controls/Inputs";
-import { Select } from "../controls/Select";
+import { Radio } from "../controls/Inputs";
 import BookSection from "./BookSection";
 import ButtonRow from "./ButtonRow";
 
 export default function PurchaseMethod({
   setProcess,
+  performanceName,
+  performanceDate,
+  performanceTime,
+  selectedSeats,
+  ticketPrice,
+  bookCompleteHandler,
 }: {
   setProcess: (process: string) => void;
+  performanceName: string;
+  performanceDate: string;
+  performanceTime: string;
+  selectedSeats: Set<string>;
+  ticketPrice: number;
+  bookCompleteHandler: () => void;
 }) {
   const [purchaseMethod, setPurchaseMethod] = useState("bank");
 
@@ -17,13 +26,27 @@ export default function PurchaseMethod({
     <>
       <BookSection>
         <h3 className="font-bold text-xl">3. 티켓 정보</h3>
-        <p>2024 주인님 단독 공연</p>
+        <p>
+          {performanceName},{" "}
+          {new Date(performanceDate).toLocaleDateString("ko-KR", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+          })}
+          , {performanceTime.replace(":", "시 ")}분
+        </p>
+
         <ul className="list-disc ml-4">
-          <li>2025년 2월 4일 / A3</li>
-          <li>2025년 2월 4일 / A4</li>
+          {Array.from(selectedSeats).map((seat) => (
+            <li key={seat}>
+              {seat} ({ticketPrice.toLocaleString("ko-KR")}원)
+            </li>
+          ))}
         </ul>
-        <p>총 2매, 합계 16,000원</p>
-        <p>합계 16,000원</p>
+        <p>
+          총 {selectedSeats.size}매, 합계{" "}
+          {(ticketPrice * selectedSeats.size).toLocaleString("ko-KR")}원
+        </p>
       </BookSection>
       <BookSection>
         <h3 className="font-bold text-xl">4. 결제 수단</h3>
@@ -36,9 +59,10 @@ export default function PurchaseMethod({
       </BookSection>
       <ButtonRow
         setProcess={setProcess}
+        bookCompleteHandler={bookCompleteHandler}
         buttons={[
           { label: "뒤로 가기", process: "purchaserInfo", highlight: false },
-          { label: "다음", process: "bookComplete", highlight: true },
+          { label: "예매하기", process: "bookComplete", highlight: true },
         ]}
       />
     </>

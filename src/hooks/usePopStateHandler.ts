@@ -1,80 +1,33 @@
 "use client";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
-interface PopStateHandlerProps {
-  onNavigationAttempt?: (url: string) => void;
-  enabled?: boolean;
+interface usePopStateHandlerProps {
+  onHandlePopState: () => void;
+  isDirty: boolean;
 }
-export function usePopStateHandler({
-  onNavigationAttempt,
-  enabled = false,
-}: PopStateHandlerProps) {
-  const [pendingUrl, setPendingUrl] = useState<string | null>(null);
-  const router = useRouter();
+
+export const usePopStateHandler = ({
+  isDirty,
+  onHandlePopState,
+}: usePopStateHandlerProps) => {
+  const isClickedFirst = useRef(false);
+
+  const handlePopState = useCallback(() => {
+    onHandlePopState();
+  }, [onHandlePopState]);
 
   useEffect(() => {
-    // 페이지 로드 시 실행되는 함수
-    const setupInitialState = () => {
-      // 현재 상태를 history.state에 저장
-      const currentState = { ...history.state, handled: true };
-      history.replaceState(currentState, "");
-    };
+    if (!isClickedFirst.current && isDirty) {
+      console.log(isDirty, "popstate");
+      window.history.pushState(null, "", window.location.href);
+      isClickedFirst.current = true;
+    }
+  }, [isDirty]); //마운트 시 현재 url 을 historyAPI 에 추가
 
-    setupInitialState();
-
-    // popstate 이벤트 처리
-    const handlePopState = (event: PopStateEvent): void => {
-      // 이미 처리된 이벤트인지 확인
-      if (event.state && event.state.handled) {
-        return;
-      }
-
-      // 기본 이벤트 동작 방지
-      event.preventDefault();
-
-      // 이동하려는 URL 저장
-      const targetUrl = window.location.href;
-
-      if (enabled) {
-        setPendingUrl(targetUrl);
-        // 외부 콜백 호출 (모달 표시 등)
-        if (onNavigationAttempt) {
-          onNavigationAttempt(targetUrl);
-        }
-        window.history.pushState({ handled: true }, "", window.location.href);
-        // 현재 URL로 다시 상태 변경
-      } else {
-        setPendingUrl(null); //변경 사항 없으면 즉시 이동
-      }
-    };
-
+  useEffect(() => {
     window.addEventListener("popstate", handlePopState);
-
     return () => {
       window.removeEventListener("popstate", handlePopState);
     };
-  }, [onNavigationAttempt]);
-
-  // 확인 시 네비게이션 진행
-  const confirmNavigation = useCallback(() => {
-    if (pendingUrl) {
-      router.push(pendingUrl);
-      setPendingUrl(null);
-      return true;
-    }
-    return false;
-  }, [pendingUrl, router]);
-
-  // 취소 시 네비게이션 취소
-  const cancelNavigation = useCallback(() => {
-    setPendingUrl(null);
-    return true;
-  }, []);
-
-  return {
-    pendingUrl,
-    confirmNavigation,
-    cancelNavigation,
-  };
-}
+  }, [handlePopState]);
+};

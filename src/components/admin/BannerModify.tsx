@@ -3,11 +3,13 @@ import { useState } from "react";
 import { CloseButton, Button } from "../controls/Button";
 import { Radio } from "../controls/Inputs";
 import Modal from "../Modal";
+import { Banner, NewBanner } from "@/types/admin";
+import { showToast } from "@/utils/toast";
 
 interface BannerModifyProps {
   onClose: () => void;
-  bannerData: any; // 수정할 배너 데이터를 받는 prop
-  onUpdate: (updatedBanner: any) => void; // 수정된 데이터를 부모로 전달하는 콜백
+  bannerData: Banner; // 수정할 배너 데이터를 받는 prop
+  onUpdate: (updatedBanner: NewBanner) => void; // 수정된 데이터를 부모로 전달하는 콜백
 }
 
 export default function BannerModify({
@@ -25,8 +27,8 @@ export default function BannerModify({
   const [formData, setFormData] = useState({
     bannerTitle: bannerData.bannerTitle || "",
     bannerImage: null as File | null,
-    alternativeText: bannerData.alternativeText || "",
-    bannerLink: bannerData.bannerLink || "",
+    alternativeText: "",
+    bannerLink: "",
   });
 
   // 입력값 변경 핸들러
@@ -41,21 +43,21 @@ export default function BannerModify({
   // 저장 버튼 클릭 시 유효성 검사 후 저장 여부 모달 열기
   const handleSave = () => {
     if (!formData.bannerTitle.trim()) {
-      alert("배너 제목을 입력해주세요.");
+      showToast("배너 제목을 입력해주세요.", "error");
       return;
     }
     // 배너 이미지는 선택하지 않아도 기존 이미지가 있을 수 있으므로
     // 필요 시 아래 조건을 조정할 수 있습니다.
     // if (!formData.bannerImage) {
-    //   alert("배너 이미지를 선택해주세요.");
+    // showToast("배너 이미지를 선택해주세요.", "error");
     //   return;
     // }
     if (!formData.alternativeText.trim()) {
-      alert("대체 텍스트를 입력해주세요.");
+      showToast("대체 텍스트를 입력해주세요.", "error");
       return;
     }
     if (!formData.bannerLink.trim()) {
-      alert("배너 링크를 입력해주세요.");
+      showToast("배너 링크를 입력해주세요.", "error");
       return;
     }
 

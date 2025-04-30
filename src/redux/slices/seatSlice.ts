@@ -30,11 +30,11 @@ const seatLabels = [
   "Z",
 ]; //고정된 값으로 재랜더링 필요 x
 
-interface SeatState extends EnrollSeats {
+export interface SeatState extends EnrollSeats {
   isDirty: boolean;
   isAllAisle: number[];
 }
-const initialState: SeatState = {
+export const seatInitialState: SeatState = {
   rows: 5,
   totalSeats: 50,
   rowsConfigs: {
@@ -66,10 +66,11 @@ const initialState: SeatState = {
 
 const seatSlice = createSlice({
   name: "seat",
-  initialState,
+  initialState: seatInitialState,
   reducers: {
     setRows: (state, action: PayloadAction<number>) => {
       state.rows = action.payload;
+      state.isDirty = true;
     },
     addRowsConfigs: (state, action: PayloadAction<number>) => {
       const key = seatLabels[action.payload];
@@ -78,11 +79,13 @@ const seatSlice = createSlice({
         aisles: [],
       };
       state.totalSeats += 10;
+      state.isDirty = true;
     },
     deleteRowsConfigs: (state, action: PayloadAction<number>) => {
       const key = seatLabels[action.payload]; // seatLabels에서 인덱스를 기반으로 키를 가져옴
       state.totalSeats -= state.rowsConfigs[key].seats;
       delete state.rowsConfigs[key];
+      state.isDirty = true;
     },
     updateSeats: (
       state,
@@ -93,6 +96,7 @@ const seatSlice = createSlice({
         const currentSeats = state.rowsConfigs[rowLabel].seats;
         state.rowsConfigs[rowLabel].seats = newSeats;
         state.totalSeats = state.totalSeats - currentSeats + newSeats;
+        state.isDirty = true;
       }
     },
     removeAisles: (
@@ -104,6 +108,7 @@ const seatSlice = createSlice({
         state.rowsConfigs[rowLabel].aisles = state.rowsConfigs[
           rowLabel
         ].aisles.filter((aisle) => aisle !== aisleNumber);
+        state.isDirty = true;
       }
     },
     addAisles: (
@@ -113,18 +118,25 @@ const seatSlice = createSlice({
       const { rowLabel, aisleNumber } = action.payload;
       if (state.rowsConfigs[rowLabel]) {
         state.rowsConfigs[rowLabel].aisles.push(aisleNumber);
+        state.isDirty = true;
       }
     },
     addIsAllAisle: (state, action: PayloadAction<number>) => {
       state.isAllAisle.push(action.payload);
+      state.isDirty = true;
     },
     removeIsAllAisle: (state, action: PayloadAction<number>) => {
       state.isAllAisle = state.isAllAisle.filter(
         (aisle) => aisle !== action.payload
       );
+      state.isDirty = true;
     },
     resetIsAllAisle: (state) => {
       state.isAllAisle = [];
+      state.isDirty = true;
+    },
+    resetSeatState: () => {
+      return seatInitialState;
     },
   },
 });
@@ -139,6 +151,7 @@ export const {
   addIsAllAisle,
   removeIsAllAisle,
   resetIsAllAisle,
+  resetSeatState,
 } = seatSlice.actions;
 
 export default seatSlice.reducer;

@@ -3,9 +3,9 @@ import React, { useMemo, useState } from "react";
 import { TextInput } from "../controls/Inputs";
 import { Button } from "../controls/Button";
 import { EnrollModalProps } from "@/types/enrollment";
-import { RootState } from "@/redux/store";
-import { useSelector } from "react-redux";
 import { format } from "date-fns";
+import { useEnrollmentData } from "@/hooks/useEnrollmentData";
+import { showToast } from "@/utils/toast";
 
 export default function EnrollModal({
   selectedDates,
@@ -14,10 +14,12 @@ export default function EnrollModal({
   initTime = "",
   initCasting = [],
   mode = "add",
+  isParentEdit = false,
 }: EnrollModalProps) {
   const [time, setTime] = useState<string>(initTime);
   const [casting, setCasting] = useState<string[]>(initCasting);
-  const { title } = useSelector((state: RootState) => state.enroll);
+  const { title } = useEnrollmentData({ isEdit: isParentEdit });
+
   const modalTitle = mode === "add" ? "공연 등록하기" : "공연 수정하기";
   const confirmButtonText = mode === "add" ? "등록" : "수정";
   const rangeDates = useMemo(() => {
@@ -57,12 +59,12 @@ export default function EnrollModal({
 
   const handleConfirm = () => {
     if (time.trim() === "") {
-      alert("시간을 입력해주세요.");
+      showToast("시간을 입력해주세요.", "error");
       return;
     }
 
     if (casting.some((cast) => cast.trim() === "")) {
-      alert("캐스팅을 모두 작성해주세요.");
+      showToast("캐스팅을 모두 작성해주세요.", "error");
       return;
     }
 

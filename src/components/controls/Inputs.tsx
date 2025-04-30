@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { forwardRef, useRef } from "react";
 import { useState, useEffect } from "react";
 import { focusRings } from "@/styles/constants";
 import {
@@ -28,7 +28,79 @@ function InputContainer({ input, children, className }: InputContainerProps) {
   );
 }
 
-export function TextInput({
+export const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
+  (
+    {
+      label,
+      value,
+      onChange,
+      type,
+      placeholder,
+      className,
+      align,
+      children,
+      ariaLabel,
+      readOnly,
+      onEnter,
+      name,
+    },
+    ref
+  ) => {
+    const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      if (onChange) {
+        onChange(e.target.value);
+      }
+    };
+    const Input = (
+      <input
+        ref={ref}
+        className={`${
+          !children
+            ? `border-2 rounded-lg ${focusRings.default}`
+            : "border-none"
+        } px-4 py-2 flex-1 w-full focus-visible:outline-none bg-background ${className}`}
+        value={value}
+        onChange={handleOnChange}
+        type={type}
+        placeholder={placeholder}
+        aria-label={label || ariaLabel}
+        readOnly={readOnly}
+        name={name}
+        onKeyDown={(e) => e.key === "Enter" && onEnter && onEnter()}
+      />
+    );
+
+    if (label) {
+      return (
+        <label
+          className={`relative whitespace-nowrap w-full flex ${
+            align === "h" ? "flex-row items-center gap-x-4" : "flex-col"
+          } ${className}`}
+        >
+          {label}
+          {children ? (
+            <InputContainer input={Input}>{children}</InputContainer>
+          ) : (
+            Input
+          )}
+        </label>
+      );
+    } else {
+      if (children) {
+        return (
+          <InputContainer input={Input} className={className}>
+            {children}
+          </InputContainer>
+        );
+      } else {
+        return Input;
+      }
+    }
+  }
+);
+TextInput.displayName = "TextInput";
+
+/*export function TextInput({
   label,
   value,
   onChange,
@@ -40,7 +112,10 @@ export function TextInput({
   ariaLabel,
   readOnly,
   onEnter,
+  name,
 }: TextInputProps) {
+  const inputRef = useRef<HTMLInputElement>(null);
+
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (onChange) {
       onChange(e.target.value);
@@ -48,6 +123,7 @@ export function TextInput({
   };
   const Input = (
     <input
+      ref={inputRef}
       className={`${
         !children ? `border-2 rounded-lg ${focusRings.default}` : "border-none"
       } px-4 py-2 flex-1 w-full focus-visible:outline-none bg-background ${className}`}
@@ -57,6 +133,7 @@ export function TextInput({
       placeholder={placeholder}
       aria-label={label || ariaLabel}
       readOnly={readOnly}
+      name={name}
       onKeyDown={(e) => e.key === "Enter" && onEnter && onEnter()}
     />
   );
@@ -70,7 +147,7 @@ export function TextInput({
       >
         {label}
         {children ? (
-          <InputContainer input={Input} children={children} />
+          <InputContainer input={Input}>{children}</InputContainer>
         ) : (
           Input
         )}
@@ -79,17 +156,15 @@ export function TextInput({
   } else {
     if (children) {
       return (
-        <InputContainer
-          input={Input}
-          children={children}
-          className={className}
-        />
+        <InputContainer input={Input} className={className}>
+          {children}
+        </InputContainer>
       );
     } else {
       return Input;
     }
   }
-}
+}*/
 
 export function JoinInput({
   label,
@@ -103,6 +178,7 @@ export function JoinInput({
   validation,
   message,
   max,
+  vertical,
 }: JoinInputProps) {
   const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (onChange) {
@@ -134,7 +210,7 @@ export function JoinInput({
 
   if (error) {
     className = "border-flesh-500";
-  } else if (!!value) {
+  } else if (!!value && !vertical) {
     className = "border-black";
   } else {
     className = "border-gray-300";
@@ -144,9 +220,13 @@ export function JoinInput({
     <>
       <fieldset className="h-[43px]">
         <label
-          className={`text-sm flex sm:mb-[5px] gap-3 border-b whitespace-nowrap w-full items-center focus-within:border-black sm:text-base ${
+          className={`text-sm flex sm:mb-[5px] border-b whitespace-nowrap w-full  focus-within:border-black sm:text-base ${
             className ? className : ""
-          } `}
+          } ${
+            vertical
+              ? "flex-col text-flesh-400 font-bold"
+              : "gap-3 items-center"
+          }`}
         >
           {label}
           <input
@@ -155,8 +235,8 @@ export function JoinInput({
             value={value}
             onChange={handleOnChange}
             onBlur={handleOnBlur}
-            className={`focus:outline-none w-full placeholder:text-sm sm:placeholder:text-base ${
-              disabled && "bg-white"
+            className={`focus:outline-none w-full placeholder:text-sm sm:placeholder:text-base text-black font-normal ${
+              disabled && "bg-white cursor-not-allowed"
             }`}
             aria-label={label}
             disabled={disabled}

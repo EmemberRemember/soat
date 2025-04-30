@@ -4,11 +4,9 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination } from "swiper/modules";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Swiper as SwiperClass } from "swiper/types";
-
 import "swiper/css";
 import "swiper/css/pagination";
 import { PerformanceData } from "@/app/api/performance/route";
-import { DailyPerformances } from "@/types/enrollment";
 import Link from "next/link";
 
 const CATEGORIES = ["전체", "콘서트", "뮤지컬", "연극", "전시/행사", "팬미팅"];
@@ -89,20 +87,19 @@ export default function CurrentShowSection({
           <img
             src={show.poster.url}
             alt={show.title}
-            className="absolute top-0 left-0 w-full h-full rounded-xl cursor-pointer object-cover"
+            className="absolute top-0 left-0 w-full h-full rounded-xl cursor-pointer object-cover hover:shadow-md transition-all duration-200"
           />
         </div>
         <div className="flex flex-col flex-1">
           <p className="font-bold text-lg md:text-xl cursor-pointer">
             {show.title}
           </p>
-          <p className="text-sm md:text-base">{show.detailAddress}</p>
           <p className="text-gray-500 text-xs md:text-sm mb-2 md:mb-4">
             {showDate(show.performances)}
           </p>
           <p className="text-sm md:text-base mt-auto">
             <span className="text-flesh-600 font-bold">예매가</span> :{" "}
-            {show.price.toLocaleString()}
+            {show.price.toLocaleString() + "원"}
           </p>
         </div>
       </div>
@@ -130,68 +127,78 @@ export default function CurrentShowSection({
               ))}
             </ul>
           </div>
-          <div className="flex items-center ml-4 pl-2 bg-inherit">
-            <p className="flex items-center gap-2 cursor-pointer shrink-0 ">
-              더보기 <img src="images/icons/next-icon.svg" alt="더보기" />
-            </p>
-          </div>
+          <Link href="/performances/booking">
+            <div className="flex items-center ml-4 pl-2 bg-inherit">
+              <p className="flex items-center gap-2 cursor-pointer shrink-0 hover:underline pb-2">
+                더보기 <img src="images/icons/next-icon.svg" alt="더보기" />
+              </p>
+            </div>
+          </Link>
         </div>
       </nav>
 
-      {useSwiper ? (
-        <div className="relative px-8 md:px-12">
-          <button
-            onClick={handlePrev}
-            className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 
-           bg-black text-white w-8 h-8 rounded-full flex items-center justify-center
-           hover:bg-gray-800 transition-colors duration-300 focus:outline-none
-           hidden md:flex"
-            aria-label="이전 슬라이드"
-          >
-            <ChevronLeft absoluteStrokeWidth />
-          </button>
-
-          <button
-            onClick={handleNext}
-            className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 
-           bg-black text-white w-8 h-8 rounded-full flex items-center justify-center
-           hover:bg-gray-800 transition-colors duration-300 focus:outline-none
-           hidden md:flex"
-            aria-label="다음 슬라이드"
-          >
-            <ChevronRight absoluteStrokeWidth />
-          </button>
-
-          <Swiper
-            ref={swiperRef}
-            modules={[Navigation, Pagination]}
-            spaceBetween={24}
-            slidesPerView={slidesPerView}
-            navigation={false}
-            pagination={{
-              clickable: true,
-              el: ".swiper-pagination",
-              type: "bullets",
-            }}
-            className="mySwiper"
-          >
-            {filteredShows.map((show) => (
-              <SwiperSlide key={show.id}>
-                <ShowCard show={show} />
-              </SwiperSlide>
-            ))}
-          </Swiper>
-
-          <div className="swiper-pagination mt-6 relative"></div>
-        </div>
+      {filteredShows.length === 0 ? (
+        <p className="text-center text-lg text-gray-500 py-10">
+          현재 선택한 카테고리에는 공연이 없습니다.
+        </p>
       ) : (
-        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-          {filteredShows.map((show) => (
-            <li key={show.id}>
-              <ShowCard show={show} />
-            </li>
-          ))}
-        </ul>
+        <>
+          {useSwiper ? (
+            <div className="relative px-8 md:px-12">
+              <button
+                onClick={handlePrev}
+                className="absolute left-0 top-1/2 transform -translate-y-1/2 z-10 
+               bg-black text-white w-8 h-8 rounded-full flex items-center justify-center
+               hover:bg-gray-800 transition-colors duration-300 focus:outline-none
+               hidden md:flex"
+                aria-label="이전 슬라이드"
+              >
+                <ChevronLeft absoluteStrokeWidth />
+              </button>
+
+              <button
+                onClick={handleNext}
+                className="absolute right-0 top-1/2 transform -translate-y-1/2 z-10 
+               bg-black text-white w-8 h-8 rounded-full flex items-center justify-center
+               hover:bg-gray-800 transition-colors duration-300 focus:outline-none
+               hidden md:flex"
+                aria-label="다음 슬라이드"
+              >
+                <ChevronRight absoluteStrokeWidth />
+              </button>
+
+              <Swiper
+                ref={swiperRef}
+                modules={[Navigation, Pagination]}
+                spaceBetween={24}
+                slidesPerView={slidesPerView}
+                navigation={false}
+                pagination={{
+                  clickable: true,
+                  el: ".swiper-pagination",
+                  type: "bullets",
+                }}
+                className="mySwiper"
+              >
+                {filteredShows.map((show) => (
+                  <SwiperSlide key={show.id}>
+                    <ShowCard show={show} />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+
+              <div className="swiper-pagination mt-6 relative"></div>
+            </div>
+          ) : (
+            <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+              {filteredShows.map((show) => (
+                <li key={show.id}>
+                  <ShowCard show={show} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </>
       )}
 
       <div className="w-full bg-gray-100 h-0.5 mt-10 md:mt-12"></div>

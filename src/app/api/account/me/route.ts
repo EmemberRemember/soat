@@ -1,9 +1,11 @@
+export const dynamic = "force-dynamic";
+
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
-import { authOptions } from "../../auth/[...nextauth]/route";
+import { authOptions } from "@/auth/authOptions";
 import { adminDb } from "../../firebaseAdmin";
 
-export async function GET(request: NextRequest) {
+export async function GET(req: NextRequest) {
   try {
     // 현재 세션 확인
     const session = await getServerSession(authOptions);
@@ -35,7 +37,7 @@ export async function GET(request: NextRequest) {
     const userData = userDoc.data();
 
     // 비밀번호는 제외하고 반환
-    const { password, ...userDataWithoutPassword } = userData!;
+    const { password: _password, ...userDataWithoutPassword } = userData!;
 
     return NextResponse.json({
       user: {

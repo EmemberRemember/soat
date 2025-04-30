@@ -1,8 +1,11 @@
+export const dynamic = "force-dynamic";
+
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import ReduxProvider from "@/redux/ReduxProvider";
 import AuthProvider from "@/auth/Provider";
+import ToastClient from "@/components/ui/ToastClient";
 
 const pretendard = localFont({
   src: "./fonts/PretendardVariable.woff2",
@@ -27,6 +30,7 @@ export default function RootLayout({
         <AuthProvider>
           <ReduxProvider>
             {children}
+            <ToastClient />
             <div id="modal-root"></div>
           </ReduxProvider>
         </AuthProvider>

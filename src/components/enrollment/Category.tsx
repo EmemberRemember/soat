@@ -5,15 +5,16 @@ import { Button } from "../controls/Button";
 const categoryList = ["콘서트", "뮤지컬", "연극", "전시/행사", "팬미팅"];
 interface CategoryProps {
   onClick: (category: string) => void;
+  selectedItemStr ?: string;
 }
-export default function Category({ onClick }: CategoryProps) {
-  const [selectItem, setSelectItem] = useState<number | null>(null);
-
+export default function Category({ onClick, selectedItemStr = ""}: CategoryProps) {
+  
+  const [selectItem, setSelectItem] = useState<number>(categoryList.findIndex((categoryitem) => categoryitem === selectedItemStr));
   const handleOnClickCategoryItem = (index: number) => {
     const selectedCategory = categoryList[index];
 
     if (selectItem === index) {
-      setSelectItem(null); // 선택 해제
+      setSelectItem(-1); // 선택 해제
       onClick("");
     } else {
       setSelectItem(index); // 새로운 항목 선택

@@ -13,10 +13,15 @@ export default function Main() {
         label="나의 공연 등록 및 관리"
         onClick={() => router.push("/manager/performance")}
       />
-      <ButtonWithIcon iconSrc="/images/icons/ticket.svg" label="티켓 검증" />
+      <ButtonWithIcon
+        iconSrc="/images/icons/ticket.svg"
+        label="티켓 검증"
+        onClick={() => router.push("/manager/ticket")}
+      />
       <ButtonWithIcon
         iconSrc="/images/icons/people-black.svg"
         label="관리자 정보 수정"
+        onClick={() => router.push("/manager/edit")}
       />
     </main>
   );

@@ -23,7 +23,7 @@ export default function SlideBanner() {
         <SwiperSlide>
           <div className="w-full h-full bg-gray-100">
             <img
-              src="images/derme.jpg"
+              src="images/banner-1.jpg"
               alt="slide 1"
               className="w-full h-full object-cover"
             />
@@ -32,7 +32,7 @@ export default function SlideBanner() {
         <SwiperSlide>
           <div className="w-full h-full bg-gray-100 ">
             <img
-              src="images/derme.jpg"
+              src="images/banner-2.jpg"
               alt="slide 2"
               className="w-full h-full object-cover "
             />
@@ -41,7 +41,7 @@ export default function SlideBanner() {
         <SwiperSlide>
           <div className="w-full h-full bg-gray-100 ">
             <img
-              src="images/derme.jpg"
+              src="images/banner-3.jpg"
               alt="slide 3"
               className="w-full h-full object-cover "
             />

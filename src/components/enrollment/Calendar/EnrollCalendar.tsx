@@ -7,28 +7,28 @@ import { Value } from "react-calendar/dist/esm/shared/types.js";
 import Modal from "@/components/Modal";
 import EnrollModal from "../EnrollModal";
 import { format } from "date-fns";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
-import { useDispatch } from "react-redux";
-import { addPerformance, editPerformance } from "@/redux/slices/enrollSlice";
 import PerformanceInfo from "../PerformanceInfo";
 import "./enrollCalendar.css";
 import { useShowModal } from "@/hooks/useShowModal";
+import { usePerformanceActions } from "@/hooks/usePerformanceActions";
+import { useEnrollmentData } from "@/hooks/useEnrollmentData";
 
-export default function EnrollCalendar() {
+interface EnrollCalendar {
+  isEdit?: boolean;
+}
+export default function EnrollCalendar({isEdit = false} : EnrollCalendar) {
   const [value, setValue] = useState<CalendarValue>(null);
-  const { showModal, handleShowModal } = useShowModal();
+  const {showModal, handleShowModal } = useShowModal();
   const [modalMode, setModalMode] = useState<EnrollModalMode>("add");
   const [isRange, setIsRange] = useState<boolean>(false);
-  const performances = useSelector(
-    (state: RootState) => state.enroll.performances
-  );
-  const [initTime, setInitTime] = useState<string>("");
-  const [initCasting, setInitCasting] = useState<string[]>([]);
+  const [initTime, setInitTime] = useState<string>(""); //modal에서 쓰이는 state
+  const [initCasting, setInitCasting] = useState<string[]>([]); //modal에서 쓰이는 state
   const [selectedPerformanceIndex, setSelectedPerformanceIndex] = useState<
-    number | null
+  number | null
   >(null);
-
+  const { performances } = useEnrollmentData({isEdit})
+   const { onAddPerformance, onEditPerformance } = usePerformanceActions({ isEdit }); // Use the new hook
+ 
   const selectedEvent = useMemo(() => {
     if (Array.isArray(value) || !value) {
       //범위 선택이거나 등록된 공연이 없으면
@@ -38,7 +38,6 @@ export default function EnrollCalendar() {
     return performances[formattedDate] || null;
   }, [value, performances]);
 
-  const dispatch = useDispatch();
 
   const handleOpenEnrollModal = (state: boolean) => {
     handleShowModal(state);
@@ -57,15 +56,12 @@ export default function EnrollCalendar() {
     casting: string[]
   ) => {
     if (modalMode === "add") {
-      dispatch(addPerformance({ dates: selectedDates, time, casting })); // add 관련 액션
+      onAddPerformance(selectedDates, time, casting);
     } else if (modalMode === "edit") {
-      dispatch(
-        editPerformance({
-          date: selectedDates[0],
-          index: selectedPerformanceIndex as number,
-          performance: { time, casting },
-        })
-      ); // edit 관련 액션
+      onEditPerformance(selectedDates[0], selectedPerformanceIndex as number, {
+        time,
+        casting,
+      });
     }
     resetModalData();
   };
@@ -144,10 +140,12 @@ export default function EnrollCalendar() {
           date={value as Date}
           performances={selectedEvent}
           onEdit={handleEditButton}
+          isParentEdit={isEdit}
         />
       )}
       <Modal isOpen={showModal} onClose={() => handleOpenEnrollModal(false)}>
         <EnrollModal
+          isParentEdit={isEdit}
           mode={modalMode}
           onClose={() => handleOpenEnrollModal(false)}
           onConfirm={handleConfirm}

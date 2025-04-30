@@ -1,9 +1,10 @@
-import { sanitizeHTML } from "./../../../utils/sanitizer";
+export const dynamic = "force-dynamic";
 import { NextResponse, NextRequest } from "next/server";
 import { adminDb, adminStorage } from "../firebaseAdmin";
 import { getServerSession } from "next-auth";
-import { authOptions } from "../auth/[...nextauth]/route";
+import { authOptions } from "@/auth/authOptions";
 import { v4 as uuidv4 } from "uuid";
+import { sanitizeHTML } from "@/utils/sanitizer";
 
 interface uploadedImages {
   id: string;
@@ -18,7 +19,13 @@ interface FilesData {
   originalName: string;
 }
 
-const allowedMimeTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+const allowedMimeTypes = [
+  "image/jpeg",
+  "image/png",
+  "image/gif",
+  "image/webp",
+  "image/jpg",
+];
 
 // MIME 타입 검증 함수
 const validateMimeType = (mimeType: string) => {
@@ -69,12 +76,16 @@ const contentChangeBlobUrlToPublicUrl = (
 ): string => {
   let newContent = content;
   uploadedImages.forEach((image) => {
-    const regex = new RegExp(`data-key="${image.id}"[^>]*src="[^"]*"`, "g");
+    const regex = new RegExp(
+      `(data-key="${image.id}"[^>]*src="blob:[^"]*"|src="blob:[^"]*"[^>]*data-key="${image.id}")`,
+      "g"
+    );
     newContent = newContent.replace(
       regex,
       `data-key="${image.id}" src="${image.url}"`
     );
   });
+
   return newContent;
 };
 
@@ -115,7 +126,6 @@ export async function PUT(request: NextRequest) {
     const bucket = adminStorage.bucket();
 
     const files = formData.getAll("image") as File[];
-
     const fileData = files.map((file) => {
       const [fileId, ...fileNameParts] = file.name.split("_"); // 파일명에서 ID 추출
       const fileName = fileNameParts.join("_"); // 원래 파일명 복원
@@ -125,26 +135,24 @@ export async function PUT(request: NextRequest) {
 
     // 포스터 이미지 처리
     let posterUrl = null;
-    if (data.poster && data.poster.base64Data) {
+    if (data.poster && data.poster.url) {
       const posterFileName = `performances/${userId}/${uuidv4()}_${
         data.poster.fileName
       }`;
-      const posterFile = bucket.file(posterFileName);
-
-      // base64 데이터에서 실제 바이너리 데이터 추출
-      const base64Data = data.poster.base64Data.split(";base64,").pop();
-      const posterBuffer = Buffer.from(base64Data, "base64");
+      const posterFile = formData.get("poster") as File;
+      const posterBuffer = Buffer.from(await posterFile.arrayBuffer());
+      const posterFileRef = bucket.file(posterFileName);
 
       validateMimeType(data.poster.fileType);
 
-      await posterFile.save(posterBuffer, {
+      await posterFileRef.save(posterBuffer, {
         metadata: {
           contentType: data.poster.fileType,
         },
       });
 
       // 파일 공개 URL 설정
-      await posterFile.makePublic();
+      await posterFileRef.makePublic();
       posterUrl = `https://storage.googleapis.com/${bucket.name}/${posterFileName}`;
 
       // 원본 base64 데이터 제거하고 URL로 대체
@@ -158,7 +166,7 @@ export async function PUT(request: NextRequest) {
 
     if (data.content && fileData.length > 0) {
       const uploadImage = await handleImageUpload(fileData, userId);
-      const newContent = contentChangeBlobUrlToPublicUrl(
+      const newContent = await contentChangeBlobUrlToPublicUrl(
         data.content,
         uploadImage
       );
@@ -167,7 +175,7 @@ export async function PUT(request: NextRequest) {
 
     const santizeContent = sanitizeHTML(data.content);
     data.content = santizeContent;
-    console.log(data.content);
+
     const performanceRef = await adminDb.collection("performances").add({
       ...data,
       sellerId: userId,

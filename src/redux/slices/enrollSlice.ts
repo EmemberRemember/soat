@@ -22,6 +22,7 @@ export interface EnrollState {
   price: number;
   isDirty: boolean; //수정 상태를 관리하는 상태
   step: EnrollStep;
+  invalidField: string;
 }
 
 export const EnrollInitialState: EnrollState = {
@@ -39,6 +40,7 @@ export const EnrollInitialState: EnrollState = {
   price: 0,
   isDirty: false,
   step: 0,
+  invalidField: "",
 };
 
 const enrollSlice = createSlice({
@@ -77,7 +79,7 @@ const enrollSlice = createSlice({
       state.price = action.payload;
       state.isDirty = true;
     },
-    setPoster: (state, action: PayloadAction<ImageFile>) => {
+    setPoster: (state, action: PayloadAction<ImageFile | null>) => {
       state.poster = action.payload;
       state.isDirty = true;
     },
@@ -159,6 +161,12 @@ const enrollSlice = createSlice({
     setStep: (state, action: PayloadAction<EnrollStep>) => {
       state.step = action.payload;
     },
+    resetEnrollState: () => {
+      return EnrollInitialState;
+    },
+    setInvalidField: (state, action: PayloadAction<string>) => {
+      state.invalidField = action.payload;
+    },
   },
 });
 
@@ -180,6 +188,8 @@ export const {
   resetDirty,
   setPrice,
   setStep,
+  resetEnrollState,
+  setInvalidField,
 } = enrollSlice.actions;
 
 export default enrollSlice.reducer;

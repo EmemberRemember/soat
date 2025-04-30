@@ -1,3 +1,5 @@
+export const dynamic = "force-dynamic";
+
 import { NextResponse } from "next/server";
 import { postsIndex } from "@/lib/algolia";
 import { PerformanceData } from "@/app/api/performance/route";
@@ -5,16 +7,22 @@ import { PerformanceData } from "@/app/api/performance/route";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const title = searchParams.get("title");
+  const category = searchParams.get("category");
 
-  if (!title || title.trim() === "") {
+  if (
+    (!title || title.trim() === "") &&
+    (!category || category.trim() === "")
+  ) {
     return NextResponse.json(
       { message: "검색 정보를 가져올 수 없습니다." },
       { status: 400 }
     );
   }
 
+  const searchValue: string = (title || category || "").toString();
+
   try {
-    const { hits } = await postsIndex.search<PerformanceData>(title, {
+    const { hits } = await postsIndex.search<PerformanceData>(searchValue, {
       attributesToRetrieve: [
         "title",
         "content",
@@ -30,6 +38,7 @@ export async function GET(request: Request) {
         "detailAddress",
         "ratingSum",
         "ratingCount",
+        "performances",
       ],
       hitsPerPage: 10,
     });

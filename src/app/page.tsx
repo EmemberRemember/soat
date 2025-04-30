@@ -7,6 +7,8 @@ import CurrentShowSection from "@/components/home/CurrentShowSection";
 import axios from "axios";
 import { PerformanceData } from "./api/performance/route";
 
+export const dynamic = "force-dynamic"; // 동적 렌더링 강제 설정
+
 export default async function main() {
   const API_URL = process.env.NEXTAUTH_URL;
   const currentShows: PerformanceData[] = await (

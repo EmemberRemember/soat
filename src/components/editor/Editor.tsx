@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useEditor, EditorContent, Editor as TsEditor } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { EditMode, ToolbarButtonsConfig } from "@/types/editor";
@@ -11,7 +11,7 @@ import {
   ListOrdered,
   Quote,
   Heading1,
-  Heading2,
+  Heading2, 
   Heading3,
   Heading4,
   Code2,
@@ -19,10 +19,6 @@ import {
   ImageUp,
 } from "lucide-react";
 import Toolbar from "./Toolbar";
-import { useDispatch } from "react-redux";
-import { addFile, deleteFile, setContent } from "@/redux/slices/enrollSlice";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
 import CustomImage from "./CustomImage";
 import { useDebounce } from "@/hooks/useDebounce";
 import Modal from "../Modal";
@@ -32,76 +28,10 @@ import { Button } from "../controls/Button";
 import HtmlEditor from "./HtmlEditor";
 import { getImageURLIndexedDB } from "@/utils/Images";
 import { deleteImage } from "@/services/indexedDBService";
+import { useEnrollmentData } from "@/hooks/useEnrollmentData";
+import { useEditorActions } from "@/hooks/useEditorActions";
 
-export default function Editor() {
-  const [editMode, setEditMode] = useState<EditMode>("WYSIWYG");
-  const [imageURL, setImageURL] = useState<string>("");
-  const isPersisted = useSelector((state: RootState) => state.enroll._persist);
-  const content = useSelector((state: RootState) => state.enroll.content);
-  const files = useSelector((state: RootState) => state.enroll.files);
-  const { showModal, handleShowModal } = useShowModal();
-  const isRehydrated = isPersisted?.rehydrated;
-  const dispatch = useDispatch();
-
-  const editor = useEditor(
-    {
-      extensions: [
-        StarterKit,
-        CustomImage.configure({
-          inline: true,
-          allowBase64: true,
-        }),
-      ],
-      content: content || "",
-      editorProps: {
-        attributes: { class: "focus:outline-none" },
-      },
-      immediatelyRender: false,
-      onUpdate: ({ editor }) => {
-        onDeleteImage(editor);
-        const htmlString = editor.getHTML();
-        debounceUpdate(htmlString);
-      },
-    },
-    [isRehydrated, editMode]
-  );
-
-  useEffect(() => {
-    const replaceImageURL = async (): Promise<string> => {
-      const imgTags = Array.from(
-        content.matchAll(/<img[^>]*data-key="([^"]*)"[^>]*>/g)
-      );
-      let html = content;
-      for (const imgTag of imgTags) {
-        const imageKey = imgTag[1];
-        try {
-          const newImageURL = await getImageURLIndexedDB(imageKey);
-          if (newImageURL) {
-            html = html.replace(
-              new RegExp(`<img[^>]*data-key="${imageKey}"[^>]*>`, "g"),
-              `<img data-key="${imageKey}" src="${newImageURL}" />`
-            );
-          }
-        } catch (error) {
-          console.error("이미지 불러오기를 실패했습니다", error);
-        }
-      }
-      return html;
-    };
-
-    if (isRehydrated) {
-      replaceImageURL().then((newContent) => {
-        dispatch(setContent(newContent));
-        editor?.commands.setContent(newContent);
-      });
-    }
-  }, [isRehydrated, editor]);
-
-  const debounceUpdate = useDebounce((HtmlString: string) => {
-    dispatch(setContent(HtmlString));
-  }, 300);
-
-  const headingButtons: ToolbarButtonsConfig[] = [
+ const headingButtons: ToolbarButtonsConfig[] = [
     { type: "heading", label: "헤딩 1", icon: Heading1, level: 1 },
     { type: "heading", label: "헤딩 2", icon: Heading2, level: 2 },
     { type: "heading", label: "헤딩 3", icon: Heading3, level: 3 },
@@ -135,6 +65,84 @@ export default function Editor() {
     icon: ImageIcon,
   };
 
+interface EditorProps {
+  isParentEdit?: boolean;
+} 
+
+export default function Editor({isParentEdit = false} : EditorProps) {
+  const [editMode, setEditMode] = useState<EditMode>("WYSIWYG");
+  const [imageURL, setImageURL] = useState<string>("");
+  const [isRestoredContent, setIsRestoredContent] = useState<boolean>(false);
+  const { content , files } = useEnrollmentData({isEdit : isParentEdit})
+  const {onSetContent, onAddFile, onDeleteFile } = useEditorActions({isEdit : isParentEdit});
+  const { showModal, handleShowModal } = useShowModal();
+  const isInitialLoad = useRef(true); // 초기 로딩 여부 추적
+  
+
+  const editor = useEditor(
+    {
+      extensions: [
+        StarterKit,
+        CustomImage.configure({
+          inline: true,
+          allowBase64: true,
+        }),
+      ],
+      content: content || "",
+      editorProps: {
+        attributes: { class: "focus:outline-none" },
+      },
+      immediatelyRender: false,
+      onUpdate: ({ editor }) => {
+        onDeleteImage(editor);
+        const htmlString = editor.getHTML();
+        debounceUpdate(htmlString);
+      },
+    },
+    [editMode]
+  );
+
+  useEffect(() => {
+    if (content !== "" && editor && !isRestoredContent) {
+      setIsRestoredContent(true);
+      isInitialLoad.current = false; // 초기 로딩 완료
+      editor?.commands.setContent(content);
+    }
+  }, [content, editor]);
+
+  useEffect(() => {
+    const replaceImageURL = async (): Promise<string> => {
+      const imgTags = Array.from(
+        content.matchAll(/<img[^>]*data-key="([^"]*)"[^>]*>/g)
+      );
+      let html = content;
+      for (const imgTag of imgTags) {
+        const imageKey = imgTag[1];
+        try {
+          const newImageURL = await getImageURLIndexedDB(imageKey);
+          if (newImageURL) {
+            html = html.replace(
+              new RegExp(`<img[^>]*data-key="${imageKey}"[^>]*>`, "g"),
+              `<img data-key="${imageKey}" src="${newImageURL}" />`
+            );
+          }
+        } catch (error) {
+          console.error("이미지 불러오기를 실패했습니다", error);
+        }
+      }
+      return html;
+    };
+    if (editor && !isInitialLoad.current && isRestoredContent) {
+      replaceImageURL().then((newContent) => {
+        editor?.commands.setContent(newContent);
+      });
+    }
+  }, [editor, isRestoredContent]);
+
+  const debounceUpdate = useDebounce((HtmlString: string) => {
+    onSetContent(HtmlString);
+  }, 300);
+
   const getImageSrcList = (editor: TsEditor): string[] => {
     const parser = new DOMParser();
     const doc = parser.parseFromString(editor.getHTML(), "text/html");
@@ -154,8 +162,8 @@ export default function Editor() {
     }
     deletedImages.forEach((key) => {
       deleteImage(key); //indexDB제거
-      dispatch(deleteFile(key)); //redux 제거
-    });
+      onDeleteFile(key);
+     });
   };
 
   const handleOnClickEidtor = () => {
@@ -170,8 +178,7 @@ export default function Editor() {
       handleShowModal(false);
       return;
     }
-
-    dispatch(addFile(imageURL));
+    onAddFile(imageURL)
     editor.chain().focus().setImage({ src: imageURL }).run();
     handleShowModal(false);
   };
@@ -206,7 +213,7 @@ export default function Editor() {
           }`}
           editor={editor}
         />
-        {editMode === "HTML" && <HtmlEditor />}
+        {editMode === "HTML" && <HtmlEditor isParentEdit={isParentEdit} />}
       </>
 
       <Modal isOpen={showModal} onClose={() => handleShowModal(false)}>

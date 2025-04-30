@@ -1,4 +1,4 @@
-type RowConfig = {
+export type RowConfig = {
   seats: number;
   aisles: number[];
 };

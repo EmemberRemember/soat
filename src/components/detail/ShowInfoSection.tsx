@@ -1,10 +1,11 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Modal from "./../Modal";
 import { Button } from "../controls/Button";
 import NaverMapModal from "./NaverMap";
 import { PerformanceData } from "@/app/api/performance/route";
 import { Share, Link } from "lucide-react";
+import useReservationHandler from "@/hooks/useReservationHandler";
 
 export default function ShowInfoSection({
   performanceData,
@@ -14,15 +15,20 @@ export default function ShowInfoSection({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
   const [isMapModalOpen, setIsMapModalOpen] = useState(false);
+  const goToReservation = useReservationHandler(performanceData.id || "");
 
   const title = performanceData.title || "";
-  const startDate = performanceData.bookingEndDate || "";
-  const endDate = performanceData.bookingStartDate || "";
+  const performanceDates = Object.keys(performanceData.performances);
+  const startDate = performanceDates[0];
+  const endDate = performanceDates[performanceDates.length - 1];
   const locationName = performanceData.detailAddress || "";
   const locationAddress = performanceData.address || "";
   const price = performanceData.price || "";
   const category = performanceData.category || "";
   const posterUrl = performanceData.poster.url || "";
+  const isBookingEnabled =
+    new Date() < new Date(performanceData.bookingStartDate) ||
+    new Date() > new Date(performanceData.bookingEndDate);
 
   const handleShare = async () => {
     const shareData = {
@@ -75,7 +81,7 @@ export default function ShowInfoSection({
           <img
             src={posterUrl}
             alt="포스터"
-            className="absolute top-0 left-0 w-full h-full rounded-xl object-cover"
+            className="absolute top-0 left-0 w-full h-full rounded-xl object-cover shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-200"
           />
         </div>
       </div>
@@ -109,7 +115,9 @@ export default function ShowInfoSection({
           <ul className="space-y-4 md:space-y-6">
             <li>
               <p className="flex items-center gap-2 text-lg md:text-2xl text-neutral-700">
-                <span className="font-semibold">장소 :</span>
+                <span className="font-semibold whitespace-nowrap self-start">
+                  장소 :
+                </span>
                 {locationAddress}&nbsp;
                 {locationName}
                 <button
@@ -127,7 +135,7 @@ export default function ShowInfoSection({
             <li>
               <p className="flex items-center gap-2 text-lg md:text-2xl text-neutral-700">
                 <span className="font-semibold">예매가 :</span>
-                {price}원
+                {price.toLocaleString()}원
               </p>
             </li>
             <li>
@@ -138,12 +146,21 @@ export default function ShowInfoSection({
             </li>
           </ul>
         </div>
-
+        <p className={isBookingEnabled ? "text-flesh-500" : "text-gray-500"}>
+          예매 기간
+          {isBookingEnabled
+            ? `(${performanceData.bookingStartDate} ~
+          ${performanceData.bookingEndDate})이 아닙니다.`
+            : ` : ${performanceData.bookingStartDate} ~
+          ${performanceData.bookingEndDate}`}
+        </p>
         {/* 예매 버튼 */}
         <Button
           highlight
           size="full"
           className="text-white px-6 md:px-20 py-3 md:py-4 rounded-lg text-xl md:text-2xl mt-8 md:mt-0"
+          onClick={() => goToReservation()}
+          disabled={isBookingEnabled}
         >
           예매하기
         </Button>
@@ -155,28 +172,30 @@ export default function ShowInfoSection({
         onClose={handleCloseModal}
         className="max-w-sm text-center  mx-4 md:mx-0 flex flex-col items-center  "
       >
-        <h3 className="text-2xl font-bold mb-5">공연정보 공유하기</h3>
-        <div className="flex gap-6">
-          <div className="flex flex-col gap-2">
-            <Button
-              onClick={handleShare}
-              className="flex flex-col gap-2 items-center bg-flesh-500 px-3 rounded-full py-3 cursor-pointer "
-            >
-              <Share size={50} color="#FFFFFF" />
-            </Button>
-            <p>다른앱으로 공유</p>
+        <>
+          <h3 className="text-2xl font-bold mb-5">공연정보 공유하기</h3>
+          <div className="flex gap-6">
+            <div className="flex flex-col gap-2">
+              <Button
+                onClick={handleShare}
+                className="flex flex-col gap-2 items-center bg-flesh-500 px-3 rounded-full py-3 cursor-pointer "
+              >
+                <Share size={50} color="#FFFFFF" />
+              </Button>
+              <p>다른앱으로 공유</p>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Button
+                className="flex flex-col gap-2 items-center bg-flesh-500 px-3 rounded-full py-3 cursor-pointer"
+                onClick={handleCopyUrl}
+              >
+                <Link size={50} color="#FFFFFF" />
+              </Button>
+              복사하기
+            </div>
           </div>
-          <div className="flex flex-col gap-2">
-            <Button
-              className="flex flex-col gap-2 items-center bg-flesh-500 px-3 rounded-full py-3 cursor-pointer"
-              onClick={handleCopyUrl}
-            >
-              <Link size={50} color="#FFFFFF" />
-            </Button>
-            복사하기
-          </div>
-        </div>
-        <p className="mt-4">{modalMessage}</p>
+          <p className="mt-4">{modalMessage}</p>
+        </>
       </Modal>
 
       {/* 지도 모달 */}

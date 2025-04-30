@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import TextArea from "../controls/TextArea";
 import { Star } from "lucide-react";
 import ReviewList from "./ReviewList";
 import { Button } from "../controls/Button";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
-import { useRouter } from "next/navigation";
+import { showToast } from "@/utils/toast";
 
 export default function ReviewArea() {
   const [isReview, setReview] = useState("");
@@ -22,18 +22,24 @@ export default function ReviewArea() {
 
   const params = useParams();
   const performId = params.performId;
-  const router = useRouter();
+
+  // 한줄평 중복 작성시 오류문구 초기화
+  useEffect(() => {
+    if (error !== "") {
+      setError("");
+    }
+  }, [isReview]);
 
   // 리뷰 작성 함수
   const handleSubmitReview = async () => {
     // 입력 검증
     if (rating === 0) {
-      alert("평점을 선택해주세요.");
+      showToast("평점을 선택해주세요.", "error");
       return;
     }
 
     if (!isReview.trim()) {
-      alert("리뷰 내용을 입력해주세요.");
+      showToast("리뷰 내용을 입력해주세요.", "error");
       return;
     }
 
@@ -57,16 +63,16 @@ export default function ReviewArea() {
         const errorData = await response.json();
         throw new Error(errorData.error || "리뷰 작성에 실패했습니다.");
       }
-
-      // 성공 시 폼 초기화
-      setReview("");
-      setRating(0);
-      window.location.reload();
-
-      alert("리뷰가 성공적으로 등록되었습니다.");
+      showToast("리뷰가 성공적으로 등록되었습니다.", "success", () => {
+        // 성공 시 폼 초기화
+        setReview("");
+        setRating(0);
+        window.location.reload();
+      });
     } catch (err) {
+      const error = err as Error;
       console.error("리뷰 작성 중 오류:", err);
-      setError(err.message || "리뷰 작성 중 오류가 발생했습니다.");
+      setError(error.message || "리뷰 작성 중 오류가 발생했습니다.");
     } finally {
       setIsSubmitting(false);
     }
@@ -86,7 +92,7 @@ export default function ReviewArea() {
     <>
       <ul>
         <li className="flex gap-[10px] text-xl mb-[15px] items-center">
-          <img src="images/icons/Subtract-icon.svg" alt="" />
+          <img src="/images/icons/Subtract-icon.svg" alt="" />
           <h2 className="font-bold">한줄평 작성하기</h2>
           <div className="flex items-center gap-1">
             {[1, 2, 3, 4, 5].map((star) => (
@@ -143,7 +149,7 @@ export default function ReviewArea() {
           </div>
         </li>
       </ul>
-      <ReviewList />
+      <ReviewList session={session?.user?.email || ""} />
     </>
   );
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const categoryType = ["콘서트", "뮤지컬", "연극", "전시/행사", "팬미팅"];
 const saleStatus = ["판매예정", "판매중", "판매종료"];
@@ -7,15 +7,39 @@ const saleStatus = ["판매예정", "판매중", "판매종료"];
 export default function DesktopSearchOptionSection({
   onApply,
   onClick,
+  category,
+  title,
 }: {
   // 필터 타입 정보를 포함하도록 변경
   onApply: (filter: string, type: "category" | "saleStatus") => void;
   onClick: () => void;
+  category: string;
+  title: string;
 }) {
   const [isToggleOption, setIsToggleOption] = useState(false);
   const [activeCategoryButtons, setActiveCategoryButtons] = useState<string[]>(
     []
   );
+
+  useEffect(() => {
+    // 검색 시 초기화
+    handleReset();
+    // title 검색 시 적용되는 로직
+    if (title) {
+      setIsToggleOption(false);
+      return;
+    }
+    // category 검색 시 적용되는 로직
+    if (category) {
+      setIsToggleOption(true);
+      if (category.includes("전시") || category.includes("행사")) {
+        setActiveCategoryButtons(["전시/행사"]);
+      } else {
+        setActiveCategoryButtons([category]);
+      }
+    }
+  }, [title, category]);
+
   const [activeSaleStatusButtons, setActiveSaleStatusButtons] = useState<
     string[]
   >([]);

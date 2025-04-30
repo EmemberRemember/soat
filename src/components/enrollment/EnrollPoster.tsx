@@ -1,45 +1,62 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { Plus } from "lucide-react";
+import { usePosterHandler } from "@/hooks/usePosterHandler";
+import { useEnrollmentData } from "@/hooks/useEnrollmentData";
+import { getImageURLIndexedDB } from "@/utils/Images";
 import { useDispatch } from "react-redux";
 import { setPoster } from "@/redux/slices/enrollSlice";
-import { Plus } from "lucide-react";
-import { useSelector } from "react-redux";
-import { RootState } from "@/redux/store";
 
-export default function EnrollPoster() {
-  const [fileName, setFileName] = useState<string>("");
-  const poster = useSelector((state: RootState) => state.enroll.poster);
-  const previewPoster = poster?.base64Data;
+interface EnrollPosterProps {
+  isEdit?: boolean;
+}
+export default function EnrollPoster({ isEdit = false }: EnrollPosterProps) {
+  const imgRef = useRef<HTMLImageElement>(null);
+  const [loadedPoster, setLoadedPoster] = useState<boolean>(false);
+  const { poster } = useEnrollmentData({ isEdit });
+  const { fileName, previewPoster, handleFileChange } = usePosterHandler({
+    isEditMode: isEdit,
+  });
+
+  const handleOnFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files ? e.target.files[0] : null;
+    await handleFileChange(file);
+  };
+
+  const isInitialLoad = useRef(true); // 초기 로딩 여부 추적
+
   const dispatch = useDispatch();
 
-  const imageToBase64 = (file: File): Promise<string> => {
-    return new Promise((res) => {
-      const blob = new Blob([file]);
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-      reader.onloadend = () => {
-        const base64String = reader.result;
-        res(base64String as string);
-      };
-    });
-  };
-
-  const handleFileOnChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files ? e.target.files[0] : null;
-
-    if (file) {
-      const base64File = await imageToBase64(file);
-      setFileName(file.name);
-      dispatch(
-        setPoster({
-          fileName: file.name,
-          fileSize: file.size,
-          fileType: file.type,
-          base64Data: base64File,
-        })
-      ); // 파일을 Redux에 저장
+  useEffect(() => {
+    const relaceImageURL = async () => {
+      const targetKey = poster?.fileKey;
+      try {
+        if (targetKey) {
+          const newPosterURL = await getImageURLIndexedDB(targetKey);
+          const newPoster = {
+            fileKey: poster.fileKey,
+            fileName: poster.fileName,
+            fileSize: poster.fileSize,
+            fileType: poster.fileType,
+            url: newPosterURL,
+          };
+          dispatch(setPoster(newPoster));
+        }
+      } catch (error) {
+        console.error(
+          "새로운 포스터 URL 이미지를 받아오는데 실패했습니다",
+          error
+        );
+      }
+    };
+    if (poster) {
+      setLoadedPoster(true);
     }
-  };
+    if (isInitialLoad.current && loadedPoster) {
+      relaceImageURL();
+      isInitialLoad.current = false;
+    }
+  }, [dispatch, isInitialLoad, loadedPoster, poster]);
 
   return (
     <>
@@ -49,7 +66,9 @@ export default function EnrollPoster() {
             <img
               className="w-[380px] h-[520px] object-cover aspec-[270/210]"
               src={previewPoster}
+              data-key={`${poster?.fileKey}`}
               alt="포스터 미리보기"
+              ref={imgRef}
             />
           )}
         </div>
@@ -69,7 +88,7 @@ export default function EnrollPoster() {
           id="poster"
           name="poster"
           type="file"
-          onChange={handleFileOnChange}
+          onChange={handleOnFileChange}
         />
       </div>
     </>

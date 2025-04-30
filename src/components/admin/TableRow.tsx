@@ -1,7 +1,8 @@
-interface TableRowProps<T extends Record<string, any>> {
+type FieldMapping<T> = Record<string, keyof T>;
+interface TableRowProps<T> {
   rowData: T;
   headers: string[];
-  fieldMapping: Record<string, keyof T>;
+  fieldMapping: FieldMapping<T>;
   onClick: () => void;
 }
 

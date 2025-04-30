@@ -1,10 +1,24 @@
 "use client"; // 클라이언트 컴포넌트로 설정
 
-import React, { useEffect, useState, useCallback, useRef } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import useEmblaCarousel from "embla-carousel-react";
-import PerformanceMoreBtn from "./PerformanceMoreBtn";
+import PerformanceSlide from "./PerformanceSlide";
+import { PerformanceDataWithStatus } from "./Performance";
+import { Button } from "@/components/ui/button";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import Link from "next/link";
+import { TicketPlus } from "lucide-react";
+interface CarouselDataProps {
+  label: string;
+  data: PerformanceDataWithStatus[];
+  isLoading: boolean;
+}
 
-export default function EmblaCarousel() {
+export default function EmblaCarousel({
+  label,
+  data,
+  isLoading,
+}: CarouselDataProps) {
   const [clickedSlide, setClickedSlide] = useState<number | null>(null); // 클릭한 슬라이드 관리
   const carouselRef = useRef<HTMLDivElement | null>(null); // carouselRef의 타입을 명시
 
@@ -25,6 +39,7 @@ export default function EmblaCarousel() {
 
   useEffect(() => {
     if (!emblaApi) return;
+
     const onSelect = () => setCurrentIndex(emblaApi.selectedScrollSnap());
     emblaApi.on("select", onSelect);
     return () => {
@@ -46,7 +61,7 @@ export default function EmblaCarousel() {
     };
 
     const viewport = emblaApi.containerNode();
-    viewport.addEventListener("wheel", onWheel);
+    viewport.addEventListener("wheel", onWheel, { passive: true });
 
     return () => {
       viewport.removeEventListener("wheel", onWheel);
@@ -82,40 +97,69 @@ export default function EmblaCarousel() {
     handleDocumentClick(event.nativeEvent);
   };
 
+  // 슬라이드 이동 함수
+  const handleClickPrevBtn = () => emblaApi?.scrollPrev();
+  const handleClickNextBtn = () => emblaApi?.scrollNext();
+  // 공통 버튼 스타일
+  const navButtonClass =
+    "absolute top-60 -translate-y-1/2 z-10 rounded-full bg-background/80 backdrop-blur-sm";
+
   return (
-    <div className="relative w-full max-w-4xl mx-auto py-6 px-3">
-      <div className="overflow-hidden" ref={emblaRef}>
-        <div className="flex" ref={carouselRef}>
-          {[1, 2, 3, 4, 5].map((num) => (
-            <div className="flex flex-col">
-              <div
-                className="flex flex-col"
-                key={num}
-                onClick={(event) => {
-                  event.stopPropagation(); // 외부 클릭을 방지
-                  handleClick(num); // 슬라이드 클릭 시 토글
-                }}
-              >
-                <div className="flex-shrink-0 rounded-md mr-2 px-8 flex items-center justify-center h-60 bg-gray-200 text-2xl font-bold w-[142px] cursor-pointer">
-                  Slide {num}
-                </div>
-                <div className="w-[142px] font-bold overflow-hidden text-ellipsis whitespace-nowrap mt-2 px-1">
-                  2025 주인님 단독 콘서트 {num}
-                </div>
-              </div>
-              {clickedSlide === num && (
-                <div className="mt-4">
-                  <div
-                    className="absolute top-0 left-0 w-full h-full bg-transparent"
-                    onClick={() => setClickedSlide(null)} // 슬라이드 외부 클릭 시 닫기
+    <section className="relative w-full max-w-4xl mx-auto py-6 px-6">
+      <h2 className="text-2xl font-bold mb-6">{label}</h2>
+      {label.includes("진행중") && (
+        <Link
+          href="/enrollment"
+          className="absolute right-6 top-5 bg-flesh-500 hover:bg-flesh-600 active:bg-flesh-700 text-sm px-4 py-2 rounded-md text-white flex items-center gap-2 transition duration-200"
+        >
+          <TicketPlus />
+          공연 등록
+        </Link>
+      )}
+      {data.length > 0 ? (
+        <>
+          <Button
+            variant="outline"
+            size="icon"
+            className={`${navButtonClass} left-4 md:left-0 -ml-4`}
+            onClick={handleClickPrevBtn}
+            disabled={currentIndex === 0}
+          >
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <div className="overflow-hidden" ref={emblaRef}>
+            <div className="flex gap-4" ref={carouselRef}>
+              {data.map((data: PerformanceDataWithStatus, index: number) => {
+                const num = index + 1; // 슬라이드 번호
+                return (
+                  <PerformanceSlide
+                    key={data.id}
+                    data={data}
+                    isOpen={clickedSlide === num}
+                    handleClick={() => handleClick(num)}
+                    handleCardOutsideClick={() => handleClick(0)}
+                    handleButtonClick={handleButtonClick}
                   />
-                  <PerformanceMoreBtn onClick={handleButtonClick} />
-                </div>
-              )}
+                );
+              })}
             </div>
-          ))}
-        </div>
-      </div>
-    </div>
+          </div>
+          <Button
+            variant="outline"
+            size="icon"
+            className={`${navButtonClass} right-4 md:right-1 -mr-4`}
+            onClick={handleClickNextBtn}
+          >
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </>
+      ) : (
+        <p className="flex justify-center text-lg text-gray-500 my-40">
+          {isLoading
+            ? "공연 목록을 불러오는 중입니다..."
+            : "등록된 공연이 없습니다."}
+        </p>
+      )}
+    </section>
   );
 }

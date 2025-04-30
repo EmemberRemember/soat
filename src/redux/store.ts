@@ -10,21 +10,29 @@ import {
   PURGE,
   REGISTER,
 } from "redux-persist";
+
+interface ManualPersistOptions extends PersistorOptions {
+  manualPersist: boolean;
+}
+
 import enrollReducer from "./slices/enrollSlice";
 import seatReducer from "./slices/seatSlice";
+import enrollEditReducer from "./slices/enrollEditSlice"
+import seatEditReducer from "./slices/seatEditSlice"
+import { PersistorOptions } from "redux-persist/es/types";
+
 export const enrollPersistConfig = {
   key: "enroll", // enroll 상태의 키
   storage, // localStorage 사용
-  throttle: 300,
+  blacklist: ["isDirty", "step", "invalidField"],
+};
+
+export const seatPersistConfig = {
+  key: "seats",
+  storage,
   blacklist: ["isDirty", "step"],
 };
 
-const seatPersistConfig = {
-  key: "seats",
-  storage,
-  throttle: 300,
-  blacklist: ["isDirty"],
-};
 
 const persistedEnrollReducer = persistReducer(
   enrollPersistConfig,
@@ -32,10 +40,11 @@ const persistedEnrollReducer = persistReducer(
 );
 
 const persistedSeatReducer = persistReducer(seatPersistConfig, seatReducer);
-
 const rootReducer = combineReducers({
   enroll: persistedEnrollReducer,
   seat: persistedSeatReducer,
+  enrollEdit : enrollEditReducer,
+  seatEdit: seatEditReducer
   //reducer 추가 부분
 });
 
@@ -49,9 +58,13 @@ export const store = configureStore({
     }),
   devTools: process.env.NODE_ENV !== "production",
 });
-export const persistor = persistStore(store, { manualPersist: true }); //공식문서에는 존재하는 옵션인데 찾을 수 없다고 뜨네요..
+
+export const persistor = persistStore(store, {
+  manualPersist: true,
+} as ManualPersistOptions);
 
 export type RootState = ReturnType<typeof store.getState>;
+
 export type AppDispatch = typeof store.dispatch;
 
 export default store;
