@@ -189,7 +189,7 @@ export async function DELETE(request: NextRequest, { params }: PageParams) {
           performanceId: bookingData.performanceId,
           performanceDate: performanceDate,
           performanceTime: performanceTime,
-          status: "pending",
+          status: "pendingRefund",
           requestDate: now.toISOString().split("T")[0],
           seatCount: Array.isArray(bookingData.selectedSeats)
             ? bookingData.selectedSeats.length
