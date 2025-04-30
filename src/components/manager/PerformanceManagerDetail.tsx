@@ -5,6 +5,9 @@ import { RowConfigs } from "@/types/seat";
 import { PerformanceTime } from "@/types/performance";
 import { PerformanceData } from "@/app/api/performance/route";
 import { Button } from "../controls/Button";
+import axios from "axios";
+import { showToast } from "@/utils/toast";
+import { useRouter } from "next/navigation";
 
 interface PerformanceManagerDetailProps {
   rows: number;
@@ -41,6 +44,7 @@ export default function PerformanceManagerDetail({
           time: item.time,
           occupiedSeats: item?.occupiedSeats,
           casting: item.casting,
+          status: item.status,
         }))
       )
       .sort((a, b) => {
@@ -62,11 +66,32 @@ export default function PerformanceManagerDetail({
     }
   };
 
-  console.log(selected, "selected");
+  const router = useRouter();
 
-  const handleCancelPerformance = () => {
-    console.log("공연 취소", selected);
+  const handleEndPerformance = async () => {
+    try {
+      const response = await axios.post(
+        `/api/manager/performance/${performanceId}/end`,
+        {
+          date: selected.date,
+          time: selected.time,
+        }
+      );
+      if (response.status === 200) {
+        showToast(
+          "공연이 취소되었습니다. 관리자 페이지로 이동합니다.",
+          "success",
+          () => {
+            router.push("/manager/performance");
+          }
+        );
+      }
+    } catch (error) {
+      showToast("공연 취소 중 오류가 발생했습니다", "error");
+      console.error("공연 취소 오류:", error);
+    }
   };
+
   return (
     <>
       <div className="flex gap-2">
@@ -75,19 +100,30 @@ export default function PerformanceManagerDetail({
           onChange={(e) => handleSelectChange(e.target.value)}
         >
           {selectOptions.map((opt) => (
-            <option key={opt.value} value={opt.value}>
+            <option
+              key={opt.value}
+              value={opt.value}
+              className={`${opt.status === "ended" && "text-gray-400"}`}
+            >
               {opt.label}
             </option>
           ))}
         </select>
+
         <Button
-          onClick={handleCancelPerformance}
+          onClick={handleEndPerformance}
           size="small"
           className="whitespace-nowrap"
+          disabled={selected.status === "ended"}
         >
           공연 취소
         </Button>
       </div>
+      {selected.status === "ended" && (
+        <span className="text-flesh-500 text-sm w-full text-center mt-2">
+          해당 공연은 종료된 공연입니다.
+        </span>
+      )}
       <SeatLayout
         performanceData={performanceData}
         occupiedSeat={selectedOccupiedSeat}
