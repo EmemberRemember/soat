@@ -1,14 +1,43 @@
+"use client";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "../controls/Button";
 import BookSection from "./BookSection";
 import ButtonRow from "./ButtonRow";
-import QRCode from "react-qr-code";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import { LucideMessageCircleWarning } from "lucide-react";
 import { bookResultType } from "@/types/reservation";
 import { TossQRCode, tossUrl } from "@/components/booking/TossQRCode";
+import Modal from "../Modal";
+import { useShowModal } from "@/hooks/useShowModal";
+import Ticket from "../ticket/Ticket";
+import { CloseButton } from "../controls/Button";
+import { bookWithPerformance } from "@/types/reservation";
+import axios from "axios";
 
 export default function BookComplete(reservationData: bookResultType) {
+  const { showModal, handleShowModal } = useShowModal();
+  const [detailData, setDetailData] = useState<bookWithPerformance | null>(
+    null
+  );
+
+  async function showTicketModalHandler() {
+    if (detailData) {
+      handleShowModal(true);
+      return;
+    }
+    try {
+      const response = await axios.get(
+        `/api/account/book/${reservationData.bookingId}`
+      );
+      setDetailData(response.data);
+    } catch (error) {
+      console.error("Error fetching booking details:", error);
+    } finally {
+      handleShowModal(true);
+    }
+  }
+
   return (
     <>
       <BookSection>
@@ -129,11 +158,29 @@ export default function BookComplete(reservationData: bookResultType) {
       </BookSection>
       <ButtonRow
         setProcess={() => {}}
+        showTicketModalHandler={showTicketModalHandler}
         buttons={[
           { label: "티켓 확인", process: "ticketCheck", highlight: false },
           { label: "닫기", process: "close", highlight: true },
         ]}
       />
+      {detailData && (
+        <>
+          <Modal
+            isOpen={showModal}
+            onClose={() => handleShowModal(false)}
+            className="relative p-[0px]"
+          >
+            <>
+              <Ticket {...detailData} />
+              <CloseButton
+                className="absolute top-6 right-6"
+                onClick={() => handleShowModal(false)}
+              />
+            </>
+          </Modal>
+        </>
+      )}
     </>
   );
 }
