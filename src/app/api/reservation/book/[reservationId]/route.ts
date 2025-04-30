@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { adminDb } from "@/app/api/firebaseAdmin";
 import { PerformanceData } from "@/app/api/performance/route";
 import { authOptions } from "@/auth/authOptions";
