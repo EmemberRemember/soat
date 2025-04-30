@@ -5,8 +5,8 @@ import {
   setInvalidField,
   setStep,
 } from "@/redux/slices/enrollSlice";
-import { RootState } from "@/redux/store";
-import { getImage } from "@/services/indexedDBService";
+import { persistor, RootState } from "@/redux/store";
+import { clearAllImages, getImage } from "@/services/indexedDBService";
 import { EnrollStep } from "@/types/enrollment";
 import axios from "axios";
 import React, { useState } from "react";
@@ -25,6 +25,7 @@ export default function EnrollFooter() {
   const enrollResult = useSelector((state: RootState) => state.enroll);
   const seatResult = useSelector((state: RootState) => state.seat);
   const imageFiles = enrollResult.files;
+  const poster = enrollResult.poster;
   const isDirty = enrollResult.isDirty || seatResult.isDirty;
   const { isValid, invalidFieldName } = useValidationEnrollment({
     enroll: enrollResult,
@@ -91,11 +92,18 @@ export default function EnrollFooter() {
     return files;
   };
 
+  const getPosterFileIndexedDB = async () => {
+    if (poster && poster.fileKey) {
+      const files = await getImage(poster?.fileKey);
+      return files;
+    }
+  };
+
   const handleSubmit = async () => {
     setLoading(true);
     try {
       const imagefiles = await getImageFileIndexedDB();
-
+      const posterfile = await getPosterFileIndexedDB();
       const formData = new FormData();
 
       imagefiles.forEach((file) => {
@@ -111,6 +119,15 @@ export default function EnrollFooter() {
         }
       });
 
+      if (posterfile && posterfile.imageData) {
+        const newFile = new File(
+          [posterfile.imageData],
+          `${posterfile.id}_${posterfile.title}`,
+          { type: posterfile.imageType }
+        );
+        formData.append("poster", newFile);
+      }
+
       const { files: _files, ...rest } = {
         ...enrollResult,
         seats: seatResult,
@@ -125,6 +142,8 @@ export default function EnrollFooter() {
       });
 
       if (response.status === 201) {
+        persistor.purge();
+        await clearAllImages();
         showToast("공연 등록이 완료되었습니다.", "success", () => {
           router.push("/manager/performance");
         });

@@ -31,7 +31,7 @@ export function useValidationEnrollment({
       !!fileType &&
       !!url &&
       fileSize > 0 &&
-      /^data:image\/[a-z]+;base64/
+      /^blob:/.test(url)
     );
   };
 
