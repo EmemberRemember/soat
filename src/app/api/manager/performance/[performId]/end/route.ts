@@ -88,7 +88,6 @@ export async function POST(request: NextRequest, { params }: PageParams) {
 
     // 해당 시간대의 예매 정보 수집
     const occupiedSeats = performances[date][timeSlotIndex].occupiedSeats || [];
-
     const reservationIds = occupiedSeats.map(
       (seat: OccupiedSeat) => seat.reservationId
     );
@@ -99,28 +98,33 @@ export async function POST(request: NextRequest, { params }: PageParams) {
 
     // 2. 트랜잭션 시작 - 공연 상태 변경 및 예매 상태 업데이트
     await adminDb.runTransaction(async (transaction) => {
-      // 먼저 모든 읽기 작업을 수행
       const performanceRef = adminDb.collection("performances").doc(performId);
+      const refundRef = adminDb.collection("refunds").doc(performId);
       const performanceSnapshot = await transaction.get(performanceRef);
+      const refundDoc = await transaction.get(refundRef);
 
-      // 모든 예매 정보를 미리 읽어옴
       const bookingDocs = [];
       for (const bookingId of uniqueReservationIds) {
         const bookingRef = adminDb
           .collection("bookings")
           .doc(bookingId as string);
         const bookingDoc = await transaction.get(bookingRef);
-        bookingDocs.push({ ref: bookingRef, doc: bookingDoc });
+        if (bookingDoc.exists) {
+          bookingDocs.push({ ref: bookingRef, doc: bookingDoc });
+        } else {
+          console.log(`Booking document not found for ${bookingId}`);
+        }
       }
 
       // 특정 날짜의 전체 공연 배열 가져오기
-      const datePerformances = performances[date];
+      const datePerformances = occupiedSeats;
+
       // 공연 슬롯 복사
       const originalSlot = datePerformances[timeSlotIndex];
 
       // 좌석 상태 업데이트 로직
-      const updatedOccupiedSeats =
-        originalSlot.occupiedSeats?.map((seat: OccupiedSeat) => {
+      const updatedOccupiedSeats = datePerformances.map(
+        (seat: OccupiedSeat) => {
           let newSeatStatus;
           if (seat.status === "booked" || seat.status === "pendingRefund") {
             newSeatStatus = "pendingRefund";
@@ -131,7 +135,8 @@ export async function POST(request: NextRequest, { params }: PageParams) {
             ...seat,
             status: newSeatStatus,
           };
-        }) || [];
+        }
+      );
 
       // 공연 슬롯에 업데이트된 좌석 정보와 status 필드 반영
       const updatedSlot = {
@@ -152,8 +157,10 @@ export async function POST(request: NextRequest, { params }: PageParams) {
 
       // 모든 관련 예매의 상태 업데이트
       for (const { ref: bookingRef, doc: bookingDoc } of bookingDocs) {
-        if (bookingDoc.exists) {
-          const bookingData = bookingDoc.data();
+        const bookingData = bookingDoc.data();
+        const bookingId = bookingDoc.id;
+
+        if (bookingData) {
           const currentStatus = bookingData?.paymentStatus;
 
           // 예매 상태 업데이트 로직 개선
@@ -168,40 +175,52 @@ export async function POST(request: NextRequest, { params }: PageParams) {
             paymentStatus: newStatus,
             updatedAt: now,
           });
+
+          // refund 데이터 추가 (refunds 필드에 추가)
+          const refundEntry = {
+            phone: bookingData.purchaserInfo.phone,
+            username: bookingData.purchaserInfo.name,
+            price: bookingData.totalPrice,
+            reservationId: bookingId,
+            userId: bookingData.purchaserInfo.userId,
+            email: bookingData.purchaserInfo.email,
+            performanceId: performId,
+            performanceDate: date,
+            performanceTime: time,
+            status: "pendingRefund",
+            requestDate: now.toDate().toISOString().split("T")[0],
+            seatCount: Array.isArray(bookingData.selectedSeats)
+              ? bookingData.selectedSeats.length
+              : 0,
+            seats: bookingData.selectedSeats || [],
+          };
+
+          const existingData = refundDoc.exists
+            ? refundDoc.data()?.performance || {}
+            : {};
+
+          const existingDateData = existingData[date] || {};
+          const existingTimeRefunds = Array.isArray(existingDateData[time])
+            ? existingDateData[time]
+            : [];
+
+          const updatedPerformance = {
+            ...existingData,
+            [date]: {
+              ...existingDateData,
+              [time]: [...existingTimeRefunds, refundEntry],
+            },
+          };
+
+          // refundsRef를 사용하여 refund 정보 저장
+          transaction.set(
+            refundRef,
+            { performance: updatedPerformance },
+            { merge: true }
+          );
         }
       }
     });
-
-    // 3. 취소된 예매에 대한 알림 생성 (선택적)
-    const batch = adminDb.batch();
-
-    for (const bookingId of uniqueReservationIds) {
-      const bookingDoc = await adminDb
-        .collection("bookings")
-        .doc(bookingId as string)
-        .get();
-
-      if (bookingDoc.exists) {
-        const bookingData = bookingDoc.data();
-        const userId = bookingData?.purchaserInfo?.userId;
-
-        if (userId) {
-          const notificationRef = adminDb.collection("notifications").doc();
-          batch.set(notificationRef, {
-            userId: userId,
-            type: "performanceCancelled",
-            title: "공연 취소 알림",
-            message: `예매하신 "${performanceData.title}" 공연(${date} ${time})이 취소되었습니다.`,
-            performanceId: performId,
-            bookingId: bookingId,
-            createdAt: now,
-            isRead: false,
-          });
-        }
-      }
-    }
-
-    await batch.commit();
 
     return NextResponse.json({
       success: true,
@@ -216,65 +235,3 @@ export async function POST(request: NextRequest, { params }: PageParams) {
     );
   }
 }
-
-// 공연 종료 API 미사용으로 주석 처리 (등록된 공연의 날짜, 시간 일괄 종료)
-// import { NextResponse } from "next/server";
-// import { adminDb } from "@/app/api/firebaseAdmin";
-// import { getServerSession } from "next-auth";
-// import { authOptions } from "@/auth/authOptions";
-
-// export async function PATCH(
-//   req: Request,
-//   { params }: { params: { performId: string } }
-// ) {
-//   try {
-//     const session = await getServerSession(authOptions);
-
-//     if (!session || !session.user) {
-//       return NextResponse.json(
-//         { error: "인증되지 않은 요청입니다." },
-//         { status: 401 }
-//       );
-//     }
-
-//     const userId = session.user.id;
-//     const performanceId = params.performId;
-
-//     const docRef = adminDb.collection("performances").doc(performanceId);
-//     const doc = await docRef.get();
-
-//     if (!doc.exists) {
-//       return NextResponse.json(
-//         { error: "해당 공연이 존재하지 않습니다." },
-//         { status: 404 }
-//       );
-//     }
-
-//     const data = doc.data();
-
-//     if (data && data.sellerId !== userId) {
-//       return NextResponse.json(
-//         { error: "공연 종료 권한이 없습니다." },
-//         { status: 403 }
-//       );
-//     }
-
-//     const now = new Date();
-
-//     await docRef.update({
-//       updatedAt: now,
-//       status: "ended",
-//     });
-
-//     return NextResponse.json(
-//       { message: "공연이 성공적으로 종료되었습니다." },
-//       { status: 200 }
-//     );
-//   } catch (error) {
-//     console.error("공연 종료 실패:", error);
-//     return NextResponse.json(
-//       { error: "공연 종료 중 오류가 발생했습니다." },
-//       { status: 500 }
-//     );
-//   }
-// }
