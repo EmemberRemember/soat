@@ -117,23 +117,25 @@ export async function POST(request: NextRequest, { params }: PageParams) {
       }
 
       // 특정 날짜의 전체 공연 배열 가져오기
-      const datePerformances = occupiedSeats;
+      const datePerformances = performances[date];
 
       // 공연 슬롯 복사
-      const originalSlot = datePerformances[timeSlotIndex];
+      const originalSlot = performances[date][timeSlotIndex];
 
-      // 좌석 상태 업데이트 로직
-      const updatedOccupiedSeats = datePerformances.map(
+      // 좌석 상태 업데이트
+      const updatedOccupiedSeats = originalSlot.occupiedSeats?.map(
         (seat: OccupiedSeat) => {
-          let newSeatStatus;
+          let newStatus;
+
           if (seat.status === "booked" || seat.status === "pendingRefund") {
-            newSeatStatus = "pendingRefund";
+            newStatus = "pendingRefund";
           } else {
-            newSeatStatus = "cancel";
+            newStatus = "cancel";
           }
+
           return {
             ...seat,
-            status: newSeatStatus,
+            status: newStatus,
           };
         }
       );
