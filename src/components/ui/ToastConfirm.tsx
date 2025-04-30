@@ -44,7 +44,7 @@ export default function ToastConfirm({
         ariaLabel: buttonText + "버튼",
         pauseOnFocusLoss: false,
         onClose: () => {
-          setIsClicked(false); // 버튼 클릭되지 않고 toast가 닫힌 경우 상태 초기화
+          if (!isConfirmed) setIsClicked(false); // 버튼 클릭되지 않고 toast가 닫힌 경우 상태 초기화
         },
       }
     );
