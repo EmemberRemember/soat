@@ -26,7 +26,7 @@ export default function PerformanceMoreBtn({
           onClick={onClickEditBtn}
           Icon={Pencil}
         /> */}
-        <div className="w-full h-px bg-border" />
+        {/* <div className="w-full h-px bg-border" /> */}
         <PerformanceButton
           label="예매 확인"
           onClick={onClickCheckBtn}
