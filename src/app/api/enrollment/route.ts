@@ -135,26 +135,24 @@ export async function PUT(request: NextRequest) {
 
     // 포스터 이미지 처리
     let posterUrl = null;
-    if (data.poster && data.poster.base64Data) {
+    if (data.poster && data.poster.url) {
       const posterFileName = `performances/${userId}/${uuidv4()}_${
         data.poster.fileName
       }`;
-      const posterFile = bucket.file(posterFileName);
-
-      // base64 데이터에서 실제 바이너리 데이터 추출
-      const base64Data = data.poster.base64Data.split(";base64,").pop();
-      const posterBuffer = Buffer.from(base64Data, "base64");
+      const posterFile = formData.get("poster") as File;
+      const posterBuffer = Buffer.from(await posterFile.arrayBuffer());
+      const posterFileRef = bucket.file(posterFileName);
 
       validateMimeType(data.poster.fileType);
 
-      await posterFile.save(posterBuffer, {
+      await posterFileRef.save(posterBuffer, {
         metadata: {
           contentType: data.poster.fileType,
         },
       });
 
       // 파일 공개 URL 설정
-      await posterFile.makePublic();
+      await posterFileRef.makePublic();
       posterUrl = `https://storage.googleapis.com/${bucket.name}/${posterFileName}`;
 
       // 원본 base64 데이터 제거하고 URL로 대체
@@ -168,7 +166,6 @@ export async function PUT(request: NextRequest) {
 
     if (data.content && fileData.length > 0) {
       const uploadImage = await handleImageUpload(fileData, userId);
-      console.log("uploadImage", uploadImage);
       const newContent = await contentChangeBlobUrlToPublicUrl(
         data.content,
         uploadImage
