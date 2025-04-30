@@ -9,11 +9,15 @@ import { useSelector, useDispatch } from "react-redux";
 import NavigationGuard from "../NavigationGuard";
 import { useRouter } from "next/navigation";
 import { useValidationEnrollment } from "@/hooks/useValidationEnrollment";
-import { setEditInvalidField, setEditStep } from "@/redux/slices/enrollEditSlice";
+import {
+  setEditInvalidField,
+  setEditStep,
+} from "@/redux/slices/enrollEditSlice";
+import { showToast } from "@/utils/toast";
 
 export default function EnrollEditFooter() {
   const router = useRouter();
-  const step = useSelector((state: RootState) => state.enrollEdit.step);  
+  const step = useSelector((state: RootState) => state.enrollEdit.step);
   const enrollResult = useSelector((state: RootState) => state.enrollEdit);
   const seatResult = useSelector((state: RootState) => state.seatEdit);
   const isDirty = enrollResult.isDirty || seatResult.isDirty;
@@ -30,32 +34,35 @@ export default function EnrollEditFooter() {
       // 알림을 컴포넌트에서 처리
       switch (invalidFieldName) {
         case "enrollTitle":
-          alert("공연명을 입력해주세요");
+          showToast("공연명을 입력해주세요", "error");
           break;
         case "category":
-          alert("공연의 카테고리를 설정해주세요");
+          showToast("공연의 카테고리를 설정해주세요", "error");
           break;
         case "bookingStartDate":
-          alert("공연 예약 시작 날짜를 설정해주세요.");
+          showToast("공연 예약 시작 날짜를 설정해주세요.", "error");
           break;
         case "enrollBookingEndDate":
-          alert("공연 예약 종료 날짜는 시작 날짜보다 빠를 수 없습니다.");
+          showToast(
+            "공연 예약 종료 날짜는 시작 날짜보다 빠를 수 없습니다.",
+            "error"
+          );
           break;
         case "enrollDetailAddress":
-          alert("주소를 입력해주세요.");
+          showToast("주소를 입력해주세요.", "error");
           break;
         case "poster":
-          alert("포스터를 추가해주세요.");
+          showToast("포스터를 추가해주세요.", "error");
           break;
         case "performances":
-          alert("유효한 날짜에 공연을 등록해주세요");
+          showToast("유효한 날짜에 공연을 등록해주세요", "error");
           break;
         default:
           break;
       }
     }
   };
-    
+
   const handleOnClickSeatButton = () => {
     if (!isValid) {
       validationNotify();
@@ -110,31 +117,32 @@ export default function EnrollEditFooter() {
       });
 
       if (response.status === 201) {
-        alert("공연 수정이 완료되었습니다.");
-        router.push("/manager/performance");
+        showToast("공연 수정이 완료되었습니다.", "success", () => {
+          router.push("/manager/performance");
+        });
       }
     } catch (error) {
       if (axios.isAxiosError(error)) {
-        alert(error.response?.data.error);
+        showToast(error.response?.data.error, "error");
       }
     }
   };
 
-    return (
-      <>
+  return (
+    <>
       <NavigationGuard isDirty={isDirty} />
       <footer className="fixed left-0 bottom-0 bg-flesh-200 w-full h-[120px] flex justify-end items-center pr-[60px] gap-14">
         {step === EnrollStep.EnrollSeats && (
-            <Button type="button" onClick={handleOnClickPrevButton}>
+          <Button type="button" onClick={handleOnClickPrevButton}>
             이전으로
           </Button>
         )}
         {step === EnrollStep.EnrollPerformance ? (
-            <Button type="button" onClick={handleOnClickSeatButton}>
+          <Button type="button" onClick={handleOnClickSeatButton}>
             좌석 배치하기
           </Button>
         ) : (
-            <Button type="button" onClick={handleSubmit}>
+          <Button type="button" onClick={handleSubmit}>
             공연 수정
           </Button>
         )}

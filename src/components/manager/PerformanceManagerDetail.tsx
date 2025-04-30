@@ -4,10 +4,10 @@ import SeatLayout from "../seats/SeatLayout";
 import { RowConfigs } from "@/types/seat";
 import { PerformanceTime } from "@/types/performance";
 import { PerformanceData } from "@/app/api/performance/route";
-import { Button } from "../controls/Button";
 import axios from "axios";
 import { showToast } from "@/utils/toast";
 import { useRouter } from "next/navigation";
+import ToastConfirm from "../ui/ToastConfirm";
 
 interface PerformanceManagerDetailProps {
   rows: number;
@@ -83,6 +83,7 @@ export default function PerformanceManagerDetail({
           "success",
           () => {
             router.push("/manager/performance");
+            router.refresh();
           }
         );
       }
@@ -109,15 +110,13 @@ export default function PerformanceManagerDetail({
             </option>
           ))}
         </select>
-
-        <Button
-          onClick={handleEndPerformance}
-          size="small"
-          className="whitespace-nowrap"
+        <ToastConfirm
+          buttonText="공연 취소"
+          title="공연 취소"
+          message="공연을 취소하시겠습니까?"
           disabled={selected.status === "ended"}
-        >
-          공연 취소
-        </Button>
+          onConfirm={() => handleEndPerformance()}
+        />
       </div>
       {selected.status === "ended" && (
         <span className="text-flesh-500 text-sm w-full text-center mt-2">

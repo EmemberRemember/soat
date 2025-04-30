@@ -4,6 +4,7 @@ import { CloseButton, Button } from "../controls/Button";
 import { Radio } from "../controls/Inputs";
 import Modal from "../Modal";
 import { Banner, NewBanner } from "@/types/admin";
+import { showToast } from "@/utils/toast";
 
 interface BannerModifyProps {
   onClose: () => void;
@@ -42,21 +43,21 @@ export default function BannerModify({
   // 저장 버튼 클릭 시 유효성 검사 후 저장 여부 모달 열기
   const handleSave = () => {
     if (!formData.bannerTitle.trim()) {
-      alert("배너 제목을 입력해주세요.");
+      showToast("배너 제목을 입력해주세요.", "error");
       return;
     }
     // 배너 이미지는 선택하지 않아도 기존 이미지가 있을 수 있으므로
     // 필요 시 아래 조건을 조정할 수 있습니다.
     // if (!formData.bannerImage) {
-    //   alert("배너 이미지를 선택해주세요.");
+    // showToast("배너 이미지를 선택해주세요.", "error");
     //   return;
     // }
     if (!formData.alternativeText.trim()) {
-      alert("대체 텍스트를 입력해주세요.");
+      showToast("대체 텍스트를 입력해주세요.", "error");
       return;
     }
     if (!formData.bannerLink.trim()) {
-      alert("배너 링크를 입력해주세요.");
+      showToast("배너 링크를 입력해주세요.", "error");
       return;
     }
 

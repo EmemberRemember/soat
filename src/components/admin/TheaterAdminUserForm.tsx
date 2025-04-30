@@ -5,6 +5,7 @@ import { CloseButton, Button } from "../controls/Button";
 import { Radio } from "../controls/Inputs";
 import JoinTypeModal from "./JoinTypeModal";
 import Modal from "../Modal";
+import { showToast } from "@/utils/toast";
 
 export default function TheaterAdminUserForm({
   user,
@@ -29,7 +30,7 @@ export default function TheaterAdminUserForm({
     if (adminUserRadioState) {
       setIsOpenJoinTypeModal(true);
     } else {
-      alert("라디오 버튼을 선택하세요.");
+      showToast("라디오 버튼을 선택하세요.", "error");
     }
   };
 

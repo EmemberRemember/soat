@@ -4,6 +4,7 @@ import { Performance } from "@/types/admin";
 import { CloseButton, Button } from "../controls/Button";
 import { Radio } from "../controls/Inputs";
 import Modal from "../Modal";
+import { showToast } from "@/utils/toast";
 
 export default function PerformanceForm({
   performance,
@@ -81,7 +82,7 @@ export default function PerformanceForm({
                         <Button
                           className="h-[20px] text-xs flex items-center"
                           size="small"
-                          onClick={() => alert("상세보기 클릭")}
+                          onClick={() => showToast("상세보기 클릭")}
                         >
                           상세보기
                         </Button>
@@ -157,8 +158,8 @@ export default function PerformanceForm({
               {changeType === "sale"
                 ? "판매상태를 변경하시겠습니까?"
                 : performanceRadioState === "표시"
-                ? "해당 공연을 표시하시겠습니까?"
-                : "해당 공연을 숨김 처리하시겠습니까?"}
+                  ? "해당 공연을 표시하시겠습니까?"
+                  : "해당 공연을 숨김 처리하시겠습니까?"}
             </p>
 
             <div className="flex justify-center gap-2">
