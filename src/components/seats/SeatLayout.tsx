@@ -109,7 +109,6 @@ export default function SeatLayout({
     return <Loading />;
   };
 
-  // useEffect 수정
   useEffect(() => {
     console.log(bookingStatus);
     if (
@@ -154,6 +153,7 @@ export default function SeatLayout({
                 bookingData={bookingData}
                 bookingError={bookingError}
                 performanceId={bookingData?.performanceId as string}
+                setBookingData={setBookingData}
               />
             )
           ) : (
