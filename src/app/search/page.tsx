@@ -120,7 +120,7 @@ function SearchResults({
       const matchesCategory =
         selectedCategoryFilters.length === 0 ||
         selectedCategoryFilters.includes(item.category);
-      
+
       // 판매상태별 필터 적용
       const now = new Date();
 
@@ -132,7 +132,7 @@ function SearchResults({
       } else {
         status = "판매종료";
       }
-      
+
       const matchesStatus =
         selectedStatusFilters.length === 0 ||
         selectedStatusFilters.includes(status);
@@ -254,7 +254,6 @@ function SearchResults({
           <p className="text-gray-500 mt-8 text-center">
             검색 결과가 없습니다.
           </p> // 검색 결과가 없을 때 메시지
-          <p>검색 결과가 없습니다.</p>
         ) : (
           <section>
             <ul>
