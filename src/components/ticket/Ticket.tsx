@@ -67,7 +67,7 @@ export default function Ticket(data: bookWithPerformance) {
             <div className="bg-flesh-50 bg-opacity-20 rounded-lg p-3 border border-flesh-100">
               <p className="text-xs text-flesh-700 mb-2">좌석 번호</p>
               <p className="font-bold text-lg text-flesh-900">
-                {data.selectedSeats}
+                {data.selectedSeats.join(", ")}
               </p>
             </div>
 
