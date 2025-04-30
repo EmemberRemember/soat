@@ -11,20 +11,24 @@ import Modal from "../Modal";
 import { useShowModal } from "@/hooks/useShowModal";
 import { CloseButton } from "../controls/Button";
 import { showToast } from "@/utils/toast";
-import { stat } from "fs";
 
 interface DetailDataProps {
   label: string;
   data: string;
 }
-type PaymentStatusType = "입금 대기" | "환불 대기" | "취소 완료" | "결제 완료";
+type PaymentStatusType =
+  | "입금 대기"
+  | "환불 대기"
+  | "예매 취소"
+  | "결제 완료"
+  | "예매중";
 
 export default function ReservationDetail({ bookId }: { bookId: string }) {
   const [detailData, setDetailData] = useState<bookWithPerformance | null>(
     null
   );
   const [paymentStatus, setPaymentStatus] =
-    useState<PaymentStatusType>("입금 대기");
+    useState<PaymentStatusType>("예매중");
   const { showModal, handleShowModal } = useShowModal();
   const router = useRouter();
 
@@ -34,15 +38,16 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
         const response = await axios.get(`/api/account/book/${bookId}`);
         setDetailData(response.data);
         const status = response.data.paymentStatus;
-
-        if (status === "pending" || status === "processing") {
+        if (status === "pending") {
           setPaymentStatus("입금 대기");
         } else if (status === "booked") {
           setPaymentStatus("결제 완료");
         } else if (status === "pendingRefund") {
           setPaymentStatus("환불 대기");
         } else if (status === "cancel") {
-          setPaymentStatus("취소 완료");
+          setPaymentStatus("예매 취소");
+        } else {
+          setPaymentStatus("예매중");
         }
       } catch (error) {
         console.error("Error fetching booking details:", error);
