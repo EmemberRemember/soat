@@ -29,11 +29,13 @@ export async function GET() {
       return NextResponse.json({ reservations: [] });
     }
 
-    // 예매 데이터 배열로 변환
-    const reservations = reservationsSnapshot.docs.map((doc) => ({
-      reservationId: doc.id,
-      ...(doc.data() as { performanceId?: string }),
-    }));
+    // 예매 데이터 배열로 변환 (유효한 performanceId가 있는 것만 포함)
+    const reservations = reservationsSnapshot.docs
+      .map((doc) => ({
+        reservationId: doc.id,
+        ...(doc.data() as { performanceId?: string }),
+      }))
+      .filter((booking) => booking.performanceId); // performanceId가 있는 것만 필터링
 
     // 중복 제거한 performanceIds 추출
     const performanceIds: string[] = [];
@@ -64,25 +66,28 @@ export async function GET() {
       performancesMap[perf.id] = perf;
     });
 
-    // 예매 정보에 공연 정보 병합
-    const enrichedReservations = reservations.map((booking) => {
-      const performance = booking.performanceId
-        ? performancesMap[booking.performanceId]
-        : null;
-      return {
-        ...booking,
-        performanceDetails: performance
-          ? {
-              title: performance.title,
-              address: performance.address,
-              detailAddress: performance.detailAddress,
-              poster: performance.poster.url,
-              category: performance.category,
-              sellerTeam: performance.sellerTeam,
-            }
-          : null,
-      };
-    });
+    // 예매 정보에 공연 정보 병합 (공연 정보가 있는 항목만 포함)
+    const enrichedReservations = reservations
+      .filter(
+        (booking) =>
+          booking.performanceId && performancesMap[booking.performanceId]
+      )
+      .map((booking) => {
+        const performance = performancesMap[booking.performanceId as string];
+
+        // 기본값을 사용하여 필요한 속성 추출
+        return {
+          ...booking,
+          performanceDetails: {
+            title: performance?.title,
+            address: performance?.address,
+            detailAddress: performance?.detailAddress,
+            poster: performance?.poster?.url, // 기본 포스터 이미지 경로
+            category: performance?.category,
+            sellerTeam: performance?.sellerTeam,
+          },
+        };
+      });
 
     return NextResponse.json(enrichedReservations);
   } catch (error) {
