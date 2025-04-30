@@ -5,8 +5,8 @@ import {
   setInvalidField,
   setStep,
 } from "@/redux/slices/enrollSlice";
-import { RootState } from "@/redux/store";
-import { getImage } from "@/services/indexedDBService";
+import { persistor, RootState } from "@/redux/store";
+import { clearAllImages, getImage } from "@/services/indexedDBService";
 import { EnrollStep } from "@/types/enrollment";
 import axios from "axios";
 import React, { useState } from "react";
@@ -139,6 +139,8 @@ export default function EnrollFooter() {
 
       if (response.status === 201) {
         alert("공연 등록이 완료되었습니다.");
+        persistor.purge();
+        await clearAllImages();
         router.push("/manager/performance");
       }
     } catch (error) {
