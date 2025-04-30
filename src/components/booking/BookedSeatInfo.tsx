@@ -7,8 +7,10 @@ import { OccupiedSeat } from "@/types/performance";
 import { Button } from "../controls/Button";
 import axios from "axios";
 import Loading from "../Loading";
+import { showToast } from "@/utils/toast";
+import { BookResult } from "../seats/SeatLayout";
 
-interface Props {
+interface BookedSeatInfoProps {
   selectedSeatLabel: string;
   selectedSeatItem: OccupiedSeat;
   performanceData?: PerformanceData;
@@ -17,6 +19,7 @@ interface Props {
   bookingData: bookResultType | null;
   bookingError: string | null;
   performanceId: string;
+  setBookingData: React.Dispatch<React.SetStateAction<BookResult | null>>;
 }
 
 const BookingStatus = {
@@ -36,7 +39,8 @@ export default function BookedSeatInfo({
   bookingData,
   bookingError,
   performanceId,
-}: Props) {
+  setBookingData,
+}: BookedSeatInfoProps) {
   const [loading, setLoading] = useState<boolean>(false);
 
   const putReservationStatus = async (
@@ -63,8 +67,7 @@ export default function BookedSeatInfo({
         }
       );
 
-      console.log("입금 상태 변경 성공:", response.data);
-      return response.data; // 성공 시 응답 데이터 반환 (선택 사항)
+      return response.data.bookedData; // 성공 시 응답 데이터 반환 (선택 사항)
     } catch (error) {
       console.error("입금 상태 변경 실패:", error); // 에러를 다시 던져서 호출하는 쪽에서 처리하도록 함
     } finally {
@@ -75,13 +78,21 @@ export default function BookedSeatInfo({
   const handleOnClickUpdateReservationStatus = async () => {
     const reservationId = selectedSeatItem.reservationId;
     const status = "booked";
-    const data = await putReservationStatus(
-      reservationId,
-      performanceId,
-      status,
-      performanceDate,
-      performanceTime
-    );
+    try {
+      const data = await putReservationStatus(
+        reservationId,
+        performanceId,
+        status,
+        performanceDate,
+        performanceTime
+      );
+
+      setBookingData(data.updateBookData as BookResult);
+    } catch (error) {
+      if (error) {
+        showToast("예약상태 변경에 실패했습니다.", "error");
+      }
+    }
   };
 
   return (
