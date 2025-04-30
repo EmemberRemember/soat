@@ -54,7 +54,7 @@ export default function Ticket(data: bookWithPerformance) {
           <div className="w-1/2">
             <div className="bg-flesh-50 bg-opacity-20 rounded-lg p-2 flex flex-col items-center justify-center border border-flesh-100 h-full">
               <QRCode
-                value={data.bookingId}
+                value={data.reservationId}
                 className="w-full h-auto p-2 bg-white"
               />
               <p className="text-xs pt-2 text-gray-500 text-center mt-1 break-keep">
@@ -74,7 +74,7 @@ export default function Ticket(data: bookWithPerformance) {
             <div className="bg-flesh-50 bg-opacity-20 rounded-lg p-3 border border-flesh-100">
               <p className="text-xs text-flesh-700 mb-2">예매 번호</p>
               <p className="font-bold text-sm text-flesh-900 break-all">
-                {data.bookingId}
+                {data.reservationId}
               </p>
             </div>
           </div>

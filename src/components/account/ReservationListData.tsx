@@ -41,15 +41,18 @@ export default function ReservationListData({
               new Date() >
               new Date(`${book.performanceDate}T${book.performanceTime}:00`);
             return (
-              <li key={book.id} className={`size-full ${listWidthStyle}`}>
-                <Link href={`/account/mybook/${book.id}`}>
+              <li
+                key={book.reservationId}
+                className={`size-full ${listWidthStyle}`}
+              >
+                <Link href={`/account/mybook/${book.reservationId}`}>
                   <article>
                     <Card className="relative hover:shadow-lg transition-all duration-200 ">
                       <CardContent className="p-0">
                         <img
                           src={book.performanceDetails.poster}
                           alt={`${book.performanceDetails.title} 포스터`}
-                          className={`bg-flesh-500 size-full rounded-t-md sm:mb-1  object-cover ${imgAspectStyle} ${
+                          className={`size-full rounded-t-md sm:mb-1 object-cover ${imgAspectStyle} ${
                             isViewComplete && "blur-[1px]"
                           }`}
                         />

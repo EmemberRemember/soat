@@ -22,7 +22,7 @@ export function showToast(
     hideProgressBar: false,
   };
 
-  if (type === "info") toast(message, toastCustomStyle);
+  if (type === "info") toast.info(message, toastCustomStyle);
   else if (type === "success") {
     if (onClose) {
       return toast.success(message, {
