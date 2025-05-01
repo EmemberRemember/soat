@@ -58,6 +58,13 @@ const SwiperWrapper = styled.div`
     width: 15px !important;
     height: 25px !important;
     color: black !important;
+    transition: 0.3s;
+
+    &:hover,
+    &:active,
+    &:focus {
+      transform: scale(1.2);
+    }
   }
 
   .swiper-button-next::after,

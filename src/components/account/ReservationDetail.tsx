@@ -140,7 +140,7 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
                 <img
                   src={detailData.performanceDetails.poster}
                   alt={detailData.performanceDetails.title + "포스터"}
-                  className={`object-cover w-full aspect-[90/130] rounded-md`}
+                  className={`object-cover w-full aspect-[90/130] rounded-md shadow-lg  transition duration-300 hover:scale-105`}
                 />
               </Link>
               <ul className="text-xs w-full sm:text-base md:text-xl ">

@@ -84,7 +84,7 @@ export default function ShowInfoSection({
           <img
             src={posterUrl}
             alt="포스터"
-            className="absolute top-0 left-0 w-full h-full rounded-xl object-cover shadow-sm border border-gray-200 hover:shadow-lg transition-all duration-200"
+            className="absolute top-0 left-0 w-full h-full rounded-xl object-cover shadow-lg  transition duration-300 sm:hover:scale-105"
           />
         </div>
       </div>

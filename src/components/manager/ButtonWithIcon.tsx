@@ -17,7 +17,7 @@ export default function ButtonWithIcon({
     <button
       onClick={onClick}
       className={
-        "w-4/5 bg-flesh-400 text-background flex items-center my-6 rounded-md hover:shadow-md transition-all duration-200" +
+        "w-4/5 bg-flesh-400 text-background flex items-center my-6 rounded-md hover:shadow-lg transition duration-300" +
         className
       }
     >
