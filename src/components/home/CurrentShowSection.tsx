@@ -28,7 +28,13 @@ export default function CurrentShowSection({
 
   useEffect(() => {
     if (category === "전체") {
-      setFilteredShows(SHOWS);
+      setFilteredShows(
+        SHOWS.sort(
+          (a, b) =>
+            new Date(a.bookingEndDate).getTime() -
+            new Date(b.bookingEndDate).getTime()
+        )
+      );
     } else {
       const filtered = SHOWS.filter((show) => show.category === category);
       setFilteredShows(filtered);

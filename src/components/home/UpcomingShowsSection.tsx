@@ -7,7 +7,11 @@ export default function UpcomingShowsSection({
 }: {
   data: PerformanceData[];
 }) {
-  const shows = data;
+  const shows = data.sort(
+    (a, b) =>
+      new Date(a.bookingEndDate).getTime() -
+      new Date(b.bookingEndDate).getTime()
+  );
 
   return (
     <section className="container mx-auto px-4">
