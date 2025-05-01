@@ -5,6 +5,9 @@ import { bookWithPerformance } from "@/types/reservation";
 
 export default function useBookingDetail() {
   const [bookingData, setBookingData] = useState<bookWithPerformance[]>([]);
+  const [upComingBookingData, setUpComingBookingData] = useState<
+    bookWithPerformance[]
+  >([]);
   const [completedBookingData, setCompletedBookingData] = useState<
     bookWithPerformance[]
   >([]);
@@ -29,6 +32,26 @@ export default function useBookingDetail() {
       );
       const now = new Date();
       setBookingData(data);
+      setUpComingBookingData(
+        data
+          .filter((bookData: bookWithPerformance) => {
+            return (
+              now <
+              new Date(
+                `${bookData.performanceDate}T${bookData.performanceTime}:00`
+              )
+            );
+          })
+          .sort((a: bookWithPerformance, b: bookWithPerformance) => {
+            const dateA = new Date(
+              `${a.performanceDate}T${a.performanceTime}:00`
+            );
+            const dateB = new Date(
+              `${b.performanceDate}T${b.performanceTime}:00`
+            );
+            return dateA.getTime() - dateB.getTime();
+          })
+      );
       setCompletedBookingData(
         data.filter((bookData: bookWithPerformance) => {
           return (
@@ -47,5 +70,11 @@ export default function useBookingDetail() {
     }
   }, [bookingData, completedBookingData]);
 
-  return { bookingData, completedBookingData, isLoading, fetchAllBookings };
+  return {
+    bookingData,
+    upComingBookingData,
+    completedBookingData,
+    isLoading,
+    fetchAllBookings,
+  };
 }
