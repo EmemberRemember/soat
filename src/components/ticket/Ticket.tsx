@@ -71,7 +71,7 @@ export default function Ticket({
         <div className="flex gap-x-2">
           <div className="w-1/2">
             <div className="bg-flesh-50 bg-opacity-20 rounded-lg p-2 flex flex-col items-center justify-center border border-flesh-100 h-full">
-              {status === " booked" ? (
+              {status === "booked" ? (
                 <>
                   <QRCode
                     value={reservationId}
@@ -85,7 +85,7 @@ export default function Ticket({
                 <>
                   <Skeleton className="w-full aspect-[1/1] p-2" />
                   <p className="text-xs pt-2 text-gray-500 text-center mt-1 break-keep">
-                    예약 완료시 QR 코드가 생성됩니다.
+                    예매 및 결제 완료시 QR 코드가 생성됩니다.
                   </p>
                 </>
               )}
