@@ -26,9 +26,12 @@ export default function ShowInfoSection({
   const price = performanceData.price || "";
   const category = performanceData.category || "";
   const posterUrl = performanceData.poster.url || "";
+  const bookingStartDate = new Date(performanceData.bookingStartDate);
+  bookingStartDate.setHours(0, 0, 0, 0); // 예매 시작 시간 0시 0분 0초로 설정
+  const bookingEndDate = new Date(performanceData.bookingEndDate);
+  bookingEndDate.setHours(23, 59, 59, 59); // 예매 종료 시간 23시 59분 59초로 설정
   const isBookingEnabled =
-    new Date() < new Date(performanceData.bookingStartDate) ||
-    new Date() > new Date(performanceData.bookingEndDate);
+    new Date() < bookingStartDate || new Date() > bookingEndDate;
 
   const handleShare = async () => {
     const shareData = {
