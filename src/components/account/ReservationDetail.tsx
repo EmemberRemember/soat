@@ -89,9 +89,9 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
   const handleCheckQrCode = () => {
     switch (paymentStatus) {
       case "예매중":
-      case "입금 대기":
-        showToast("결제 완료 후 QR 티켓 확인이 가능합니다.", "error");
+        showToast("예매 완료 후 QR 티켓 확인이 가능합니다.", "error");
         break;
+      case "입금 대기":
       case "결제 완료":
         handleShowModal(true);
         break;
@@ -236,13 +236,14 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
           >
             <>
               <Ticket
-                title={detailData.bookTitle}
+                title={detailData.performanceDetails.title}
                 performanceDate={detailData.performanceDate}
                 performanceTime={detailData.performanceTime}
                 address={detailData.performanceDetails.address}
                 detailAddress={detailData.performanceDetails.detailAddress}
                 selectedSeats={detailData.selectedSeats}
                 reservationId={detailData.reservationId}
+                status={detailData.paymentStatus}
               />
               <CloseButton
                 className="absolute top-6 right-6"

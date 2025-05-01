@@ -158,6 +158,7 @@ export default function BookComplete(reservationData: bookResultType) {
               detailAddress={reservationData.performanceDetailLocation}
               selectedSeats={reservationData.selectedSeats}
               reservationId={reservationData.bookingId}
+              status={reservationData.paymentStatus}
             />
             <CloseButton
               className="absolute top-6 right-6"
