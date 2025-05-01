@@ -6,6 +6,7 @@ import { PerformanceData } from "@/app/api/performance/route";
 import Header from "../../../components/home/Header";
 import Footer from "../../../components/home/Footer";
 import SearchResultItem from "@/components/search/SearchResultItem";
+import Loading from "@/components/Loading";
 
 const UpcomingShowsPage = () => {
   const [data, setData] = useState<PerformanceData[]>([]);
@@ -41,7 +42,7 @@ const UpcomingShowsPage = () => {
           </h2>
 
           {isLoading ? (
-            <p className="text-gray-500">로딩 중...</p>
+            <Loading />
           ) : data.length === 0 ? (
             <p className="text-gray-500">오픈 예정 공연이 없습니다.</p>
           ) : (
