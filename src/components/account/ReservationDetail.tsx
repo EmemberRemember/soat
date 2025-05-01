@@ -235,7 +235,15 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
             className="relative p-[0px]"
           >
             <>
-              <Ticket {...detailData} />
+              <Ticket
+                title={detailData.bookTitle}
+                performanceDate={detailData.performanceDate}
+                performanceTime={detailData.performanceTime}
+                address={detailData.performanceDetails.address}
+                detailAddress={detailData.performanceDetails.detailAddress}
+                selectedSeats={detailData.selectedSeats}
+                reservationId={detailData.reservationId}
+              />
               <CloseButton
                 className="absolute top-6 right-6"
                 onClick={() => handleShowModal(false)}
