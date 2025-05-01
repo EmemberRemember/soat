@@ -38,16 +38,23 @@ export default function ReservationDetail({ bookId }: { bookId: string }) {
         const response = await axios.get(`/api/account/book/${bookId}`);
         setDetailData(response.data);
         const status = response.data.paymentStatus;
-        if (status === "pending") {
+
+        switch (status) {
+          case "pending":
           setPaymentStatus("입금 대기");
-        } else if (status === "booked") {
+            break;
+          case "booked":
           setPaymentStatus("결제 완료");
-        } else if (status === "pendingRefund") {
+            break;
+          case "pendingRefund":
           setPaymentStatus("환불 대기");
-        } else if (status === "cancel") {
+            break;
+          case "cancel":
           setPaymentStatus("예매 취소");
-        } else {
+            break;
+          default:
           setPaymentStatus("예매중");
+            break;
         }
       } catch (error) {
         console.error("Error fetching booking details:", error);
