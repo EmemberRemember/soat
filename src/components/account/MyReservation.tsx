@@ -4,8 +4,13 @@ import useBookingDetail from "@/hooks/useBookingDetail";
 import ReservationList from "./ReservationList";
 
 export default function MyReservation() {
-  const { bookingData, completedBookingData, isLoading, fetchAllBookings } =
-    useBookingDetail();
+  const {
+    bookingData,
+    upComingBookingData,
+    completedBookingData,
+    isLoading,
+    fetchAllBookings,
+  } = useBookingDetail();
 
   useEffect(() => {
     fetchAllBookings();
@@ -13,7 +18,7 @@ export default function MyReservation() {
 
   return (
     <div className="flex flex-col relative">
-      <ReservationList data={bookingData} isLoading={isLoading} />
+      <ReservationList data={upComingBookingData} isLoading={isLoading} />
       <ReservationList
         data={completedBookingData}
         isPastData

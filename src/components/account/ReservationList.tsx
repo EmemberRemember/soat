@@ -17,7 +17,7 @@ export default function ReservationList({
   return (
     <section className="max-w-[1000px] relative sm:col-span-2 sm:row-start-1 min-w-[290px] ">
       <h2 className="my-[10px] text-sm sm:text-3xl sm:my-6 font-bold">
-        {isPastData ? "지난 예매 내역" : "예매 내역"}
+        {isPastData ? "지난 예매 내역" : "예정된 예매 내역"}
       </h2>
       <Button
         type="button"
@@ -27,7 +27,7 @@ export default function ReservationList({
         href={
           isPastData
             ? "/account/mybook?book=past"
-            : "/account/mybook?book=total"
+            : "/account/mybook?book=upComing"
         }
       >
         더보기

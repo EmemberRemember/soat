@@ -10,8 +10,13 @@ export default function Page({
 }: {
   searchParams: { book?: string };
 }) {
-  const { bookingData, completedBookingData, isLoading, fetchAllBookings } =
-    useBookingDetail();
+  const {
+    bookingData,
+    upComingBookingData,
+    completedBookingData,
+    isLoading,
+    fetchAllBookings,
+  } = useBookingDetail();
 
   useEffect(() => {
     fetchAllBookings();
@@ -25,10 +30,20 @@ export default function Page({
       <main className={`m-auto w-full pt-[10px] px-[30px] sm:px-[0]`}>
         <section className="m-auto sm:w-[80%] mb-12 lg:pl-[26px]">
           <h2 className="my-[10px] sm:text-3xl sm:my-6 font-bold">
-            {book === "total" ? "전체" : "지난"} 예매 내역
+            {book === "past"
+              ? "지난 예매 내역"
+              : book === "upComing"
+                ? "예정된 예매 내역"
+                : "전체 예매 내역"}
           </h2>
           <ReservationListData
-            data={book === "total" ? bookingData : completedBookingData}
+            data={
+              book === "past"
+                ? completedBookingData
+                : book === "upComing"
+                  ? upComingBookingData
+                  : bookingData
+            }
             isLoading={isLoading}
           />
         </section>
