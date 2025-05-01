@@ -5,10 +5,12 @@ export default function ButtonRow({
   setProcess,
   buttons,
   bookCompleteHandler,
+  showTicketModalHandler,
 }: {
   className?: string;
   setProcess: (process: string) => void;
   bookCompleteHandler?: () => void;
+  showTicketModalHandler?: () => void;
   buttons: { label: string; process: string; highlight: boolean }[];
 }) {
   return (
@@ -24,6 +26,9 @@ export default function ButtonRow({
               }
               if (button.process === "close") {
                 window.close();
+              }
+              if (button.process === "ticketCheck" && showTicketModalHandler) {
+                showTicketModalHandler();
               } else {
                 setProcess(button.process);
               }

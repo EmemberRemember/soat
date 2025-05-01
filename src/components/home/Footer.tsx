@@ -12,9 +12,7 @@ export default function Footer() {
           <dd className="m-0">주식회사 쏘앳</dd>
 
           <dt className="font-bold">대표이사 :</dt>
-          <dd className="m-0">
-            김지훈,하진희,윤시운,황초희 이휘경,허승범 멘토,김예원,한지현
-          </dd>
+          <dd className="m-0">김지훈,하진희,윤시운,이휘경,김예원</dd>
 
           <dt className="font-bold">사업자번호 : </dt>
           <dd className="m-0">202 - 50 - 11724</dd>
