@@ -7,7 +7,11 @@ import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
 import { showToast } from "@/utils/toast";
 
-export default function ReviewArea() {
+interface ReviewAreaProps {
+  setTapState: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export default function ReviewArea({ setTapState }: ReviewAreaProps) {
   const [isReview, setReview] = useState("");
   const [rating, setRating] = useState(0);
   const [hover, setHover] = useState(0);
@@ -25,10 +29,9 @@ export default function ReviewArea() {
 
   // 한줄평 중복 작성시 오류문구 초기화
   useEffect(() => {
-    if (error !== "") {
-      setError("");
-    }
-  }, [isReview]);
+    if (!error) return;
+    else setError("");
+  }, [isReview, rating]);
 
   // 리뷰 작성 함수
   const handleSubmitReview = async () => {
@@ -67,7 +70,10 @@ export default function ReviewArea() {
         // 성공 시 폼 초기화
         setReview("");
         setRating(0);
-        window.location.reload();
+        setTapState("");
+        setTimeout(() => {
+          setTapState("REVIEW");
+        }, 0);
       });
     } catch (err) {
       const error = err as Error;

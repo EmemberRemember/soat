@@ -61,7 +61,7 @@ export default function ShowDetailSection({
       {isTapState === "SHOWDETAIL" && (
         <ShowDetailArea performanceData={performanceData} />
       )}
-      {isTapState === "REVIEW" && <ReviewArea />}
+      {isTapState === "REVIEW" && <ReviewArea setTapState={setTapState} />}
       {isTapState === "CAUTION" && <CautionArea />}
     </section>
   );
