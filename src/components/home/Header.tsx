@@ -59,7 +59,9 @@ export default function Header() {
   return (
     <header className="relative">
       {/* 메인 헤더 */}
-      <div className="px-4 md:px-[140px] py-4 md:py-[40px] flex items-center justify-between whitespace-nowrap gap-8">
+      <div
+        className={`px-4 md:px-[140px] py-4 md:py-[40px] flex items-center justify-between whitespace-nowrap gap-8 ${isMenuOpen && "fixed bg-white w-full z-10"}`}
+      >
         {/* 로고와 검색 영역 */}
         <div className="flex relative">
           <h1>
