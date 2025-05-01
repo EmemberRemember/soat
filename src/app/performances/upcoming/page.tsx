@@ -27,10 +27,14 @@ const UpcomingShowsPage = () => {
   }, []);
 
   const totalPages = Math.ceil(data.length / itemsPerPage);
-  const displayedData = data.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const displayedData = data
+    .sort(
+      (a, b) =>
+        new Date(a.bookingStartDate).getTime() -
+        new Date(b.bookingStartDate).getTime()
+    )
+    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  // 예매일이 빠른 순서가 맨 위로 오도록 오름차순 정렬
 
   return (
     <>

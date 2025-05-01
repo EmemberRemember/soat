@@ -7,6 +7,7 @@ import Header from "../../../components/home/Header";
 import Footer from "../../../components/home/Footer";
 import SearchResultItem from "@/components/search/SearchResultItem";
 import Loading from "@/components/Loading";
+import getLastPerformanceDate from "@/utils/getLastPerformanceDate";
 
 const BookingListPage = () => {
   const [data, setData] = useState<PerformanceData[]>([]);
@@ -28,10 +29,13 @@ const BookingListPage = () => {
 
   // 페이지네이션 처리
   const totalPages = Math.ceil(data.length / itemsPerPage);
-  const displayedData = data.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  const displayedData = data
+    .sort(
+      (a, b) =>
+        getLastPerformanceDate(a.performances) -
+        getLastPerformanceDate(b.performances)
+    )
+    .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
   return (
     <>
@@ -39,7 +43,7 @@ const BookingListPage = () => {
       <main>
         <div className="container mx-auto px-4 py-8">
           <h2 className="text-2xl font-bold mb-6">
-            현재 예매중인 공연{" "}
+            현재 예매중인 공연
             <span className="font-medium">({data.length})</span>
           </h2>
 
