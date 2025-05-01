@@ -1,5 +1,3 @@
-"use client";
-import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "../controls/Button";
 import BookSection from "./BookSection";
@@ -12,30 +10,12 @@ import Modal from "../Modal";
 import { useShowModal } from "@/hooks/useShowModal";
 import Ticket from "../ticket/Ticket";
 import { CloseButton } from "../controls/Button";
-import { bookWithPerformance } from "@/types/reservation";
-import axios from "axios";
 
 export default function BookComplete(reservationData: bookResultType) {
   const { showModal, handleShowModal } = useShowModal();
-  const [detailData, setDetailData] = useState<bookWithPerformance | null>(
-    null
-  );
 
-  async function showTicketModalHandler() {
-    if (detailData) {
-      handleShowModal(true);
-      return;
-    }
-    try {
-      const response = await axios.get(
-        `/api/account/book/${reservationData.bookingId}`
-      );
-      setDetailData(response.data);
-    } catch (error) {
-      console.error("Error fetching booking details:", error);
-    } finally {
-      handleShowModal(true);
-    }
+  function showTicketModalHandler() {
+    handleShowModal(true);
   }
 
   return (
@@ -59,7 +39,7 @@ export default function BookComplete(reservationData: bookResultType) {
                 month: "long",
                 day: "numeric",
               }
-            )}{" "}
+            )}
             {reservationData.performanceTime}
           </dd>
           <dt className="font-bold">좌석번호</dt>
@@ -73,7 +53,6 @@ export default function BookComplete(reservationData: bookResultType) {
             })}
           </dd>
           <dt className="font-bold">입금 기한</dt>
-          {/*<dd className="mb-2">2025년 1월 21일 오후 11시 59분까지</dd>*/}
           <dd className="mb-2">
             {new Date(reservationData.dueDate)
               .toLocaleTimeString("ko-KR", {
@@ -164,23 +143,29 @@ export default function BookComplete(reservationData: bookResultType) {
           { label: "닫기", process: "close", highlight: true },
         ]}
       />
-      {detailData && (
-        <>
-          <Modal
-            isOpen={showModal}
-            onClose={() => handleShowModal(false)}
-            className="relative p-[0px]"
-          >
-            <>
-              <Ticket {...detailData} />
-              <CloseButton
-                className="absolute top-6 right-6"
-                onClick={() => handleShowModal(false)}
-              />
-            </>
-          </Modal>
-        </>
-      )}
+      <>
+        <Modal
+          isOpen={showModal}
+          onClose={() => handleShowModal(false)}
+          className="relative p-[0px]"
+        >
+          <>
+            <Ticket
+              title={reservationData.bookTitle}
+              performanceDate={reservationData.performanceDate}
+              performanceTime={reservationData.performanceTime}
+              address={reservationData.performanceLocation}
+              detailAddress={reservationData.performanceDetailLocation}
+              selectedSeats={reservationData.selectedSeats}
+              reservationId={reservationData.bookingId}
+            />
+            <CloseButton
+              className="absolute top-6 right-6"
+              onClick={() => handleShowModal(false)}
+            />
+          </>
+        </Modal>
+      </>
     </>
   );
 }
