@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import useSetEditEnrollData from "@/hooks/useSetEditEnrollData";
 import { showToast } from "@/utils/toast";
+import getLastPerformanceDate from "@/utils/getLastPerformanceDate";
 
 interface SliceProps {
   data: PerformanceDataWithStatus;
@@ -29,33 +30,11 @@ export default function PerformanceSlide({
   const nowDate = new Date();
   const isNotYetBookingDate = new Date(bookingStartDate) > nowDate;
   const isBookingEnded = new Date(bookingEndDate) < nowDate;
-  const isPerformanceEnded = new Date(getLastPerformanceDate()) < nowDate;
+  const isPerformanceEnded =
+    new Date(getLastPerformanceDate(data.performances) || bookingEndDate) <
+    nowDate;
   const { setEditEnrollData, setEditSeatData } = useSetEditEnrollData();
   const router = useRouter();
-
-  function getLastPerformanceDate() {
-    const performanceDates = Object.keys(data.performances).sort(
-      (a, b) => new Date(b).getTime() - new Date(a).getTime()
-    );
-    const finishPerformanceDate = performanceDates[0];
-
-    if (Object.keys(data.performances).length > 0) {
-      const lastTime = data.performances[finishPerformanceDate]
-        .map(({ time }) => time)
-        .sort((a, b) => Number(b) - Number(a))[0]
-        .split(":");
-      const lastPerformanceDate = new Date(finishPerformanceDate);
-      lastPerformanceDate.setHours(
-        Number(lastTime[0]),
-        Number(lastTime[1]),
-        59,
-        59
-      );
-      return lastPerformanceDate;
-    } else {
-      return bookingEndDate;
-    }
-  }
 
   const terminatePerformance = async () => {
     const endConfirm = confirm("공연을 종료하시겠습니까?");
@@ -133,7 +112,7 @@ export default function PerformanceSlide({
       >
         {/* nowDate > new Date(bookingEndDate)는 공연 일자가 등록되지 않았지만 예매일자가 긴 데이터가 있어서 임시 구현 */}
         <CardContent className="p-0 relative">
-          {(isBookingEnded && isPerformanceEnded) || data.status === "ended" ? (
+          {isPerformanceEnded || data.status === "ended" ? (
             <Badge
               variant="outline"
               className="absolute top-2 left-2 text-white font-normal text-[10px] sm:text-xs md:text-sm"
