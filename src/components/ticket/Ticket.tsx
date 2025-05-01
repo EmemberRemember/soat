@@ -8,6 +8,7 @@ import {
   Map,
   Ticket as TicketIcon,
 } from "lucide-react";
+import { Skeleton } from "../ui/skeleton";
 
 interface TicketProps {
   title: string;
@@ -17,6 +18,7 @@ interface TicketProps {
   detailAddress: string;
   selectedSeats: string[];
   reservationId: string;
+  status: string; // "booked" | "pending" | "processing" | "cancel" | "pendingRefund"
 }
 
 export default function Ticket({
@@ -27,6 +29,7 @@ export default function Ticket({
   detailAddress,
   selectedSeats,
   reservationId,
+  status,
 }: TicketProps) {
   return (
     <article className="relative bg-white rounded-xl overflow-hidden shadow-xl border border-gray-200 flex flex-col justify-center items-center">
@@ -68,13 +71,24 @@ export default function Ticket({
         <div className="flex gap-x-2">
           <div className="w-1/2">
             <div className="bg-flesh-50 bg-opacity-20 rounded-lg p-2 flex flex-col items-center justify-center border border-flesh-100 h-full">
-              <QRCode
-                value={reservationId}
-                className="w-full h-auto p-2 bg-white"
-              />
-              <p className="text-xs pt-2 text-gray-500 text-center mt-1 break-keep">
-                입장 시 QR 코드를 보여 주세요
-              </p>
+              {status === " booked" ? (
+                <>
+                  <QRCode
+                    value={reservationId}
+                    className="w-full h-auto p-2 bg-white"
+                  />
+                  <p className="text-xs pt-2 text-gray-500 text-center mt-1 break-keep">
+                    입장 시 QR 코드를 보여 주세요
+                  </p>
+                </>
+              ) : (
+                <>
+                  <Skeleton className="w-full aspect-[1/1] p-2" />
+                  <p className="text-xs pt-2 text-gray-500 text-center mt-1 break-keep">
+                    예약 완료시 QR 코드가 생성됩니다.
+                  </p>
+                </>
+              )}
             </div>
           </div>
 
