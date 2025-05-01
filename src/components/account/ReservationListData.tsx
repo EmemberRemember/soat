@@ -20,7 +20,7 @@ export default function ReservationListData({
   const dataList = data.slice(...sliceData);
   const imgAspectStyle = "aspect-[7/6] sm:aspect-[90/130]";
   const listWidthStyle = "w-[25vw] sm:w-[18vw]";
-  const skeletonStyle = `h-full rounded-xl  ${imgAspectStyle} ${listWidthStyle}`;
+  const skeletonStyle = `h-full rounded-xl ${imgAspectStyle} ${listWidthStyle} ${slice && slice === 3 && "flex-1"}`;
 
   return (
     <>
@@ -33,7 +33,7 @@ export default function ReservationListData({
       ) : (
         <ul
           className={`flex gap-[10px] justify-center ${
-            Array.isArray(dataList) && dataList.length > 3 && "flex-wrap"
+            dataList && dataList.length > 3 && "flex-wrap"
           }`}
         >
           {dataList.map((book: bookWithPerformance) => {
