@@ -264,6 +264,7 @@ export async function POST(request: NextRequest) {
         performanceDate: selectedDay,
         performanceTime: selectedTime,
         performanceLocation: performanceData.address,
+        performanceDetailLocation: performanceData.detailAddress,
         selectedSeats,
         purchaserInfo,
         totalPrice,

@@ -5,6 +5,7 @@ export interface bookResultType {
   performanceDate: string;
   performanceTime: string;
   performanceLocation: string;
+  performanceDetailLocation: string;
   selectedSeats: string[];
   purchaserInfo: {
     name: string;
