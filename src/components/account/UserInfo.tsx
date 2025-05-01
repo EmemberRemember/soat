@@ -1,5 +1,6 @@
 import UserInfoItem from "@/components/account/UserInfoItem";
 import Link from "next/link";
+import ViewAllBooking from "./ViewAllBooking";
 
 export default function UserInfo() {
   return (
@@ -14,6 +15,7 @@ export default function UserInfo() {
           회원 정보 수정
         </Link>
       </div>
+      <ViewAllBooking className="hidden sm:flex" />
     </section>
   );
 }
