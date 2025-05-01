@@ -5,6 +5,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import Loading from "@/components/Loading";
 
 enum UserType {
   TICKETUSER = "TICKETUSER",
@@ -27,6 +28,7 @@ export default function LoginContent() {
   const [password, setPassword] = useState<string>("");
   const [rememberMe, setRememberMe] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [isButtonClicked, setIsButtonClicked] = useState<boolean>(false);
 
   useEffect(() => {
     const savedEmail = localStorage.getItem("rememberedEmail");
@@ -79,6 +81,7 @@ export default function LoginContent() {
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    setIsButtonClicked(true);
 
     const result = await signIn("credentials", {
       email,
@@ -94,6 +97,7 @@ export default function LoginContent() {
     } else {
       if (result?.error) {
         setError(result.error);
+        setIsButtonClicked(false);
       } else {
         setError("로그인에 실패했습니다.");
       }
@@ -173,8 +177,14 @@ export default function LoginContent() {
               </label>
             </div>
 
-            <Button highlight size="full" type="submit" disabled={!isFormValid}>
+            <Button
+              highlight
+              size="full"
+              type="submit"
+              disabled={!isFormValid || isButtonClicked}
+            >
               로그인
+              {isButtonClicked && <Loading size="small" />}
             </Button>
             {error && <p className="text-flesh-400 text-sm">{error}</p>}
           </form>
