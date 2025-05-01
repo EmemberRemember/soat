@@ -186,11 +186,12 @@ export default function Header() {
                         handleLogout(e);
                         toggleMenu();
                       }}
-                      className="text-black flex gap-[5px] items-center p-2 hover:bg-gray-100 rounded"
+                      className="text-black flex gap-[9px] items-center p-2 hover:bg-gray-100 rounded"
                     >
                       <img
                         src="/images/icons/mypage-login-icon.svg"
                         alt="로그아웃"
+                        className="pl-1"
                       />
                       로그아웃
                     </a>
@@ -224,7 +225,7 @@ export default function Header() {
                   <li className="cursor-pointer">
                     <Link
                       href="/login"
-                      className="text-black flex gap-[5px] items-center p-2 hover:bg-gray-100 rounded"
+                      className="text-black flex gap-[9px] items-center p-2 hover:bg-gray-100 rounded"
                       onClick={toggleMenu}
                     >
                       <img
