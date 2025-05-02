@@ -121,32 +121,39 @@ export async function POST(request: NextRequest, { params }: PageParams) {
 
       // 공연 슬롯 복사
       const originalSlot = performances[date][timeSlotIndex];
+      let updatedSlot;
+      // 예매된 좌석이 없는 경우 - 공연 상태만 'ended'로 바꿔주고 반환
+      if (!Array.isArray(occupiedSeats) || occupiedSeats.length === 0) {
+        updatedSlot = {
+          ...originalSlot,
+          status: "ended",
+        };
+      } else {
+        // 좌석 상태 업데이트
+        const updatedOccupiedSeats = originalSlot.occupiedSeats?.map(
+          (seat: OccupiedSeat) => {
+            let newStatus;
 
-      // 좌석 상태 업데이트
-      const updatedOccupiedSeats = originalSlot.occupiedSeats?.map(
-        (seat: OccupiedSeat) => {
-          let newStatus;
+            if (seat.status === "booked" || seat.status === "pendingRefund") {
+              newStatus = "pendingRefund";
+            } else {
+              newStatus = "cancel";
+            }
 
-          if (seat.status === "booked" || seat.status === "pendingRefund") {
-            newStatus = "pendingRefund";
-          } else {
-            newStatus = "cancel";
+            return {
+              ...seat,
+              status: newStatus,
+            };
           }
+        );
 
-          return {
-            ...seat,
-            status: newStatus,
-          };
-        }
-      );
-
-      // 공연 슬롯에 업데이트된 좌석 정보와 status 필드 반영
-      const updatedSlot = {
-        ...originalSlot,
-        status: "ended",
-        occupiedSeats: updatedOccupiedSeats,
-      };
-
+        // 공연 슬롯에 업데이트된 좌석 정보와 status 필드 반영
+        updatedSlot = {
+          ...originalSlot,
+          status: "ended",
+          occupiedSeats: updatedOccupiedSeats,
+        };
+      }
       // 기존 배열 복사 후 해당 인덱스만 업데이트
       const newDatePerformances = [...datePerformances];
       newDatePerformances[timeSlotIndex] = updatedSlot;
