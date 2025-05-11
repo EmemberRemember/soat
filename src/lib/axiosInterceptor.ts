@@ -7,7 +7,7 @@ export default async function axiosInterceptor(url: string) {
     ? "next-auth.session-token"
     : "__Secure-next-auth.session-token";
 
-  const sessionToken = cookies().get("next-auth.session-token")?.value;
+  const sessionToken = cookies().get(sessionCookieName)?.value;
   const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}${url}`, {
     headers: {
       Cookie: `${sessionCookieName}=${sessionToken}`,
