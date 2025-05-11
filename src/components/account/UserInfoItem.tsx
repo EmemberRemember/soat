@@ -20,6 +20,8 @@ function Li({ label, data }: UserDataProps) {
 export default async function UserInfoItem() {
   const response = await axiosInterceptor("/api/account/me");
   const user = response.user;
+  const userType = user?.userType === "buyer" ? "예매회원" : "공연관리자";
+
   return (
     <ul className="p-5 rounded-[10px] w-full border-2 border-flesh-200 text-xs sm:h-80 sm:flex sm:flex-col sm:justify-center sm:gap-2 whitespace-nowrap sm:px-3 md:px-5">
       <Li label="이름" data={user?.username} />
@@ -28,7 +30,7 @@ export default async function UserInfoItem() {
         label="휴대폰"
         data={user?.phoneNumber.replace(/^(\d{3})(\d{4})(\d{4})$/, "$1-$2-$3")}
       />
-      <Li label="회원 유형" data={user?.userType} />
+      <Li label="회원 유형" data={userType} />
     </ul>
   );
 }
