@@ -1,29 +1,12 @@
-"use client";
-import { useEffect } from "react";
-import useBookingDetail from "@/hooks/useBookingDetail";
 import ReservationList from "./ReservationList";
+import axiosInterceptor from "@/lib/axiosInterceptor";
 
-export default function MyReservation() {
-  const {
-    bookingData,
-    upComingBookingData,
-    completedBookingData,
-    isLoading,
-    fetchAllBookings,
-  } = useBookingDetail();
-
-  useEffect(() => {
-    fetchAllBookings();
-  }, [fetchAllBookings]);
-
+export default async function MyReservation() {
+  const response = await axiosInterceptor("/api/account/book");
   return (
     <div className="flex flex-col relative">
-      <ReservationList data={upComingBookingData} isLoading={isLoading} />
-      <ReservationList
-        data={completedBookingData}
-        isPastData
-        isLoading={isLoading}
-      />
+      <ReservationList data={response} dataType="upComing" />
+      <ReservationList data={response} dataType="past" />
     </div>
   );
 }
