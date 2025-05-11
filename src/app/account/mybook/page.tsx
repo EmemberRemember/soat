@@ -1,29 +1,17 @@
-"use client";
-import { useEffect } from "react";
 import Header from "@/components/home/Header";
 import Footer from "@/components/home/Footer";
 import ReservationListData from "@/components/account/ReservationListData";
-import useBookingDetail from "@/hooks/useBookingDetail";
+import axiosInterceptor from "@/lib/axiosInterceptor";
 
-export default function Page({
+export default async function Page({
   searchParams,
 }: {
   searchParams: { book?: string };
 }) {
-  const {
-    bookingData,
-    upComingBookingData,
-    completedBookingData,
-    isLoading,
-    fetchAllBookings,
-  } = useBookingDetail();
-
-  useEffect(() => {
-    fetchAllBookings();
-  }, [fetchAllBookings]);
-
   const book = searchParams.book || "total"; // 기본값 설정
-
+  const dataType =
+    book === "total" ? "all" : book === "past" ? "past" : "upComing";
+  const response = await axiosInterceptor("/api/account/book");
   return (
     <>
       <Header />
@@ -36,16 +24,7 @@ export default function Page({
                 ? "예정된 예매 내역"
                 : "전체 예매 내역"}
           </h2>
-          <ReservationListData
-            data={
-              book === "past"
-                ? completedBookingData
-                : book === "upComing"
-                  ? upComingBookingData
-                  : bookingData
-            }
-            isLoading={isLoading}
-          />
+          <ReservationListData data={response} dataType={dataType} />
         </section>
       </main>
       <Footer />
