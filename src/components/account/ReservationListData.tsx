@@ -77,7 +77,7 @@ export default async function ReservationListData({
                         src={book.performanceDetails.poster}
                         alt={`${book.performanceDetails.title} 포스터`}
                         className={`size-full rounded-t-md sm:mb-1 object-cover ${imgAspectStyle} ${
-                          isViewComplete && "blur-[1px]"
+                          isViewComplete && "blur-[0.5px]"
                         }`}
                       />
                       <div className="p-1 sm:p-3">
